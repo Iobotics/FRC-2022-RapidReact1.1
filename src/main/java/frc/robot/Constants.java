@@ -33,7 +33,7 @@ public final class Constants {
         public static final int kI = 0;
         public static final int kD = 0;
         public static final int kF = 0;
-        public static final int kGearRatio = 1;
+        public static final int kGearRatio = 2;
         public static final int kWheelDiameter = 6;
     }
 
