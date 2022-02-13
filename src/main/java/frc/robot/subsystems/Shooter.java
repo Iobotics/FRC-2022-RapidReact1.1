@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -26,13 +27,14 @@ public class Shooter extends SubsystemBase{
 
     }
 
-    public void setPercent(double percent){
-
-     shootLeft.set(percent);
+    public void setPower(double leftPower, double rightPower){
+        shootLeft.set(ControlMode.PercentOutput, leftPower);
+        shootRight.set(ControlMode.PercentOutput, rightPower);
     }
 
     public void stop(){
-        shootLeft.set(0);
+        shootLeft.set(ControlMode.PercentOutput, 0);
+        shootRight.set(ControlMode.PercentOutput, 0);
     }
     
 }
