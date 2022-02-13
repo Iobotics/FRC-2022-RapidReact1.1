@@ -75,15 +75,16 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
     new SequentialCommandGroup(
-      new StartEndCommand(
+      new RunCommand(
         ()-> drivetrain.motionMagic(1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
-        ()-> drivetrain.stop(),drivetrain
+        drivetrain
       ),
       new StartEndCommand(
         ()-> drivetrain.motionMagic(-1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
         ()-> drivetrain.stop(),drivetrain
       )
     );
+    SmartDashboard.putBoolean("AUTOFINISH", false);
     return null;
   }
 }
