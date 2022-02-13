@@ -37,8 +37,8 @@ public class Drivetrain extends SubsystemBase {
 
         leftMaster.setInverted(false);
         leftSlave.setInverted(false);
-        rightMaster.setInverted(false);
-        rightSlave.setInverted(false);
+        rightMaster.setInverted(true);
+        rightSlave.setInverted(true);
 
         leftSlave.follow(leftMaster); //sets slave to follow master
         rightSlave.follow(rightMaster); //sets slave to follow master
@@ -50,8 +50,8 @@ public class Drivetrain extends SubsystemBase {
         //Config NeutralMode to coast
         leftMaster.setNeutralMode(NeutralMode.Brake);
         rightMaster.setNeutralMode(NeutralMode.Brake);
-        leftSlave.setNeutralMode(NeutralMode.Coast);
-        rightSlave.setNeutralMode(NeutralMode.Coast);
+        leftSlave.setNeutralMode(NeutralMode.Brake);
+        rightSlave.setNeutralMode(NeutralMode.Brake);
 
         //Configure PIDF values for Auto drive, the Left Master is the master controller for PID
         leftMaster.config_kP(0, DrivetrainConstants.kP);

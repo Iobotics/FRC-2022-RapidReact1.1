@@ -40,8 +40,8 @@ public class RobotContainer {
     SmartDashboard.putNumber("I",0);
     SmartDashboard.putNumber("D",0);
     // Configure the button bindings
-    drivetrain.setDefaultCommand(new RunCommand(
-      () -> drivetrain.drive.tankDrive(-joystick1.getY(), joystick2.getY()), drivetrain));
+    // drivetrain.setDefaultCommand(new RunCommand(
+    //   () -> drivetrain.drive.tankDrive(-joystick1.getY(), joystick2.getY()), drivetrain));
 
 
     configureButtonBindings();
@@ -54,8 +54,9 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    new JoystickButton(joystick2,1).whileHeld(
+    new JoystickButton(joystick1,1).whileHeld(
       new StartEndCommand(
+        // ()-> drivetrain.setTank(.5,.5),
         ()-> drivetrain.motionMagic(SmartDashboard.getNumber("Distance", 0), 10,SmartDashboard.getNumber("P", 0),SmartDashboard.getNumber("I", 0),SmartDashboard.getNumber("D", 0)),
         ()-> drivetrain.stop(),drivetrain
       )
