@@ -4,4 +4,35 @@
 
 package frc.robot.subsystems;
 
-public class Shooter {}
+
+
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.RobotMap;
+
+/** Add your docs here. */
+public class Shooter extends SubsystemBase{
+
+    private TalonSRX shootLeft;
+    private TalonSRX shootRight;
+
+    public Shooter(){
+        
+        shootLeft = new TalonSRX(RobotMap.kshootLeft);
+        shootRight = new TalonSRX(RobotMap.kshootRight);
+
+        shootRight.follow(shootLeft);
+
+    }
+
+    public void setPercent(double percent){
+
+     shootLeft.set(percent);
+    }
+
+    public void stop(){
+        shootLeft.set(0);
+    }
+    
+}
