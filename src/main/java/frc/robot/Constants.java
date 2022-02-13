@@ -29,10 +29,10 @@ public final class Constants {
     }
 
     public static final class DrivetrainConstants{
-        public static final int kP = 0;
-        public static final int kI = 0;
-        public static final int kD = 0;
-        public static final int kF = 0;
+        public static final double kP = 0.001;
+        public static final double kI = 0;
+        public static final double kD = 0;
+        public static final double kF = 0;
         public static final int kGearRatio = 2;
         public static final int kWheelDiameter = 6;
     }
