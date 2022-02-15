@@ -87,7 +87,8 @@ public class Shooter extends SubsystemBase{
     {
         SmartDashboard.putNumber("Poteniometer position",arm.getSelectedSensorPosition());
         shootRight.follow(shootLeft);
-    }
+    }    
+
 
     public void setPower(double leftPower, double rightPower){
         shootLeft.set(ControlMode.PercentOutput, leftPower);

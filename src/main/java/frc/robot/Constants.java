@@ -15,6 +15,7 @@ package frc.robot;
 public final class Constants {
     public static final class RobotMap{
         
+
         // Drivetrain devices (motors) 
         public static final int kLeftMaster = 1;
         public static final int kLeftSlave = 4;
@@ -29,8 +30,11 @@ public final class Constants {
          //intake devices(motors)
          public static final int kSpinner = 7;
     
-    }
 
+        public static final int kLeftClimber = 5;
+        public static final int kRightClimber = 6;
+    }
+    
     public static final class OIConstants{
         public static final int kJoystick1 = 0;
         public static final int kJoystick2 = 1;
