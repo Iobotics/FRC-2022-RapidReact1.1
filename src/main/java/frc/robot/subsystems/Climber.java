@@ -7,29 +7,28 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotMap;
 
 /** Add your docs here. */
 public class Climber extends SubsystemBase{
-    private TalonSRX kLeftClimber;
-    private TalonSRX kRightClimber;
+    private TalonSRX LeftClimber;
+    private TalonSRX RightClimber;
 
-
-
-
-    public void intake(){
-        kLeftClimber = new TalonSRX(RobotMap.kLeftClimber); //CAN 0
-        kRightClimber = new TalonSRX(RobotMap.kRightClimber);
+    public Climber() {
+        LeftClimber = new TalonSRX(RobotMap.kLeftClimber); //CAN 0
+        RightClimber = new TalonSRX(RobotMap.kRightClimber);
 
     }
 
-    public void setPower(double power){
-        kLeftClimber.set(ControlMode.PercentOutput, power);
-        kRightClimber.set(ControlMode.PercentOutput, power);
+    public void setPower(double leftpower,double rightpower){
+        LeftClimber.set(ControlMode.PercentOutput, leftpower);
+        RightClimber.set(ControlMode.PercentOutput, rightpower);
     }
 
-    public Object stop() {
-        return null;
+    public void stop() {
+        LeftClimber.set(ControlMode.PercentOutput, 0);
+        RightClimber.set(ControlMode.PercentOutput,0);
     }
 }

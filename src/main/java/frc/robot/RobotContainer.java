@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+<<<<<<< HEAD
 
 import frc.robot.subsystems.Drivetrain;
 //import frc.robot.commands.ExampleCommand;
@@ -22,6 +23,8 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.Constants.DrivetrainConstants;
+=======
+>>>>>>> 307f78b (First working climber)
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Climber;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -65,12 +68,16 @@ public class RobotContainer {
 
     configureButtonBindings();
 
+<<<<<<< HEAD
 
     new JoystickButton(joystick1, 1).whileHeld(
       new StartEndCommand(
         ()-> climber.setPower(joystick1.getZ()),
         ()-> climber.stop())
     );
+=======
+    
+>>>>>>> 307f78b (First working climber)
   }
 
   /**
@@ -80,6 +87,7 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+<<<<<<< HEAD
 
     new JoystickButton(joystick1,4).whileHeld(
       new StartEndCommand(
@@ -126,6 +134,13 @@ public class RobotContainer {
           ()-> intake.setPower(joystick2.getZ()),
           ()-> intake.stop())
         );
+=======
+    new JoystickButton(joystick1, 2).whileHeld(
+      new StartEndCommand(
+        ()-> climber.setPower(.7*joystick1.getZ(),.7*joystick1.getZ()),
+        ()-> climber.stop(),climber)
+    );
+>>>>>>> 307f78b (First working climber)
   }
 
   /**
@@ -136,6 +151,7 @@ public class RobotContainer {
   
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
+<<<<<<< HEAD
     new SequentialCommandGroup(
       new RunCommand(
         ()-> drivetrain.motionMagic(1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
@@ -148,6 +164,8 @@ public class RobotContainer {
       )
       );
     SmartDashboard.putBoolean("AUTOFINISH", false);
+=======
+>>>>>>> 307f78b (First working climber)
     return null;
   }
   }
