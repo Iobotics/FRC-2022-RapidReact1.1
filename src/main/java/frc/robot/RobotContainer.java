@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -11,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -30,8 +33,11 @@ public class RobotContainer {
   //private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
   private final Drivetrain drivetrain = new Drivetrain();
+  private final Climber climber = new Climber();
   private final Joystick joystick1 = new Joystick(OIConstants.kJoystick1);
   private final Joystick joystick2 = new Joystick(OIConstants.kJoystick2);
+  BooleanSupplier drivetrainIsFinished = ()-> drivetrain.isFinished();
+
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -63,7 +69,6 @@ public class RobotContainer {
         ()-> drivetrain.stop(),drivetrain
       )
     );
-    
 
   }
 
@@ -75,17 +80,16 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
     new SequentialCommandGroup(
-      RunCommand test = new RunCommand(
+       new RunCommand(
         ()-> drivetrain.motionMagic(1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
         drivetrain
-      )
-      test.addRequirements(drivetrain)
+      ).withInterrupt(drivetrainIsFinished)
       ,
       new StartEndCommand(
         ()-> drivetrain.motionMagic(-1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
         ()-> drivetrain.stop(),drivetrain
-      )
-    );
+      ).addRequirements(drivetrain)
+    )
     SmartDashboard.putBoolean("AUTOFINISH", false);
     return null;
   }
