@@ -9,6 +9,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotMap;
 
@@ -17,11 +18,16 @@ public class Shooter extends SubsystemBase{
 
     private TalonSRX shootLeft;
     private TalonSRX shootRight;
+    private TalonSRX arm;
+    
+    
 
     public Shooter(){
         
         shootLeft = new TalonSRX(RobotMap.kshootLeft);
         shootRight = new TalonSRX(RobotMap.kshootRight);
+        arm = new TalonSRX(RobotMap.karm);
+        
 
         shootRight.follow(shootLeft);
 
@@ -30,6 +36,11 @@ public class Shooter extends SubsystemBase{
     public void setPower(double leftPower, double rightPower){
         shootLeft.set(ControlMode.PercentOutput, leftPower);
         shootRight.set(ControlMode.PercentOutput, rightPower);
+    }
+
+
+    public void setArmPosition(double armPosition){
+        arm.set(ControlMode.Position, armPosition);
     }
 
     public void stop(){

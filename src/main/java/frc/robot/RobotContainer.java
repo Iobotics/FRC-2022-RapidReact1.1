@@ -51,6 +51,7 @@ public class RobotContainer {
         ()-> shooter.setPower(joystick1.getZ(), joystick1.getZ()),
         ()-> shooter.stop())
       )  ;
+    
 
   }
 
