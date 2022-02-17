@@ -75,10 +75,12 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
     new SequentialCommandGroup(
-      new RunCommand(
+      RunCommand test = new RunCommand(
         ()-> drivetrain.motionMagic(1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
         drivetrain
-      ),
+      )
+      test.addRequirements(drivetrain)
+      ,
       new StartEndCommand(
         ()-> drivetrain.motionMagic(-1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
         ()-> drivetrain.stop(),drivetrain

@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.RobotMap;
 
+import java.util.function.BooleanSupplier;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXSensorCollection;
@@ -33,6 +35,8 @@ public class Drivetrain extends SubsystemBase {
         rightMaster = new TalonFX(RobotMap.kRightMaster); //CAN 2
         rightSlave = new TalonFX(RobotMap.kRightSlave); //CAN 3
 
+        rightMaster.configFactoryDefault();
+
         LMSensor = leftMaster.getSensorCollection();
 
         leftMaster.setInverted(false);
@@ -42,6 +46,7 @@ public class Drivetrain extends SubsystemBase {
 
         leftSlave.follow(leftMaster); //sets slave to follow master
         rightSlave.follow(rightMaster); //sets slave to follow master
+        rightMaster.follow(leftMaster);
 
         //Config Slave Deadband
         leftSlave.configNeutralDeadband(0);
@@ -59,17 +64,10 @@ public class Drivetrain extends SubsystemBase {
         leftMaster.config_kD(0, DrivetrainConstants.kD);
         leftMaster.config_kF(0, DrivetrainConstants.kF);
 
+        leftMaster.setSelectedSensorPosition(0);
+
 
     }
-
-     /**
-   * Reconfigures the motors to the drive settings
-   */
-    public void config() {
-        rightMaster.configFactoryDefault();
-        rightMaster.setInverted(true);
-        rightSlave.follow(rightMaster);
-    } 
 
     public void stop() {
         leftMaster.set(ControlMode.PercentOutput, 0);
@@ -91,7 +89,6 @@ public class Drivetrain extends SubsystemBase {
         rightMaster.follow(leftMaster);
         leftMaster.configMotionCruiseVelocity((int)targetSpeed);
         leftMaster.configMotionAcceleration((int)targetSpeed);
-        leftMaster.setSelectedSensorPosition(0);
 
         leftMaster.config_kP(0, P);
         leftMaster.config_kI(0, I);
@@ -107,6 +104,11 @@ public class Drivetrain extends SubsystemBase {
 
       public double getVelocity() {
         return leftMaster.getSelectedSensorVelocity();
+      }
+
+      public boolean isFinished() {
+        if(LMSensor.getIntegratedSensorPosition() < distance)
+        return ;
       }
   
       @Override
