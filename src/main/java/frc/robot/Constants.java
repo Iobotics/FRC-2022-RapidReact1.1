@@ -22,19 +22,17 @@ public final class Constants {
         public static final int kRightMaster = 3;
         public static final int kRightSlave = 2;
 
-        //shooter devices(motors)
-        public static final int kshootLeft = 8;
-        public static final int kshootRight = 9;
-        public static final int karm = 10;
-
          //intake devices(motors)
          public static final int kSpinner = 7;
     
+        //shooter devices(motors)
+        public static final int kshootLeft = 8;
+        public static final int kshootRight = 9;
+        public static final int karm = 0;
+        public static final int kLeftClimber = 6;
+        public static final int kRightClimber = 5;
+        }
 
-        public static final int kLeftClimber = 5;
-        public static final int kRightClimber = 6;
-    }
-    
     public static final class OIConstants{
         public static final int kJoystick1 = 0;
         public static final int kJoystick2 = 1;

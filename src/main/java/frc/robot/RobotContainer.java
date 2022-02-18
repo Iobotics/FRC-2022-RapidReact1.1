@@ -128,9 +128,14 @@ public class RobotContainer {
         ()-> climber.setPower(.4*joystick1.getZ(),.4*joystick1.getZ()),
         ()-> climber.stop(),climber)
     );
-    new JoystickButton(joystick2, 2).whileHeld(
+    new JoystickButton(joystick1, 4).whileHeld(
       new StartEndCommand(
-        ()-> climber.climberAux(0), ()-> climber.stop(), climber)
+        ()-> climber.climberAux(1000), ()-> climber.stop(), climber)
+    );
+
+    new JoystickButton(joystick1, 3).whenPressed(
+      new StartEndCommand(
+        ()-> climber.setZero(), ()-> climber.stop(), climber)
     );
 
   }

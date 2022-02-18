@@ -18,7 +18,7 @@ public class Intake extends SubsystemBase {
 
 
     public void intake(){
-        spinner = new TalonSRX(RobotMap.kSpinner); //CAN 0
+        // spinner = new TalonSRX(RobotMap.kSpinner); //CAN 0
 
 
     }
