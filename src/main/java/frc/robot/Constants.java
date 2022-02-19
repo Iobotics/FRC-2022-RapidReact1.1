@@ -31,7 +31,11 @@ public final class Constants {
         public static final int karm = 0;
         public static final int kLeftClimber = 6;
         public static final int kRightClimber = 5;
-        }
+    }
+
+    public static final class Delay{
+        public static final int kTimeoutMs = 30;
+    }
 
     public static final class OIConstants{
         public static final int kJoystick1 = 0;
@@ -56,9 +60,7 @@ public final class Constants {
         public static final int kPIDprimary = 0;
     }
 
-    public static final class Delay{
-        public static final int kTimeoutMs = 0;
-    }
+    
 }
 
 
