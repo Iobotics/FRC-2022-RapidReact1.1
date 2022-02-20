@@ -32,7 +32,7 @@ public class RobotContainer {
 
   private final Joystick joystick1 = new Joystick(OIConstants.kJoystick1);
   private final Joystick joystick2 = new Joystick(OIConstants.kJoystick2);
-  private final Shooter shooter = new Shooter();
+  public final Shooter shooter = new Shooter();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -68,7 +68,15 @@ public class RobotContainer {
       )
     );
     
+    new JoystickButton(joystick2, 3).whenPressed(
+      new StartEndCommand(
+        ()-> shooter.pitchUp(), null)
+    );  
 
+    new JoystickButton(joystick2, 4).whenPressed(
+      new StartEndCommand(
+        ()-> shooter.pitchDown(), null)
+    );
   }
 
   /**

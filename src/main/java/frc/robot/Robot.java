@@ -8,6 +8,9 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -25,7 +28,7 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
   private final Shooter shooter = new Shooter();
-
+  AnalogPotentiometer pot = new AnalogPotentiometer(0, 180, 30);
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -35,6 +38,8 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    m_robotContainer.shooter.startCompressor();
+
   }
 
   /**
