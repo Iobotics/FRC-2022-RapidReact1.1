@@ -18,6 +18,7 @@ public final class Constants {
         //shooter devices(motors)
         public static final int kshootLeft = 8;
         public static final int kshootRight = 9;
+        public static final int karm = 0;
     
         }
 
