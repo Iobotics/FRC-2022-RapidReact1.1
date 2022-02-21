@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.subsystems.Intake;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -40,6 +41,11 @@ public class RobotContainer {
 
   public final Shooter shooter = new Shooter();
 
+  private final Intake intake = new Intake();
+  
+
+
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
@@ -52,6 +58,8 @@ public class RobotContainer {
       () -> drivetrain.drive.tankDrive(-joystick1.getY(), joystick2.getY()), drivetrain));
 
     configureButtonBindings();
+
+
   }
 
   /**
@@ -102,6 +110,11 @@ public class RobotContainer {
         ()-> shooter.stop(),shooter
       )
     );
+    new JoystickButton(joystick2, 2).whileHeld(
+        new StartEndCommand(
+          ()-> intake.setPower(joystick2.getZ()),
+          ()-> intake.stop())
+        );
   }
 
   /**
@@ -128,3 +141,5 @@ public class RobotContainer {
   }
   }
 
+  
+   
