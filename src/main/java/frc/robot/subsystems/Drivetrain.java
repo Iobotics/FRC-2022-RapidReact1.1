@@ -105,11 +105,6 @@ public class Drivetrain extends SubsystemBase {
       public double getVelocity() {
         return leftMaster.getSelectedSensorVelocity();
       }
-
-      public boolean isFinished() {
-        if(LMSensor.getIntegratedSensorPosition() < distance)
-        return ;
-      }
   
       @Override
       public void periodic() {
