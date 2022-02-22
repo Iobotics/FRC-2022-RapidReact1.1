@@ -61,6 +61,20 @@ public final class Constants {
     }
 
     
+
+
+
+    public static final class PIDConstants{
+        public static final double kNeutralDeadband = 0.03;
+        public static final int kPIDprimary = 0;
+        public static final int kPIDturn = 1;
+        public static final int kRemoteFilter0 = 0;
+        public static final int kRemoteFilter1 = 1;
+        //PID GAINS 	                                      kP     kI   kD   kF   Iz  PeakOut 
+        public final static Gains kGains_Distanc = new Gains( 0.001, 0.0, 0.0, 0.0, 0,  1.00 );
+        public final static Gains kGains_Turning = new Gains( 0.001, 0.0, 0.0, 0.0, 0,  1.00 );
+
+        public final static int kSlot0 = 0;
+        public final static int kSlot1 = 1;
+    }
 }
-
-

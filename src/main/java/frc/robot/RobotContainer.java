@@ -27,6 +27,7 @@ import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Climber;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
@@ -128,9 +129,14 @@ public class RobotContainer {
         ()-> climber.setPower(.4*joystick1.getZ(),.4*joystick1.getZ()),
         ()-> climber.stop(),climber)
     );
+
     new JoystickButton(joystick1, 4).whileHeld(
       new StartEndCommand(
-        ()-> climber.climberAux(1000), ()-> climber.stop(), climber)
+        ()-> climber.climberAux(10000), ()-> climber.stop(), climber)
+    );
+
+    new JoystickButton(joystick1,5).whileHeld(
+      new RunCommand(()->climber.getPosition(),climber)
     );
 
     new JoystickButton(joystick1, 3).whenPressed(
@@ -138,6 +144,10 @@ public class RobotContainer {
         ()-> climber.setZero(), ()-> climber.stop(), climber)
     );
 
+    new JoystickButton(joystick1,1).whileHeld(
+      new RunCommand(()->climber.zeroEncoders(.4*joystick1.getZ()), climber
+      ).andThen(()->climber.stop(),climber)
+    );
   }
 
   /**
