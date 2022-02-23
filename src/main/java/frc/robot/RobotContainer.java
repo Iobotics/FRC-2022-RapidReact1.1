@@ -141,7 +141,7 @@ public class RobotContainer {
 
     new JoystickButton(joystick1, 4).whenPressed(
       new StartEndCommand(
-        ()-> climber.setZero(), ()-> climber.stop(), climber)
+        ()-> climber.setZero(), ()-> climber.stopZero(), climber)
     );
 
     new JoystickButton(joystick1,1).whileHeld(

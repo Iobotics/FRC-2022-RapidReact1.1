@@ -86,9 +86,9 @@ public class Climber extends SubsystemBase{
 		
 		/* Configure output and sensor direction */
 		LeftClimber.setSensorPhase(true);
-		// LeftClimber.setInverted(false);
+		LeftClimber.setInverted(false);
 		RightClimber.setSensorPhase(false);
-		// RightClimber.setInverted(true);
+		RightClimber.setInverted(false);
 		
 		
 		/* Set status frame periods to ensure we don't have stale data */
@@ -98,8 +98,8 @@ public class Climber extends SubsystemBase{
 		LeftClimber.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5, Delay.kTimeoutMs);
 
 		/* Configure neutral deadband */
-		// RightClimber.configNeutralDeadband(PIDConstants.kNeutralDeadband, Delay.kTimeoutMs);
-		// LeftClimber.configNeutralDeadband(PIDConstants.kNeutralDeadband, Delay.kTimeoutMs);
+		RightClimber.configNeutralDeadband(PIDConstants.kNeutralDeadband, Delay.kTimeoutMs);
+		LeftClimber.configNeutralDeadband(PIDConstants.kNeutralDeadband, Delay.kTimeoutMs);
 
 		/* Max out the peak output (for all modes).  
 		 * However you can limit the output of a given PID object with configClosedLoopPeakOutput().
@@ -145,17 +145,22 @@ public class Climber extends SubsystemBase{
 		RightClimber.selectProfileSlot(PIDConstants.kSlot0, PIDConstants.kPIDprimary);
 		RightClimber.selectProfileSlot(PIDConstants.kSlot1, PIDConstants.kPIDturn);
 
+		//Configure Limit Switches to prevent lift from pulling too far
 		RightClimber.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
 		LeftClimber.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
+
+		//Configure soft limits to prevent lift from pulling / pushing too far
+		//NOTE: MAY NEED TO FIX FOR RIGHTCLIMBER!!!! USES ACTIVE SENSOR (REMOTE SENSOR) I THINK
 		RightClimber.configForwardSoftLimitThreshold(10000,Delay.kTimeoutMs);
 		RightClimber.configReverseSoftLimitThreshold(0,Delay.kTimeoutMs);
-		RightClimber.configForwardSoftLimitEnable(false,Delay.kTimeoutMs);
-		RightClimber.configReverseSoftLimitEnable(false,Delay.kTimeoutMs);
+		RightClimber.configForwardSoftLimitEnable(true,Delay.kTimeoutMs);
+		RightClimber.configReverseSoftLimitEnable(true,Delay.kTimeoutMs);
 		LeftClimber.configForwardSoftLimitThreshold(10000,Delay.kTimeoutMs);
 		LeftClimber.configReverseSoftLimitThreshold(0,Delay.kTimeoutMs);
-		LeftClimber.configForwardSoftLimitEnable(false,Delay.kTimeoutMs);
-		LeftClimber.configReverseSoftLimitEnable(false,Delay.kTimeoutMs);
+		LeftClimber.configForwardSoftLimitEnable(true,Delay.kTimeoutMs);
+		LeftClimber.configReverseSoftLimitEnable(true,Delay.kTimeoutMs);
 
+		//define the acceleration and cruise Velocity of the lift
 		RightClimber.configMotionAcceleration(1000);
 		RightClimber.configMotionCruiseVelocity(100);
        
@@ -163,11 +168,43 @@ public class Climber extends SubsystemBase{
         setZero();
     }
 
-    public void getPosition()
-    {
-        SmartDashboard.putNumber("LeftClimber:",LeftClimber.getSelectedSensorPosition());
+	//Uses PID and AUX PID to move both climbers to a position while staying relatively at the same height
+    public void climberAux(double position)
+    { 
+        RightClimber.set(ControlMode.Position, position,DemandType.AuxPID,RightClimber.getSelectedSensorPosition(1));
+		LeftClimber.follow(RightClimber,FollowerType.AuxOutput1);
     }
 
+	//Runs lift at a given power
+    public void setPower(double leftpower,double rightpower){
+        LeftClimber.set(ControlMode.PercentOutput, leftpower);
+        RightClimber.set(ControlMode.PercentOutput, rightpower);
+    }
+
+	//move motors until they reach limit switches
+	public void zeroEncoders(double speed)
+	{
+		RightClimber.configReverseSoftLimitEnable(false,Delay.kTimeoutMs);
+		LeftClimber.configReverseSoftLimitEnable(false,Delay.kTimeoutMs);
+		setPower(speed,speed);
+	}
+
+	//when zeroEncoders is stopped, reset zero point and make sure that reverse soft limits are re-enabled
+	public void stopZero() {
+		stop();
+		setZero();
+		RightClimber.configReverseSoftLimitEnable(true,Delay.kTimeoutMs);
+		LeftClimber.configReverseSoftLimitEnable(true,Delay.kTimeoutMs);
+	}
+
+	//Function that will return Climbers positions )
+	public void getPosition()
+    {
+        SmartDashboard.putNumber("LeftClimber:",LeftClimber.getSensorCollection().getQuadraturePosition());
+		SmartDashboard.putNumber("RightClimber:",LeftClimber.getSensorCollection().getQuadraturePosition());
+    }
+
+	//function sets both 
     public void setZero()
     {
         LeftClimber.getSensorCollection().setQuadraturePosition(0, Delay.kTimeoutMs);
@@ -175,49 +212,9 @@ public class Climber extends SubsystemBase{
         SmartDashboard.putNumber("Zero's set!",LeftClimber.getSelectedSensorPosition());
 	}
 
-	public void zeroEncoders(double speed)
-	{
-		double rightpower = 0;
-		double leftpower = 0;
-		SmartDashboard.putNumber("Active:",1);
-		if(RightClimber.getSensorCollection().isRevLimitSwitchClosed())
-		{
-			rightpower = speed;
-		}
-		else
-		{
-			RightClimber.setSelectedSensorPosition(0);
-			SmartDashboard.putNumber("RIGHT:",1);
-		}
-
-		if(LeftClimber.getSensorCollection().isRevLimitSwitchClosed())
-		{
-			leftpower = speed;
-		}
-		else
-		{
-			LeftClimber.setSelectedSensorPosition(0);
-			SmartDashboard.putNumber("LEFT:",1);
-		}
-		setPower(leftpower,rightpower);
-	}
-
-    public void climberAux(double position)
-    { 
-		SmartDashboard.putNumber("AUXAACTIVE",0);
-        RightClimber.set(ControlMode.Position, position,DemandType.AuxPID,RightClimber.getSelectedSensorPosition(1));
-		LeftClimber.follow(RightClimber,FollowerType.AuxOutput1);
-    }
-
-    public void setPower(double leftpower,double rightpower){
-		SmartDashboard.putNumber("POWER:",leftpower);
-        LeftClimber.set(ControlMode.PercentOutput, leftpower);
-        RightClimber.set(ControlMode.PercentOutput, rightpower);
-    }
-
+	//stops motor motion
     public void stop() {
-        LeftClimber.selectProfileSlot(RobotMap.kLeftClimber, 1);
-        LeftClimber.set(ControlMode.PercentOutput, 0);
-        RightClimber.set(ControlMode.PercentOutput,0);
+        RightClimber.set(ControlMode.PercentOutput, 0);
+        LeftClimber.set(ControlMode.PercentOutput,0);
     }
 }
