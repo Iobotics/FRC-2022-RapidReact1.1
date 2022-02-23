@@ -130,23 +130,23 @@ public class RobotContainer {
         ()-> climber.stop(),climber)
     );
 
-    new JoystickButton(joystick1, 4).whileHeld(
+    new JoystickButton(joystick1, 3).whenPressed(
       new StartEndCommand(
-        ()-> climber.climberAux(10000), ()-> climber.stop(), climber)
+        ()-> climber.climberAux(1000),()->climber.stop(), climber)
     );
 
     new JoystickButton(joystick1,5).whileHeld(
       new RunCommand(()->climber.getPosition(),climber)
     );
 
-    new JoystickButton(joystick1, 3).whenPressed(
+    new JoystickButton(joystick1, 4).whenPressed(
       new StartEndCommand(
         ()-> climber.setZero(), ()-> climber.stop(), climber)
     );
 
     new JoystickButton(joystick1,1).whileHeld(
       new RunCommand(()->climber.zeroEncoders(.4*joystick1.getZ()), climber
-      ).andThen(()->climber.stop(),climber)
+      )
     );
   }
 

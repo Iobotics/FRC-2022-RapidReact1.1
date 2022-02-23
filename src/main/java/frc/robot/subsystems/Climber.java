@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.FollowerType;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.SensorTerm;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
@@ -44,7 +45,6 @@ public class Climber extends SubsystemBase{
 		RightClimber.setNeutralMode(NeutralMode.Brake);
 		
 		/** Feedback Sensor Configuration */
-		RightClimber.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
 		/* Configure the left Talon's selected sensor as local QuadEncoder */
 		LeftClimber.configSelectedFeedbackSensor(	FeedbackDevice.QuadEncoder,				// Local Feedback Source
 													PIDConstants.kPIDprimary,					// PID Slot for Source [0, 1]
@@ -57,11 +57,11 @@ public class Climber extends SubsystemBase{
 												Delay.kTimeoutMs);						// Configuration Timeout
 		
 		/* Setup Sum signal to be used for Distance */
-		RightClimber.configSensorTerm(SensorTerm.Sum0, FeedbackDevice.RemoteSensor1, Delay.kTimeoutMs);				// Feedback Device of Remote Talon
+		RightClimber.configSensorTerm(SensorTerm.Sum0, FeedbackDevice.RemoteSensor0, Delay.kTimeoutMs);				// Feedback Device of Remote Talon
 		RightClimber.configSensorTerm(SensorTerm.Sum1, FeedbackDevice.CTRE_MagEncoder_Relative, Delay.kTimeoutMs);	// Quadrature Encoder of current Talon
 		
 		/* Setup Difference signal to be used for Turn */
-		RightClimber.configSensorTerm(SensorTerm.Diff1, FeedbackDevice.RemoteSensor1, Delay.kTimeoutMs);
+		RightClimber.configSensorTerm(SensorTerm.Diff1, FeedbackDevice.RemoteSensor0, Delay.kTimeoutMs);
 		RightClimber.configSensorTerm(SensorTerm.Diff0, FeedbackDevice.CTRE_MagEncoder_Relative, Delay.kTimeoutMs);
 		
 		/* Configure Sum [Sum of both QuadEncoders] to be used for Primary PID Index */
@@ -85,10 +85,11 @@ public class Climber extends SubsystemBase{
 														Delay.kTimeoutMs);
 		
 		/* Configure output and sensor direction */
-		LeftClimber.setInverted(false);
 		LeftClimber.setSensorPhase(true);
-		RightClimber.setInverted(true);
-		RightClimber.setSensorPhase(true);
+		// LeftClimber.setInverted(false);
+		RightClimber.setSensorPhase(false);
+		// RightClimber.setInverted(true);
+		
 		
 		/* Set status frame periods to ensure we don't have stale data */
 		RightClimber.setStatusFramePeriod(StatusFrame.Status_12_Feedback1, 20, Delay.kTimeoutMs);
@@ -97,8 +98,8 @@ public class Climber extends SubsystemBase{
 		LeftClimber.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5, Delay.kTimeoutMs);
 
 		/* Configure neutral deadband */
-		RightClimber.configNeutralDeadband(PIDConstants.kNeutralDeadband, Delay.kTimeoutMs);
-		LeftClimber.configNeutralDeadband(PIDConstants.kNeutralDeadband, Delay.kTimeoutMs);
+		// RightClimber.configNeutralDeadband(PIDConstants.kNeutralDeadband, Delay.kTimeoutMs);
+		// LeftClimber.configNeutralDeadband(PIDConstants.kNeutralDeadband, Delay.kTimeoutMs);
 
 		/* Max out the peak output (for all modes).  
 		 * However you can limit the output of a given PID object with configClosedLoopPeakOutput().
@@ -112,17 +113,17 @@ public class Climber extends SubsystemBase{
 		RightClimber.config_kP(PIDConstants.kSlot0, PIDConstants.kGains_Distanc.kP, Delay.kTimeoutMs);
 		RightClimber.config_kI(PIDConstants.kSlot0, PIDConstants.kGains_Distanc.kI, Delay.kTimeoutMs);
 		RightClimber.config_kD(PIDConstants.kSlot0, PIDConstants.kGains_Distanc.kD, Delay.kTimeoutMs);
-		RightClimber.config_kF(PIDConstants.kSlot0, PIDConstants.kGains_Distanc.kF, Delay.kTimeoutMs);
-		RightClimber.config_IntegralZone(PIDConstants.kSlot0, PIDConstants.kGains_Distanc.kIzone, Delay.kTimeoutMs);
-		RightClimber.configClosedLoopPeakOutput(PIDConstants.kSlot0, PIDConstants.kGains_Distanc.kPeakOutput, Delay.kTimeoutMs);
+		// RightClimber.config_kF(PIDConstants.kSlot0, PIDConstants.kGains_Distanc.kF, Delay.kTimeoutMs);
+		// RightClimber.config_IntegralZone(PIDConstants.kSlot0, PIDConstants.kGains_Distanc.kIzone, Delay.kTimeoutMs);
+		// RightClimber.configClosedLoopPeakOutput(PIDConstants.kSlot0, PIDConstants.kGains_Distanc.kPeakOutput, Delay.kTimeoutMs);
 
 		/* FPID Gains for turn servo */
 		RightClimber.config_kP(PIDConstants.kSlot1, PIDConstants.kGains_Turning.kP, Delay.kTimeoutMs);
 		RightClimber.config_kI(PIDConstants.kSlot1, PIDConstants.kGains_Turning.kI, Delay.kTimeoutMs);
 		RightClimber.config_kD(PIDConstants.kSlot1, PIDConstants.kGains_Turning.kD, Delay.kTimeoutMs);
-		RightClimber.config_kF(PIDConstants.kSlot1, PIDConstants.kGains_Turning.kF, Delay.kTimeoutMs);
-		RightClimber.config_IntegralZone(PIDConstants.kSlot1, PIDConstants.kGains_Turning.kIzone, Delay.kTimeoutMs);
-		RightClimber.configClosedLoopPeakOutput(PIDConstants.kSlot1, PIDConstants.kGains_Turning.kPeakOutput, Delay.kTimeoutMs);
+		// RightClimber.config_kF(PIDConstants.kSlot1, PIDConstants.kGains_Turning.kF, Delay.kTimeoutMs);
+		// RightClimber.config_IntegralZone(PIDConstants.kSlot1, PIDConstants.kGains_Turning.kIzone, Delay.kTimeoutMs);
+		// RightClimber.configClosedLoopPeakOutput(PIDConstants.kSlot1, PIDConstants.kGains_Turning.kPeakOutput, Delay.kTimeoutMs);
 			
 		/* 1ms per loop.  PID loop can be slowed down if need be.
 		 * For example,
@@ -131,8 +132,8 @@ public class Climber extends SubsystemBase{
 		 * - sensor movement is very slow causing the derivative error to be near zero.
 		 */
         int closedLoopTimeMs = 1;
-        RightClimber.configClosedLoopPeriod(0, closedLoopTimeMs, Delay.kTimeoutMs);
-        RightClimber.configClosedLoopPeriod(1, closedLoopTimeMs, Delay.kTimeoutMs);
+        RightClimber.configClosedLoopPeriod(PIDConstants.kSlot0, closedLoopTimeMs, Delay.kTimeoutMs);
+        RightClimber.configClosedLoopPeriod(PIDConstants.kSlot1, closedLoopTimeMs, Delay.kTimeoutMs);
 
 		/* configAuxPIDPolarity(boolean invert, int timeoutMs)
 		 * false means talon's local output is PID0 + PID1, and other side Talon is PID0 - PID1
@@ -144,14 +145,19 @@ public class Climber extends SubsystemBase{
 		RightClimber.selectProfileSlot(PIDConstants.kSlot0, PIDConstants.kPIDprimary);
 		RightClimber.selectProfileSlot(PIDConstants.kSlot1, PIDConstants.kPIDturn);
 
-		RightClimber.configForwardSoftLimitThreshold(1000,Delay.kTimeoutMs);
+		RightClimber.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
+		LeftClimber.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
+		RightClimber.configForwardSoftLimitThreshold(10000,Delay.kTimeoutMs);
 		RightClimber.configReverseSoftLimitThreshold(0,Delay.kTimeoutMs);
-		RightClimber.configForwardSoftLimitEnable(true,Delay.kTimeoutMs);
-		RightClimber.configReverseSoftLimitEnable(true,Delay.kTimeoutMs);
-		LeftClimber.configForwardSoftLimitThreshold(1000,Delay.kTimeoutMs);
+		RightClimber.configForwardSoftLimitEnable(false,Delay.kTimeoutMs);
+		RightClimber.configReverseSoftLimitEnable(false,Delay.kTimeoutMs);
+		LeftClimber.configForwardSoftLimitThreshold(10000,Delay.kTimeoutMs);
 		LeftClimber.configReverseSoftLimitThreshold(0,Delay.kTimeoutMs);
-		LeftClimber.configForwardSoftLimitEnable(true,Delay.kTimeoutMs);
-		LeftClimber.configReverseSoftLimitEnable(true,Delay.kTimeoutMs);
+		LeftClimber.configForwardSoftLimitEnable(false,Delay.kTimeoutMs);
+		LeftClimber.configReverseSoftLimitEnable(false,Delay.kTimeoutMs);
+
+		RightClimber.configMotionAcceleration(1000);
+		RightClimber.configMotionCruiseVelocity(100);
        
         /* Initialize */
         setZero();
@@ -159,7 +165,7 @@ public class Climber extends SubsystemBase{
 
     public void getPosition()
     {
-        SmartDashboard.putNumber("LeftClimber:",RightClimber.getSelectedSensorPosition());
+        SmartDashboard.putNumber("LeftClimber:",LeftClimber.getSelectedSensorPosition());
     }
 
     public void setZero()
@@ -173,33 +179,38 @@ public class Climber extends SubsystemBase{
 	{
 		double rightpower = 0;
 		double leftpower = 0;
-		if(!RightClimber.getSensorCollection().isRevLimitSwitchClosed())
+		SmartDashboard.putNumber("Active:",1);
+		if(RightClimber.getSensorCollection().isRevLimitSwitchClosed())
 		{
 			rightpower = speed;
 		}
 		else
 		{
 			RightClimber.setSelectedSensorPosition(0);
+			SmartDashboard.putNumber("RIGHT:",1);
 		}
 
-		if(!LeftClimber.getSensorCollection().isRevLimitSwitchClosed())
+		if(LeftClimber.getSensorCollection().isRevLimitSwitchClosed())
 		{
 			leftpower = speed;
 		}
 		else
 		{
 			LeftClimber.setSelectedSensorPosition(0);
+			SmartDashboard.putNumber("LEFT:",1);
 		}
 		setPower(leftpower,rightpower);
 	}
 
     public void climberAux(double position)
     { 
+		SmartDashboard.putNumber("AUXAACTIVE",0);
         RightClimber.set(ControlMode.Position, position,DemandType.AuxPID,RightClimber.getSelectedSensorPosition(1));
-        LeftClimber.follow(RightClimber,FollowerType.AuxOutput1);
+		LeftClimber.follow(RightClimber,FollowerType.AuxOutput1);
     }
 
     public void setPower(double leftpower,double rightpower){
+		SmartDashboard.putNumber("POWER:",leftpower);
         LeftClimber.set(ControlMode.PercentOutput, leftpower);
         RightClimber.set(ControlMode.PercentOutput, rightpower);
     }

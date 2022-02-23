@@ -29,8 +29,8 @@ public final class Constants {
         public static final int kshootLeft = 8;
         public static final int kshootRight = 9;
         public static final int karm = 0;
-        public static final int kLeftClimber = 6;
-        public static final int kRightClimber = 5;
+        public static final int kLeftClimber = 5;
+        public static final int kRightClimber = 6;
     }
 
     public static final class Delay{
@@ -65,14 +65,14 @@ public final class Constants {
 
 
     public static final class PIDConstants{
-        public static final double kNeutralDeadband = 0.03;
+        public static final double kNeutralDeadband = 0.00;
         public static final int kPIDprimary = 0;
         public static final int kPIDturn = 1;
         public static final int kRemoteFilter0 = 0;
         public static final int kRemoteFilter1 = 1;
         //PID GAINS 	                                      kP     kI   kD   kF   Iz  PeakOut 
-        public final static Gains kGains_Distanc = new Gains( 0.001, 0.0, 0.0, 0.0, 0,  1.00 );
-        public final static Gains kGains_Turning = new Gains( 0.001, 0.0, 0.0, 0.0, 0,  1.00 );
+        public final static Gains kGains_Distanc = new Gains( 1.0, 0.0, 0.0, 0.0, 0,  1.00 );
+        public final static Gains kGains_Turning = new Gains( 1.0, 0.0, 0.0, 0.0, 0,  1.00 );
 
         public final static int kSlot0 = 0;
         public final static int kSlot1 = 1;
