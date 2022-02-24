@@ -36,7 +36,6 @@ public class RobotContainer {
   private final Climber climber = new Climber();
   private final Joystick joystick1 = new Joystick(OIConstants.kJoystick1);
   private final Joystick joystick2 = new Joystick(OIConstants.kJoystick2);
-  BooleanSupplier drivetrainIsFinished = ()-> drivetrain.isFinished();
 
 
 
@@ -83,13 +82,13 @@ public class RobotContainer {
        new RunCommand(
         ()-> drivetrain.motionMagic(1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
         drivetrain
-      ).withInterrupt(drivetrainIsFinished)
+      )
       ,
       new StartEndCommand(
         ()-> drivetrain.motionMagic(-1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
         ()-> drivetrain.stop(),drivetrain
-      ).addRequirements(drivetrain)
-    )
+      )
+    );
     SmartDashboard.putBoolean("AUTOFINISH", false);
     return null;
   }
