@@ -36,6 +36,7 @@ public class RobotContainer {
   private final Climber climber = new Climber();
   private final Joystick joystick1 = new Joystick(OIConstants.kJoystick1);
   private final Joystick joystick2 = new Joystick(OIConstants.kJoystick2);
+  
 
 
 
@@ -76,19 +77,20 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
+  
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
     new SequentialCommandGroup(
-       new RunCommand(
+      new RunCommand(
         ()-> drivetrain.motionMagic(1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
         drivetrain
       )
-      ,
-      new StartEndCommand(
-        ()-> drivetrain.motionMagic(-1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
-        ()-> drivetrain.stop(),drivetrain
+        ,
+    new StartEndCommand(
+      ()-> drivetrain.motionMagic(-1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
+      ()-> drivetrain.stop(),drivetrain
       )
-    );
+      );
     SmartDashboard.putBoolean("AUTOFINISH", false);
     return null;
   }
