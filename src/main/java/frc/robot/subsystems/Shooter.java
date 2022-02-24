@@ -28,7 +28,7 @@ public class Shooter extends SubsystemBase{
     private TalonSRX shootRight;
     private TalonSRX arm;
     private DoubleSolenoid pitchSolenoid;
-    private Compressor  pcmCompressor;
+    //private Compressor  pcmCompressor;
 
     
 
@@ -39,7 +39,7 @@ public class Shooter extends SubsystemBase{
         arm = new TalonSRX(RobotMap.karm);
         pitchSolenoid = new DoubleSolenoid(0, PneumaticsModuleType.CTREPCM, 1, 2);
         shootRight.follow(shootLeft);
-        pcmCompressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
+        //pcmCompressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
     }
 
     public void setPower(double leftPower, double rightPower){
@@ -56,9 +56,9 @@ public class Shooter extends SubsystemBase{
         shootRight.set(ControlMode.PercentOutput, 0);
     }
 
-    public void startCompressor(){
-        pcmCompressor.enableDigital();
-    }
+    /*public void startCompressor(){
+        cmCompressor.enableDigital();
+    }*/
     
     public void pitchUp(){
         pitchSolenoid.set(DoubleSolenoid.Value.kForward);

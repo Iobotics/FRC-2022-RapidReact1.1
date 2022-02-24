@@ -13,6 +13,7 @@ import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -56,7 +57,7 @@ public class RobotContainer {
 
     new JoystickButton(joystick1, 2).whileHeld(
       new StartEndCommand(
-        ()->shooter.setArmPosition(300), 
+        ()->shooter.setArmPosition(0), 
         ()->shooter.stop(), shooter
       )
     );
@@ -69,13 +70,13 @@ public class RobotContainer {
     );
     
     new JoystickButton(joystick2, 3).whenPressed(
-      new StartEndCommand(
-        ()-> shooter.pitchUp(), null)
+      new InstantCommand(
+        ()-> shooter.pitchUp())
     );  
 
     new JoystickButton(joystick2, 4).whenPressed(
-      new StartEndCommand(
-        ()-> shooter.pitchDown(), null)
+      new InstantCommand(
+        ()-> shooter.pitchDown())
     );
   }
 

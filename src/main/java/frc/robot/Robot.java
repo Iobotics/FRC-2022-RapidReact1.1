@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Shooter;
+import edu.wpi.first.wpilibj.Compressor;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -28,7 +29,7 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
   private final Shooter shooter = new Shooter();
-  AnalogPotentiometer pot = new AnalogPotentiometer(0, 180, 30);
+  private Compressor m_compressor;
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -38,9 +39,11 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-    m_robotContainer.shooter.startCompressor();
+    //m_robotContainer.shooter.startCompressor();
+    m_compressor = new Compressor(PneumaticsModuleType.CTREPCM);
 
-  }
+    m_compressor.enableDigital();
+    }
 
   /**
    * This function is called every robot packet, no matter the mode. Use this for items like
