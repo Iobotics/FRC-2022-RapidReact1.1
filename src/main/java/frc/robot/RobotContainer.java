@@ -69,15 +69,10 @@ public class RobotContainer {
       )
     );
     
-    new JoystickButton(joystick2, 3).whenPressed(
+    new JoystickButton(joystick1, 3).whenPressed(
       new InstantCommand(
-        ()-> shooter.pitchUp())
+        ()-> shooter.pitchChange(),shooter)
     );  
-
-    new JoystickButton(joystick2, 4).whenPressed(
-      new InstantCommand(
-        ()-> shooter.pitchDown())
-    );
   }
 
   /**
