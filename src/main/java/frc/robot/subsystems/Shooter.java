@@ -10,22 +10,14 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.fasterxml.jackson.annotation.JsonSetter.Value;
-
-import edu.wpi.first.wpilibj.AnalogPotentiometer;
-import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Delay;
 import frc.robot.Constants.RobotMap;
-<<<<<<< HEAD
-//import frc.robot.first.wpilibj.DoubleSolenoid.Value;
-=======
 import frc.robot.Constants.ShooterConstants;
 import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.*;
->>>>>>> 71ca88c (Pneumatic Control working)
 
 /** Add your docs here. */
 public class Shooter extends SubsystemBase{
@@ -38,14 +30,19 @@ public class Shooter extends SubsystemBase{
     
 
     public Shooter(){
-        pitchSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
+        pitchSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, ShooterConstants.kDoubleSolenoidLeftSlot, ShooterConstants.kDoubleSolenoidRightSlot);
         shootLeft = new TalonSRX(RobotMap.kshootLeft);
         shootRight = new TalonSRX(RobotMap.kshootRight);
         arm = new TalonSRX(RobotMap.karm);
         
+        //------Shooter wheels setup--------
         shootRight.follow(shootLeft);
+
+        //------Double Solenoid setup------
+        //initalize the solenoid to start in the Forward Position
         pitchSolenoid.set(kForward);
 
+        //-----Shooter Direction/arm setup---
         //make sure arm is powered off
         arm.set(ControlMode.PercentOutput,0);
 
@@ -97,16 +94,34 @@ public class Shooter extends SubsystemBase{
         shootRight.set(ControlMode.PercentOutput, rightPower);
     }
 
+    //Aim the shooter using PID with the Potentiometer
     public void setArmPosition(double armPosition){
         arm.set(ControlMode.MotionMagic, armPosition);
     }
 
-    public void stop(){
+    public void stopArm()
+    {
+
+    }
+
+    public void stopWheels()
+    {
         shootLeft.set(ControlMode.PercentOutput, 0);
         shootRight.set(ControlMode.PercentOutput, 0);
     }
-    
-    public void pitchChange(){
-        pitchSolenoid.toggle();
+
+    public void stop(){
+        stopWheels();
+        stopArm();
+    }
+
+    //Sets the solenoid to extend/retract
+    public void extendPneumatic(boolean extend){
+        if(extend)
+        {
+            pitchSolenoid.set(kForward);
+            return;
+        }
+        pitchSolenoid.set(kReverse);
     }
 }

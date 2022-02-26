@@ -28,6 +28,8 @@ public final class Constants {
     }
 
     public static final class ShooterConstants{
+        public static final int kDoubleSolenoidLeftSlot = 0;
+        public static final int kDoubleSolenoidRightSlot = 1;
         /* 	                                    			  kP   kI   kD   kF   Iz  PeakOut */
         public static final Gains kShooterGains = new Gains( 1.0, 0.0,  0.0, 0.0, 0,  1 );
         public static final int kSlot0 = 0;

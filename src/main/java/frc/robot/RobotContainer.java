@@ -15,6 +15,7 @@ import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
@@ -33,6 +34,8 @@ public class RobotContainer {
 
   private final Joystick joystick1 = new Joystick(OIConstants.kJoystick1);
   private final Joystick joystick2 = new Joystick(OIConstants.kJoystick2);
+
+
   public final Shooter shooter = new Shooter();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -58,7 +61,7 @@ public class RobotContainer {
     new JoystickButton(joystick1, 2).whileHeld(
       new StartEndCommand(
         ()->shooter.setArmPosition(0), 
-        ()->shooter.stop(), shooter
+        ()->shooter.stopArm(), shooter
       )
     );
 
@@ -69,10 +72,17 @@ public class RobotContainer {
       )
     );
     
-    new JoystickButton(joystick1, 3).whenPressed(
-      new InstantCommand(
-        ()-> shooter.pitchChange(),shooter)
+    new JoystickButton(joystick1, 3).whileHeld(
+      new StartEndCommand(
+        ()-> shooter.extendPneumatic(true),
+        ()-> shooter.extendPneumatic(false), shooter
+      )
     );  
+    new JoystickButton(joystick1,4).whenPressed(
+      new InstantCommand(
+        ()-> shooter.stop(),shooter
+      )
+    );
   }
 
   /**
