@@ -31,6 +31,8 @@ public final class Constants {
         public static final int karm = 0;
         public static final int kLeftClimber = 5;
         public static final int kRightClimber = 6;
+        public static final int kLeftRotary = 2;
+        public static final int kRightRotary = 3;
     }
 
     public static final class Delay{
@@ -71,8 +73,9 @@ public final class Constants {
         public static final int kRemoteFilter0 = 0;
         public static final int kRemoteFilter1 = 1;
         //PID GAINS 	                                      kP     kI   kD   kF   Iz  PeakOut 
-        public final static Gains kGains_Distanc = new Gains( 1.0, 0.0, 0.0, 0.0, 0,  1.00 );
-        public final static Gains kGains_Turning = new Gains( 1.0, 0.0, 0.0, 0.0, 0,  1.00 );
+        public final static Gains kGainsDistanc = new Gains( 1.0, 0.0, 0.0, 0.0, 0,  1.00 );
+        public final static Gains kGainsTurning = new Gains( 1.0, 0.0, 0.0, 0.0, 0,  1.00 );
+        public final static Gains kGainsRotArm = new Gains( 1.0, 0.0, 0.0, 0.0, 0,  1.00 );
 
         public final static int kSlot0 = 0;
         public final static int kSlot1 = 1;

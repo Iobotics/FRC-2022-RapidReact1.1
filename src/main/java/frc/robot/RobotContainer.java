@@ -57,6 +57,9 @@ public class RobotContainer {
   private final Climber climber = new Climber();
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    // Configure the button bindings
+    configureButtonBindings();
+    SmartDashboard.putNumber("Art Target Position:",0);
 
     SmartDashboard.putNumber("Distance",10);
     SmartDashboard.putNumber("P",0);
@@ -132,7 +135,7 @@ public class RobotContainer {
 
     new JoystickButton(joystick1, 3).whenPressed(
       new StartEndCommand(
-        ()-> climber.climberAux(1000),()->climber.stop(), climber)
+        ()-> climber.climberAux(1000),()->climber.stopClimb(), climber)
     );
 
     new JoystickButton(joystick1,5).whileHeld(
@@ -147,6 +150,12 @@ public class RobotContainer {
     new JoystickButton(joystick1,1).whileHeld(
       new RunCommand(()->climber.zeroEncoders(.4*joystick1.getZ()), climber
       )
+    );
+
+    new JoystickButton(joystick1,7).whileHeld(
+      new StartEndCommand(
+        ()-> climber.artSetPoint(SmartDashboard.getNumber("Art Target Position:",0)), 
+        ()-> climber.stopArt(), climber)
     );
   }
 

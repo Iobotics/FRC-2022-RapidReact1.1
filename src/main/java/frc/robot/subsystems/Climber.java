@@ -17,6 +17,10 @@ import com.ctre.phoenix.motorcontrol.SensorTerm;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXPIDSetConfiguration;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -28,11 +32,27 @@ import frc.robot.Constants.RobotMap;
 public class Climber extends SubsystemBase{
     private TalonSRX leftClimber;
     private TalonSRX rightClimber;
+    private CANSparkMax leftRotaryArt;
+    private CANSparkMax rightRotaryArt;
+    private SparkMaxPIDController leftCanController;
+    private SparkMaxPIDController rightCanController;
+    private RelativeEncoder LEncoder;
+    private RelativeEncoder REncoder;
 
     public Climber() {
         leftClimber = new TalonSRX(RobotMap.kLeftClimber);
         rightClimber = new TalonSRX(RobotMap.kRightClimber);
 
+        leftRotaryArt = new  CANSparkMax(RobotMap.kLeftRotary, MotorType.kBrushless);
+        rightRotaryArt = new  CANSparkMax(RobotMap.kRightRotary, MotorType.kBrushless);
+
+        leftCanController = leftRotaryArt.getPIDController();
+        rightCanController = rightRotaryArt.getPIDController();
+
+        LEncoder = leftRotaryArt.getEncoder();
+        REncoder = rightRotaryArt.getEncoder();
+        
+        //-------------TALON SETUP-------------------
         rightClimber.set(ControlMode.PercentOutput, 0);
 		leftClimber.set(ControlMode.PercentOutput, 0);
 
@@ -110,17 +130,17 @@ public class Climber extends SubsystemBase{
 		rightClimber.configPeakOutputReverse(-1.0, Delay.kTimeoutMs);
 
 		/* FPID Gains for distance servo */
-		rightClimber.config_kP(PIDConstants.kSlot0, PIDConstants.kGains_Distanc.kP, Delay.kTimeoutMs);
-		rightClimber.config_kI(PIDConstants.kSlot0, PIDConstants.kGains_Distanc.kI, Delay.kTimeoutMs);
-		rightClimber.config_kD(PIDConstants.kSlot0, PIDConstants.kGains_Distanc.kD, Delay.kTimeoutMs);
+		rightClimber.config_kP(PIDConstants.kSlot0, PIDConstants.kGainsDistanc.kP, Delay.kTimeoutMs);
+		rightClimber.config_kI(PIDConstants.kSlot0, PIDConstants.kGainsDistanc.kI, Delay.kTimeoutMs);
+		rightClimber.config_kD(PIDConstants.kSlot0, PIDConstants.kGainsDistanc.kD, Delay.kTimeoutMs);
 		// rightClimber.config_kF(PIDConstants.kSlot0, PIDConstants.kGains_Distanc.kF, Delay.kTimeoutMs);
 		// rightClimber.config_IntegralZone(PIDConstants.kSlot0, PIDConstants.kGains_Distanc.kIzone, Delay.kTimeoutMs);
 		// rightClimber.configClosedLoopPeakOutput(PIDConstants.kSlot0, PIDConstants.kGains_Distanc.kPeakOutput, Delay.kTimeoutMs);
 
 		/* FPID Gains for turn servo */
-		rightClimber.config_kP(PIDConstants.kSlot1, PIDConstants.kGains_Turning.kP, Delay.kTimeoutMs);
-		rightClimber.config_kI(PIDConstants.kSlot1, PIDConstants.kGains_Turning.kI, Delay.kTimeoutMs);
-		rightClimber.config_kD(PIDConstants.kSlot1, PIDConstants.kGains_Turning.kD, Delay.kTimeoutMs);
+		rightClimber.config_kP(PIDConstants.kSlot1, PIDConstants.kGainsTurning.kP, Delay.kTimeoutMs);
+		rightClimber.config_kI(PIDConstants.kSlot1, PIDConstants.kGainsTurning.kI, Delay.kTimeoutMs);
+		rightClimber.config_kD(PIDConstants.kSlot1, PIDConstants.kGainsTurning.kD, Delay.kTimeoutMs);
 		// rightClimber.config_kF(PIDConstants.kSlot1, PIDConstants.kGains_Turning.kF, Delay.kTimeoutMs);
 		// rightClimber.config_IntegralZone(PIDConstants.kSlot1, PIDConstants.kGains_Turning.kIzone, Delay.kTimeoutMs);
 		// rightClimber.configClosedLoopPeakOutput(PIDConstants.kSlot1, PIDConstants.kGains_Turning.kPeakOutput, Delay.kTimeoutMs);
@@ -166,6 +186,31 @@ public class Climber extends SubsystemBase{
        
         /* Initialize */
         setZero();
+        //--------------------CAN SPARK MAX SETUP-----------------
+        //restore factory defaults to prevent unexpected behavior
+        rightRotaryArt.restoreFactoryDefaults();
+        leftRotaryArt.restoreFactoryDefaults();
+
+        //enable motor soft limits
+        rightRotaryArt.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward,false);
+        rightRotaryArt.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse,false);
+        rightCanController.setOutputRange(-1, 1);
+        rightCanController.setSmartMotionMaxVelocity(1000, 0);
+        rightCanController.setSmartMotionMaxAccel(2000, 0);
+
+        //set PID values
+        rightCanController.setP(PIDConstants.kGainsRotArm.kP);
+        rightCanController.setI(PIDConstants.kGainsRotArm.kI);
+        rightCanController.setD(PIDConstants.kGainsRotArm.kD);
+
+        //left motor follows right
+        leftRotaryArt.follow(rightRotaryArt,true);
+    }
+
+    //use PID to move arm to artTarget
+    public void artSetPoint(double artTarget)
+    {
+        leftCanController.setReference(artTarget, CANSparkMax.ControlType.kSmartMotion);
     }
 
 	//Uses PID and AUX PID to move both climbers to a position while staying relatively at the same height
@@ -201,7 +246,8 @@ public class Climber extends SubsystemBase{
 	public void getPosition()
     {
         SmartDashboard.putNumber("leftClimber:",leftClimber.getSensorCollection().getQuadraturePosition());
-		SmartDashboard.putNumber("rightClimber:",leftClimber.getSensorCollection().getQuadraturePosition());
+        SmartDashboard.putNumber("leftRotary:",LEncoder.getPosition());
+        SmartDashboard.putNumber("RightRotary:",REncoder.getPosition());
     }
 
 	//function sets both 
@@ -212,9 +258,21 @@ public class Climber extends SubsystemBase{
         SmartDashboard.putNumber("Zero's set!",leftClimber.getSelectedSensorPosition());
 	}
 
+    //stops arm motion
+    public void stopArt() {
+        rightRotaryArt.set(0);
+        leftRotaryArt.set(0);
+    }
+
 	//stops motor motion
-    public void stop() {
+    public void stopClimb() {
         rightClimber.set(ControlMode.PercentOutput, 0);
         leftClimber.set(ControlMode.PercentOutput,0);
+    }
+
+    //stops all motion
+    public void stop() {
+        stopClimb();
+        stopArt();
     }
 }
