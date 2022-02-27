@@ -4,10 +4,4 @@
 
 package frc.robot.subsystems;
 
-/** Add your docs here. */
-public class Climber {
-    public Climber() 
-    {
-        
-    }
-}
+public class Climber {}
