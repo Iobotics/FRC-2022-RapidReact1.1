@@ -27,12 +27,12 @@ public final class Constants {
     
         //shooter devices(motors)
         public static final int kshootLeft = 8;
-        public static final int kshootRight = 9;
+        public static final int kshootRight = 7;
         public static final int karm = 0;
         public static final int kLeftClimber = 5;
         public static final int kRightClimber = 6;
-        public static final int kLeftRotary = 2;
-        public static final int kRightRotary = 3;
+        public static final int kLeftRotary = 9;
+        public static final int kRightRotary = 10;
     }
 
     public static final class Delay{
@@ -75,7 +75,7 @@ public final class Constants {
         //PID GAINS 	                                      kP     kI   kD   kF   Iz  PeakOut 
         public final static Gains kGainsDistanc = new Gains( 1.0, 0.0, 0.0, 0.0, 0,  1.00 );
         public final static Gains kGainsTurning = new Gains( 1.0, 0.0, 0.0, 0.0, 0,  1.00 );
-        public final static Gains kGainsRotArm = new Gains( 1.0, 0.0, 0.0, 0.0, 0,  1.00 );
+        public final static Gains kGainsRotArm = new Gains( .003, 0.0, 0.0, 0.0, 0,  1.00 );
 
         public final static int kSlot0 = 0;
         public final static int kSlot1 = 1;

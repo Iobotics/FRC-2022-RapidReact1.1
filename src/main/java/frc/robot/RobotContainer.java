@@ -27,6 +27,7 @@ import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Climber;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -133,26 +134,38 @@ public class RobotContainer {
         ()-> climber.stop(),climber)
     );
 
-    new JoystickButton(joystick1, 3).whenPressed(
-      new StartEndCommand(
-        ()-> climber.climberAux(1000),()->climber.stopClimb(), climber)
-    );
+    /* new JoystickButton(joystick1, 2).whileHeld(
+       new StartEndCommand(
+         ()-> climber.setPower(.4*joystick1.getZ(),.4*joystick1.getZ()),
+         ()-> climber.stop(),climber)
+     );
+
+     new JoystickButton(joystick1, 3).whenPressed(
+       new StartEndCommand(
+         ()-> climber.climberAux(1000),()->climber.stopClimb(), climber)
+     );*/
 
     new JoystickButton(joystick1,5).whileHeld(
       new RunCommand(()->climber.getPosition(),climber)
     );
-
-    new JoystickButton(joystick1, 4).whenPressed(
-      new StartEndCommand(
-        ()-> climber.setZero(), ()-> climber.stopZero(), climber)
-    );
-
-    new JoystickButton(joystick1,1).whileHeld(
-      new RunCommand(()->climber.zeroEncoders(.4*joystick1.getZ()), climber
+    
+    new JoystickButton(joystick1, 3).whenPressed(
+      new InstantCommand(
+        ()->climber.updateTarget(),climber
       )
     );
 
-    new JoystickButton(joystick1,7).whileHeld(
+    /* new JoystickButton(joystick1, 4).whenPressed(
+       new StartEndCommand(
+         ()-> climber.setZero(), ()-> climber.stopZero(), climber)
+     );
+
+     new JoystickButton(joystick1,1).whileHeld(
+       new RunCommand(()->climber.zeroEncoders(.4*joystick1.getZ()), climber
+       )
+     );*/
+
+    new JoystickButton(joystick1,1).whileHeld(
       new StartEndCommand(
         ()-> climber.artSetPoint(SmartDashboard.getNumber("Art Target Position:",0)), 
         ()-> climber.stopArt(), climber)

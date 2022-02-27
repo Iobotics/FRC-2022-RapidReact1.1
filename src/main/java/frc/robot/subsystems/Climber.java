@@ -19,6 +19,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXPIDSetConfiguration;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxRelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -45,12 +46,6 @@ public class Climber extends SubsystemBase{
 
         leftRotaryArt = new  CANSparkMax(RobotMap.kLeftRotary, MotorType.kBrushless);
         rightRotaryArt = new  CANSparkMax(RobotMap.kRightRotary, MotorType.kBrushless);
-
-        leftCanController = leftRotaryArt.getPIDController();
-        rightCanController = rightRotaryArt.getPIDController();
-
-        LEncoder = leftRotaryArt.getEncoder();
-        REncoder = rightRotaryArt.getEncoder();
         
         //-------------TALON SETUP-------------------
         rightClimber.set(ControlMode.PercentOutput, 0);
@@ -191,12 +186,20 @@ public class Climber extends SubsystemBase{
         rightRotaryArt.restoreFactoryDefaults();
         leftRotaryArt.restoreFactoryDefaults();
 
+		
+        leftCanController = leftRotaryArt.getPIDController();
+        rightCanController = rightRotaryArt.getPIDController();
+
+        LEncoder = leftRotaryArt.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor,42);
+        REncoder = rightRotaryArt.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor,42);
+
         //enable motor soft limits
         rightRotaryArt.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward,false);
         rightRotaryArt.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse,false);
+
         rightCanController.setOutputRange(-1, 1);
-        rightCanController.setSmartMotionMaxVelocity(1000, 0);
-        rightCanController.setSmartMotionMaxAccel(2000, 0);
+        rightCanController.setSmartMotionMaxVelocity(10000, 0);
+        rightCanController.setSmartMotionMaxAccel(20000, 0);
 
         //set PID values
         rightCanController.setP(PIDConstants.kGainsRotArm.kP);
@@ -205,12 +208,17 @@ public class Climber extends SubsystemBase{
 
         //left motor follows right
         leftRotaryArt.follow(rightRotaryArt,true);
+		rightCanController.setFeedbackDevice(REncoder);
     }
 
+	public void updateTarget()
+	{
+		SmartDashboard.putNumber("Art Target Position:",0);
+	}
     //use PID to move arm to artTarget
     public void artSetPoint(double artTarget)
     {
-        leftCanController.setReference(artTarget, CANSparkMax.ControlType.kSmartMotion);
+        rightCanController.setReference(artTarget, CANSparkMax.ControlType.kSmartMotion,0);
     }
 
 	//Uses PID and AUX PID to move both climbers to a position while staying relatively at the same height
@@ -245,7 +253,7 @@ public class Climber extends SubsystemBase{
 	//Function that will return Climbers positions )
 	public void getPosition()
     {
-        SmartDashboard.putNumber("leftClimber:",leftClimber.getSensorCollection().getQuadraturePosition());
+        // SmartDashboard.putNumber("leftClimber:",leftClimber.getSensorCollection().getQuadraturePosition());
         SmartDashboard.putNumber("leftRotary:",LEncoder.getPosition());
         SmartDashboard.putNumber("RightRotary:",REncoder.getPosition());
     }
@@ -260,8 +268,8 @@ public class Climber extends SubsystemBase{
 
     //stops arm motion
     public void stopArt() {
-        rightRotaryArt.set(0);
-        leftRotaryArt.set(0);
+        rightCanController.setReference(0.00,CANSparkMax.ControlType.kVoltage);
+        leftCanController.setReference(0.00,CANSparkMax.ControlType.kVoltage);
     }
 
 	//stops motor motion
