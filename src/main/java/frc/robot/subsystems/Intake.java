@@ -4,24 +4,10 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 /** Add your docs here. */
 public class Intake extends SubsystemBase {
 
-    private TalonSRX spinner;
-
-h
-
-    public void intake(){
-        spinner = new TalonSRX(RobotMap.kSpinner); //CAN 0
-
-
-    }
-
-    public void setPower(double power){
-        spinner.set(ControlMode.PercentOutput, power);
-    }
-
-    public Object stop() {
-        return null;
-    }
+    
 }

@@ -14,6 +14,12 @@ package frc.robot;
  */
 public final class Constants {
     public static final class RobotMap{
+        
+        // Drivetrain devices (motors) 
+        public static final int kLeftMaster = 1;
+        public static final int kLeftSlave = 4;
+        public static final int kRightMaster = 3;
+        public static final int kRightSlave = 2;
 
         //shooter devices(motors)
         public static final int kshootLeft = 8;
@@ -25,6 +31,15 @@ public final class Constants {
     public static final class OIConstants{
         public static final int kJoystick1 = 0;
         public static final int kJoystick2 = 1;
+    }
+
+    public static final class DrivetrainConstants{
+        public static final double kP = 0.001;
+        public static final double kI = 0;
+        public static final double kD = 0;
+        public static final double kF = 0;
+        public static final int kGearRatio = 2;
+        public static final int kWheelDiameter = 6;
     }
 
     public static final class ShooterConstants{

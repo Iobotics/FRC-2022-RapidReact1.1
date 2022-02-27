@@ -8,9 +8,11 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.commands.ExampleCommand;
-import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.Drivetrain;
+//import frc.robot.commands.ExampleCommand;
+//import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -31,7 +33,7 @@ public class RobotContainer {
 
   //private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
-
+  private final Drivetrain drivetrain = new Drivetrain();
   private final Joystick joystick1 = new Joystick(OIConstants.kJoystick1);
   private final Joystick joystick2 = new Joystick(OIConstants.kJoystick2);
 
@@ -40,6 +42,14 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
+    SmartDashboard.putNumber("Distance",10);
+    SmartDashboard.putNumber("P",0);
+    SmartDashboard.putNumber("I",0);
+    SmartDashboard.putNumber("D",0);
+    // Configure the button bindings
+    drivetrain.setDefaultCommand(new RunCommand(
+      () -> drivetrain.drive.tankDrive(-joystick1.getY(), joystick2.getY()), drivetrain));
 
     configureButtonBindings();
   }
@@ -51,6 +61,15 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+
+    new JoystickButton(joystick1,4).whileHeld(
+      new StartEndCommand(
+        // ()-> drivetrain.setTank(.5,.5),
+        ()-> drivetrain.motionMagic(SmartDashboard.getNumber("Distance", 0), 10,SmartDashboard.getNumber("P", 0),SmartDashboard.getNumber("I", 0),SmartDashboard.getNumber("D", 0)),
+        ()-> drivetrain.stop(),drivetrain
+      )
+    );
+
     new JoystickButton(joystick1, 1).whileHeld(
       new StartEndCommand(
         ()-> shooter.setPower(joystick1.getZ(), joystick1.getZ()),
@@ -72,13 +91,13 @@ public class RobotContainer {
       )
     );
     
-    new JoystickButton(joystick1, 3).whileHeld(
+    new JoystickButton(joystick1, 5).whileHeld(
       new StartEndCommand(
         ()-> shooter.extendPneumatic(true),
         ()-> shooter.extendPneumatic(false), shooter
       )
     );  
-    new JoystickButton(joystick1,4).whenPressed(
+    new JoystickButton(joystick1,6).whenPressed(
       new InstantCommand(
         ()-> shooter.stop(),shooter
       )
@@ -93,6 +112,19 @@ public class RobotContainer {
   
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
+    new SequentialCommandGroup(
+      new RunCommand(
+        ()-> drivetrain.motionMagic(1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
+        drivetrain
+      )
+        ,
+    new StartEndCommand(
+      ()-> drivetrain.motionMagic(-1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
+      ()-> drivetrain.stop(),drivetrain
+      )
+      );
+    SmartDashboard.putBoolean("AUTOFINISH", false);
     return null;
   }
-}
+  }
+
