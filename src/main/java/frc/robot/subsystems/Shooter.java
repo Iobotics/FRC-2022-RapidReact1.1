@@ -51,7 +51,7 @@ public class Shooter extends SubsystemBase{
 
         //Set Neutral Mode
         arm.setNeutralMode(NeutralMode.Brake);
-        
+
         //PID SETUP CONFIGURATION
         //configure Potenientometer (analog input) as PID feedback
         arm.configSelectedFeedbackSensor(FeedbackDevice.Analog,
@@ -76,8 +76,15 @@ public class Shooter extends SubsystemBase{
         arm.configClosedLoopPeriod(ShooterConstants.kSlot0, closedLoopTimeMs);
 
         //configure acceleration and cruise velocity
-        arm.configMotionAcceleration(100);
-        arm.configMotionCruiseVelocity(30);
+        arm.configMotionAcceleration(1000);
+        arm.configMotionCruiseVelocity(3000);
+
+        arm.configForwardSoftLimitThreshold(0);
+        arm.configReverseSoftLimitThreshold(0);
+
+        arm.configForwardSoftLimitEnable(true);
+        arm.configReverseSoftLimitEnable(true);
+        
 
         //select the PID Slot to be used for primary PID loop
         arm.selectProfileSlot(ShooterConstants.kSlot0, ShooterConstants.kPIDprimary);
@@ -86,7 +93,7 @@ public class Shooter extends SubsystemBase{
     public void getPosition() 
     {
         SmartDashboard.putNumber("Poteniometer position",arm.getSelectedSensorPosition());
-        shootRight.follow(shootLeft);
+        // shootRight.follow(shootLeft);
     }
 
     public void setPower(double leftPower, double rightPower){
@@ -101,7 +108,7 @@ public class Shooter extends SubsystemBase{
 
     public void stopArm()
     {
-
+        arm.set(ControlMode.PercentOutput,0);
     }
 
     public void stopWheels()

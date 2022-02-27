@@ -54,8 +54,8 @@ public class RobotContainer {
     SmartDashboard.putNumber("I",0);
     SmartDashboard.putNumber("D",0);
     // Configure the button bindings
-    drivetrain.setDefaultCommand(new RunCommand(
-      () -> drivetrain.drive.tankDrive(-joystick1.getY(), joystick2.getY()), drivetrain));
+    // drivetrain.setDefaultCommand(new RunCommand(
+    //   () -> drivetrain.drive.tankDrive(-joystick1.getY(), joystick2.getY()), drivetrain));
 
     configureButtonBindings();
 
@@ -70,24 +70,24 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
 
-    new JoystickButton(joystick1,4).whileHeld(
-      new StartEndCommand(
-        // ()-> drivetrain.setTank(.5,.5),
-        ()-> drivetrain.motionMagic(SmartDashboard.getNumber("Distance", 0), 10,SmartDashboard.getNumber("P", 0),SmartDashboard.getNumber("I", 0),SmartDashboard.getNumber("D", 0)),
-        ()-> drivetrain.stop(),drivetrain
-      )
-    );
+    // new JoystickButton(joystick1,4).whileHeld(
+    //   new StartEndCommand(
+    //     // ()-> drivetrain.setTank(.5,.5),
+    //     ()-> drivetrain.motionMagic(SmartDashboard.getNumber("Distance", 0), 10,SmartDashboard.getNumber("P", 0),SmartDashboard.getNumber("I", 0),SmartDashboard.getNumber("D", 0)),
+    //     ()-> drivetrain.stop(),drivetrain
+    //   )
+    // );
 
-    new JoystickButton(joystick1, 1).whileHeld(
-      new StartEndCommand(
-        ()-> shooter.setPower(joystick1.getZ(), joystick1.getZ()),
-        ()-> shooter.stop()
-      )
-    );
+    // new JoystickButton(joystick1, 1).whileHeld(
+    //   new StartEndCommand(
+    //     ()-> shooter.setPower(joystick1.getZ(), joystick1.getZ()),
+    //     ()-> shooter.stop()
+    //   )
+    // );
 
     new JoystickButton(joystick1, 2).whileHeld(
       new StartEndCommand(
-        ()->shooter.setArmPosition(0), 
+        ()->shooter.setArmPosition(200), 
         ()->shooter.stopArm(), shooter
       )
     );
@@ -99,22 +99,22 @@ public class RobotContainer {
       )
     );
     
-    new JoystickButton(joystick1, 5).whileHeld(
-      new StartEndCommand(
-        ()-> shooter.extendPneumatic(true),
-        ()-> shooter.extendPneumatic(false), shooter
-      )
-    );  
-    new JoystickButton(joystick1,6).whenPressed(
-      new InstantCommand(
-        ()-> shooter.stop(),shooter
-      )
-    );
-    new JoystickButton(joystick2, 2).whileHeld(
-        new StartEndCommand(
-          ()-> intake.setPower(joystick2.getZ()),
-          ()-> intake.stop())
-        );
+    // new JoystickButton(joystick1, 5).whileHeld(
+    //   new StartEndCommand(
+    //     ()-> shooter.extendPneumatic(true),
+    //     ()-> shooter.extendPneumatic(false), shooter
+    //   )
+    // );  
+    // new JoystickButton(joystick1,6).whenPressed(
+    //   new InstantCommand(
+    //     ()-> shooter.stop(),shooter
+    //   )
+    // );
+    // new JoystickButton(joystick2, 2).whileHeld(
+    //     new StartEndCommand(
+    //       ()-> intake.setPower(joystick2.getZ()),
+    //       ()-> intake.stop())
+    //     );
   }
 
   /**
