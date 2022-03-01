@@ -62,9 +62,9 @@ public final class Constants {
         public static final int kPIDprimary = 0;
     }
 
-    
-
-
+    public static final class ClimberConstants{
+        public static final int kArmCountsPerRev = 1680;
+    }
 
     public static final class PIDConstants{
         public static final double kNeutralDeadband = 0.00;
