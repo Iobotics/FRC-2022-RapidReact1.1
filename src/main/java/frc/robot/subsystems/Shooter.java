@@ -78,16 +78,16 @@ public class Shooter extends SubsystemBase{
         //configure acceleration and cruise velocity
         arm.configMotionAcceleration(1000);
         arm.configMotionCruiseVelocity(3000);
+        
+        //select the PID Slot to be used for primary PID loop
+        arm.selectProfileSlot(ShooterConstants.kSlot0, ShooterConstants.kPIDprimary);
 
-        arm.configForwardSoftLimitThreshold(0);
-        arm.configReverseSoftLimitThreshold(0);
+        //enable soft limits
+        arm.configForwardSoftLimitThreshold(500);
+        arm.configReverseSoftLimitThreshold(200);
 
         arm.configForwardSoftLimitEnable(true);
         arm.configReverseSoftLimitEnable(true);
-        
-
-        //select the PID Slot to be used for primary PID loop
-        arm.selectProfileSlot(ShooterConstants.kSlot0, ShooterConstants.kPIDprimary);
     }
 
     public void getPosition() 
