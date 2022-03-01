@@ -25,6 +25,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.Delay;
 import frc.robot.Constants.PIDConstants;
 import frc.robot.Constants.RobotMap;
@@ -234,6 +235,23 @@ public class Climber extends SubsystemBase{
         rightClimber.set(ControlMode.PercentOutput, rightpower);
     }
 
+
+    // units / revolution *  = Degrees 1 revolution / 360 degrees  = units / 360 degrees 1680/360 goto(0)
+
+    //preset: 0degree = some position. 
+    //toward the front of bot = forward, so positive degree = down on the bot
+    //so say 10degree = 0position + (input) * (1680/360);
+
+
+    public void armDeg(double degree)
+    {
+        rightCanController.setReference(degree * ((double)(ClimberConstants.kArmCountsPerRev)/360),CANSparkMax.ControlType.kSmartMotion,PIDConstants.kPIDprimary);
+    }
+
+    //zero's arm position - should be done when the arm is pointed DIRECTLY UP.
+    public void zeroArm(){
+        REncoder.setPosition(0);
+    }
 	//move motors until they reach limit switches
 	public void zeroEncoders(double speed)
 	{
