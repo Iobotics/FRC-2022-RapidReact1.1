@@ -14,7 +14,7 @@ public class Intake extends SubsystemBase {
 
     private TalonSRX spinner;
 
-    public void intake(){
+    public Intake(){
         spinner = new TalonSRX(RobotMap.kSpinner); //CAN 0
 
 
@@ -24,7 +24,7 @@ public class Intake extends SubsystemBase {
         spinner.set(ControlMode.PercentOutput, power);
     }
 
-    public Object stop() {
-        return null;
+    public void stop() {
+       spinner.set(ControlMode.PercentOutput,0);
     }
 }

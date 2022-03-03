@@ -83,8 +83,8 @@ public class Shooter extends SubsystemBase{
         arm.selectProfileSlot(ShooterConstants.kSlot0, ShooterConstants.kPIDprimary);
 
         //enable soft limits
-        arm.configForwardSoftLimitThreshold(500);
-        arm.configReverseSoftLimitThreshold(200);
+        arm.configForwardSoftLimitThreshold(400);
+        arm.configReverseSoftLimitThreshold(250);
 
         arm.configForwardSoftLimitEnable(true);
         arm.configReverseSoftLimitEnable(true);

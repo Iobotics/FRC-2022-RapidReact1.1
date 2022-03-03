@@ -78,16 +78,16 @@ public class RobotContainer {
     //   )
     // );
 
-    // new JoystickButton(joystick1, 1).whileHeld(
-    //   new StartEndCommand(
-    //     ()-> shooter.setPower(joystick1.getZ(), joystick1.getZ()),
-    //     ()-> shooter.stop()
-    //   )
-    // );
+    new JoystickButton(joystick1, 1).whileHeld(
+      new StartEndCommand(
+        ()-> shooter.setPower(joystick1.getZ(), joystick1.getZ()),
+        ()-> shooter.stopWheels()
+      )
+    );
 
     new JoystickButton(joystick1, 2).whileHeld(
       new StartEndCommand(
-        ()->shooter.setArmPosition(200), 
+        ()->shooter.setArmPosition(250), 
         ()->shooter.stopArm(), shooter
       )
     );
@@ -110,11 +110,11 @@ public class RobotContainer {
     //     ()-> shooter.stop(),shooter
     //   )
     // );
-    // new JoystickButton(joystick2, 2).whileHeld(
-    //     new StartEndCommand(
-    //       ()-> intake.setPower(joystick2.getZ()),
-    //       ()-> intake.stop())
-    //     );
+    new JoystickButton(joystick2, 1).whileHeld(
+        new StartEndCommand(
+          ()-> intake.setPower(joystick2.getZ()),
+          ()-> intake.stop())
+        );
   }
 
   /**
@@ -125,17 +125,17 @@ public class RobotContainer {
   
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    new SequentialCommandGroup(
-      new RunCommand(
-        ()-> drivetrain.motionMagic(1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
-        drivetrain
-      )
-        ,
-    new StartEndCommand(
-      ()-> drivetrain.motionMagic(-1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
-      ()-> drivetrain.stop(),drivetrain
-      )
-      );
+    // new SequentialCommandGroup(
+    //   new RunCommand(
+    //     ()-> drivetrain.motionMagic(1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
+    //     drivetrain
+    //   )
+    //     ,
+    // new StartEndCommand(
+    //   ()-> drivetrain.motionMagic(-1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
+    //   ()-> drivetrain.stop(),drivetrain
+    //   )
+    //   );
     SmartDashboard.putBoolean("AUTOFINISH", false);
     return null;
   }
