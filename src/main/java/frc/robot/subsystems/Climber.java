@@ -42,6 +42,7 @@ public class Climber extends SubsystemBase{
     private RelativeEncoder REncoder;
 
     public Climber() {
+		SmartDashboard.putNumber("Art Target Angle:",0);
         leftClimber = new TalonSRX(RobotMap.kLeftClimber);
         rightClimber = new TalonSRX(RobotMap.kRightClimber);
 
@@ -181,12 +182,11 @@ public class Climber extends SubsystemBase{
 		rightClimber.configMotionCruiseVelocity(100);
        
         /* Initialize */
-        setZero();
+        setClimbZero();
         //--------------------CAN SPARK MAX SETUP-----------------
         //restore factory defaults to prevent unexpected behavior
         rightRotaryArt.restoreFactoryDefaults();
         leftRotaryArt.restoreFactoryDefaults();
-
 		
         leftCanController = leftRotaryArt.getPIDController();
         rightCanController = rightRotaryArt.getPIDController();
@@ -199,9 +199,8 @@ public class Climber extends SubsystemBase{
         rightRotaryArt.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse,false);
 
         rightCanController.setOutputRange(-1, 1);
-        rightCanController.setSmartMotionMaxVelocity(10000, 0);
-        rightCanController.setSmartMotionMaxAccel(20000, 0);
-
+        rightCanController.setSmartMotionMaxVelocity(100000,0);
+        rightCanController.setSmartMotionMaxAccel(200000, 0);
         //set PID values
         rightCanController.setP(PIDConstants.kGainsRotArm.kP);
         rightCanController.setI(PIDConstants.kGainsRotArm.kI);
@@ -212,10 +211,6 @@ public class Climber extends SubsystemBase{
 		rightCanController.setFeedbackDevice(REncoder);
     }
 
-	public void updateTarget()
-	{
-		SmartDashboard.putNumber("Art Target Position:",0);
-	}
     //use PID to move arm to artTarget
     public void artSetPoint(double artTarget)
     {
@@ -230,65 +225,95 @@ public class Climber extends SubsystemBase{
     }
 
 	//Runs lift at a given power
-    public void setPower(double leftpower,double rightpower){
+    public void setClimbPower(double leftpower,double rightpower){
         leftClimber.set(ControlMode.PercentOutput, leftpower);
         rightClimber.set(ControlMode.PercentOutput, rightpower);
     }
 
+	//----------ARM FUNCTIONS--------
 
+	//arm PID using degrees as input units
     // units / revolution *  = Degrees 1 revolution / 360 degrees  = units / 360 degrees 1680/360 goto(0)
-
     //preset: 0degree = some position. 
     //toward the front of bot = forward, so positive degree = down on the bot
-    //so say 10degree = 0position + (input) * (1680/360);
-
-
     public void armDeg(double degree)
     {
-        rightCanController.setReference(degree * ((double)(ClimberConstants.kArmCountsPerRev)/360),CANSparkMax.ControlType.kSmartMotion,PIDConstants.kPIDprimary);
+        rightCanController.setReference(degree * (ClimberConstants.kBeltGearRatio)*((double)(ClimberConstants.kArmCountsPerRev)/360),CANSparkMax.ControlType.kSmartMotion,PIDConstants.kPIDprimary);
     }
 
     //zero's arm position - should be done when the arm is pointed DIRECTLY UP.
     public void zeroArm(){
         REncoder.setPosition(0);
+		SmartDashboard.putNumber("Art Target Angle:",0);
+		SmartDashboard.putNumber("PVal", PIDConstants.kGainsRotArm.kP);
+		SmartDashboard.putNumber("IVal", PIDConstants.kGainsRotArm.kI);
+		SmartDashboard.putNumber("DVal", PIDConstants.kGainsRotArm.kD);
+    } 
+
+	//set static arm speed
+	public void armSpeed(double speed)
+	{
+		rightCanController.setReference(speed,CANSparkMax.ControlType.kVoltage);
+	}
+
+	//adjust pid
+	public void armPidVal(double P, double I, double D)
+	{
+		rightCanController.setP(P);
+        rightCanController.setI(I);
+        rightCanController.setD(D);
+		SmartDashboard.putNumber("ReadP", rightCanController.getP());
+		SmartDashboard.putNumber("ReadI", rightCanController.getI());
+		SmartDashboard.putNumber("ReadD", rightCanController.getD());
+    
+	}
+
+	public void refreshDash() {
+		SmartDashboard.putNumber("ReadP", rightCanController.getP());
+		SmartDashboard.putNumber("ReadI", rightCanController.getI());
+		SmartDashboard.putNumber("ReadD", rightCanController.getD());
+		SmartDashboard.putNumber("PVal", PIDConstants.kGainsRotArm.kP);
+		SmartDashboard.putNumber("IVal", PIDConstants.kGainsRotArm.kI);
+		SmartDashboard.putNumber("DVal", PIDConstants.kGainsRotArm.kD);
+		SmartDashboard.putNumber("Art Target Angle:",0);
+		SmartDashboard.putNumber("Climber Target Height:",0);
+    
+    
+	}
+	//stops arm motion
+    public void stopArm() {
+        rightCanController.setReference(0.00,CANSparkMax.ControlType.kVoltage);
+        leftCanController.setReference(0.00,CANSparkMax.ControlType.kVoltage);
     }
+
+	//returns the encoder position of the Arm
+	public void getArmPos()
+	{
+		SmartDashboard.putNumber("arm Position",REncoder.getPosition());
+	}
+
 	//move motors until they reach limit switches
-	public void zeroEncoders(double speed)
+	public void zeroClimbEncoders(double speed)
 	{
 		rightClimber.configReverseSoftLimitEnable(false,Delay.kTimeoutMs);
 		leftClimber.configReverseSoftLimitEnable(false,Delay.kTimeoutMs);
-		setPower(speed,speed);
+		setClimbPower(speed,speed);
 	}
-
 	//when zeroEncoders is stopped, reset zero point and make sure that reverse soft limits are re-enabled
-	public void stopZero() {
+	public void stopClimbZero() {
 		stop();
-		setZero();
+		setClimbZero();
 		rightClimber.configReverseSoftLimitEnable(true,Delay.kTimeoutMs);
 		leftClimber.configReverseSoftLimitEnable(true,Delay.kTimeoutMs);
 	}
 
-	//Function that will return Climbers positions )
-	public void getPosition()
-    {
-        // SmartDashboard.putNumber("leftClimber:",leftClimber.getSensorCollection().getQuadraturePosition());
-        SmartDashboard.putNumber("leftRotary:",LEncoder.getPosition());
-        SmartDashboard.putNumber("RightRotary:",REncoder.getPosition());
-    }
-
 	//function sets both 
-    public void setZero()
+    public void setClimbZero()
     {
         leftClimber.getSensorCollection().setQuadraturePosition(0, Delay.kTimeoutMs);
 		rightClimber.getSensorCollection().setQuadraturePosition(0, Delay.kTimeoutMs);
         SmartDashboard.putNumber("Zero's set!",leftClimber.getSelectedSensorPosition());
 	}
-
-    //stops arm motion
-    public void stopArt() {
-        rightCanController.setReference(0.00,CANSparkMax.ControlType.kVoltage);
-        leftCanController.setReference(0.00,CANSparkMax.ControlType.kVoltage);
-    }
 
 	//stops motor motion
     public void stopClimb() {
@@ -299,6 +324,6 @@ public class Climber extends SubsystemBase{
     //stops all motion
     public void stop() {
         stopClimb();
-        stopArt();
+        stopArm();
     }
 }

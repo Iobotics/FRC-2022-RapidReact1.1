@@ -25,6 +25,7 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.PIDConstants;
 import frc.robot.subsystems.Climber;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -44,14 +45,14 @@ public class RobotContainer {
 
   //private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
-  private final Drivetrain drivetrain = new Drivetrain();
+  // private final Drivetrain drivetrain = new Drivetrain();
   private final Joystick joystick1 = new Joystick(OIConstants.kJoystick1);
   private final Joystick joystick2 = new Joystick(OIConstants.kJoystick2);
 
 
-  public final Shooter shooter = new Shooter();
+  // public final Shooter shooter = new Shooter();
 
-  private final Intake intake = new Intake();
+  // private final Intake intake = new Intake();
   
   //private final Joystick joystick2 = new Joystick(OIConstants.kJoystick2);
 
@@ -67,9 +68,6 @@ public class RobotContainer {
     SmartDashboard.putNumber("I",0);
     SmartDashboard.putNumber("D",0);
     // Configure the button bindings
-    drivetrain.setDefaultCommand(new RunCommand(
-      () -> drivetrain.drive.tankDrive(-joystick1.getY(), joystick2.getY()), drivetrain));
-
     configureButtonBindings();
     
   }
@@ -83,56 +81,56 @@ public class RobotContainer {
   private void configureButtonBindings() {
 
 
-    new JoystickButton(joystick1,4).whileHeld(
-      new StartEndCommand(
-        // ()-> drivetrain.setTank(.5,.5),
-        ()-> drivetrain.motionMagic(SmartDashboard.getNumber("Distance", 0), 10,SmartDashboard.getNumber("P", 0),SmartDashboard.getNumber("I", 0),SmartDashboard.getNumber("D", 0)),
-        ()-> drivetrain.stop(),drivetrain
-      )
-    );
+    // new JoystickButton(joystick1,4).whileHeld(
+    //   new StartEndCommand(
+    //     // ()-> drivetrain.setTank(.5,.5),
+    //     ()-> drivetrain.motionMagic(SmartDashboard.getNumber("Distance", 0), 10,SmartDashboard.getNumber("P", 0),SmartDashboard.getNumber("I", 0),SmartDashboard.getNumber("D", 0)),
+    //     ()-> drivetrain.stop(),drivetrain
+    //   )
+    // );
 
-    new JoystickButton(joystick1, 1).whileHeld(
-      new StartEndCommand(
-        ()-> shooter.setPower(joystick1.getZ(), joystick1.getZ()),
-        ()-> shooter.stop()
-      )
-    );
+    // new JoystickButton(joystick1, 1).whileHeld(
+    //   new StartEndCommand(
+    //     ()-> shooter.setPower(joystick1.getZ(), joystick1.getZ()),
+    //     ()-> shooter.stop()
+    //   )
+    // );
 
-    new JoystickButton(joystick1, 2).whileHeld(
-      new StartEndCommand(
-        ()->shooter.setArmPosition(0), 
-        ()->shooter.stopArm(), shooter
-      )
-    );
+    // new JoystickButton(joystick1, 2).whileHeld(
+    //   new StartEndCommand(
+    //     ()->shooter.setArmPosition(0), 
+    //     ()->shooter.stopArm(), shooter
+    //   )
+    // );
 
-    new JoystickButton(joystick1,3).whileHeld(
-      new RunCommand(
-        ()->shooter.getPosition(),
-        shooter
-      )
-    );
+    // new JoystickButton(joystick1,3).whileHeld(
+    //   new RunCommand(
+    //     ()->shooter.getPosition(),
+    //     shooter
+    //   )
+    // );
     
-    new JoystickButton(joystick1, 5).whileHeld(
-      new StartEndCommand(
-        ()-> shooter.extendPneumatic(true),
-        ()-> shooter.extendPneumatic(false), shooter
-      )
-    );  
-    new JoystickButton(joystick1,6).whenPressed(
-      new InstantCommand(
-        ()-> shooter.stop(),shooter
-      )
-    );
-    new JoystickButton(joystick2, 2).whileHeld(
-        new StartEndCommand(
-          ()-> intake.setPower(joystick2.getZ()),
-          ()-> intake.stop())
-        );
-    new JoystickButton(joystick1, 2).whileHeld(
-      new StartEndCommand(
-        ()-> climber.setPower(.4*joystick1.getZ(),.4*joystick1.getZ()),
-        ()-> climber.stop(),climber)
-    );
+    // new JoystickButton(joystick1, 5).whileHeld(
+    //   new StartEndCommand(
+    //     ()-> shooter.extendPneumatic(true),
+    //     ()-> shooter.extendPneumatic(false), shooter
+    //   )
+    // );  
+    // new JoystickButton(joystick1,6).whenPressed(
+    //   new InstantCommand(
+    //     ()-> shooter.stop(),shooter
+    //   )
+    // );
+    // new JoystickButton(joystick2, 2).whileHeld(
+    //     new StartEndCommand(
+    //       ()-> intake.setPower(joystick2.getZ()),
+    //       ()-> intake.stop())
+    //     );
+    // new JoystickButton(joystick1, 2).whileHeld(
+    //   new StartEndCommand(
+    //     ()-> climber.setPower(.4*joystick1.getZ(),.4*joystick1.getZ()),
+    //     ()-> climber.stop(),climber)
+    // );
 
     /* new JoystickButton(joystick1, 2).whileHeld(
        new StartEndCommand(
@@ -145,30 +143,74 @@ public class RobotContainer {
          ()-> climber.climberAux(1000),()->climber.stopClimb(), climber)
      );*/
 
-    new JoystickButton(joystick1,5).whileHeld(
-      new RunCommand(()->climber.getPosition(),climber)
-    );
+    // new JoystickButton(joystick1,5).whileHeld(
+    //   new RunCommand(()->climber.getPosition(),climber)
+    // );
     
-    new JoystickButton(joystick1, 3).whenPressed(
-      new InstantCommand(
-        ()->climber.updateTarget(),climber
-      )
-    );
-
-    /* new JoystickButton(joystick1, 4).whenPressed(
-       new StartEndCommand(
-         ()-> climber.setZero(), ()-> climber.stopZero(), climber)
-     );
-
-     new JoystickButton(joystick1,1).whileHeld(
-       new RunCommand(()->climber.zeroEncoders(.4*joystick1.getZ()), climber
-       )
-     );*/
+    // new JoystickButton(joystick1, 3).whenPressed(
+    //   new InstantCommand(
+    //     ()->climber.updateTarget(),climber
+    //   )
+    // );
 
     new JoystickButton(joystick1,1).whileHeld(
       new StartEndCommand(
-        ()-> climber.artSetPoint(SmartDashboard.getNumber("Art Target Position:",0)), 
-        ()-> climber.stopArt(), climber)
+      ()-> climber.armDeg(SmartDashboard.getNumber("Art Target Angle:",0)), 
+      ()-> climber.stopArm(), climber
+      )
+    );
+    new JoystickButton(joystick1,2).whenPressed(
+      new InstantCommand(
+        ()-> climber.zeroArm(), climber
+      )
+    );
+    new JoystickButton(joystick1,3).whileHeld(
+      new InstantCommand(
+        ()-> climber.getArmPos(), climber
+      )
+    );
+    new JoystickButton(joystick1,4).whileHeld(
+      new StartEndCommand(
+        ()->climber.armSpeed(joystick1.getZ()),
+        ()-> climber.stopArm(), climber
+      )
+    );
+    
+    new JoystickButton(joystick1,5).whenPressed(
+      new InstantCommand(
+        ()-> climber.armPidVal(SmartDashboard.getNumber("PVal", PIDConstants.kGainsRotArm.kP),SmartDashboard.getNumber("IVal", PIDConstants.kGainsRotArm.kI),SmartDashboard.getNumber("DVal", PIDConstants.kGainsRotArm.kD)), climber)
+    );
+    new JoystickButton(joystick1,6).whenPressed(
+      new InstantCommand(
+        ()-> climber.refreshDash(), climber
+      )
+    );
+    new JoystickButton(joystick1, 7).whenPressed(
+      new StartEndCommand(
+        ()-> climber.setClimbPower(joystick1.getZ(),joystick1.getZ()), 
+        ()-> climber.stopClimb(), climber
+      )
+    );
+    new JoystickButton(joystick1,8).whenPressed(
+      new InstantCommand(
+        ()-> climber.stop(), climber)
+    );
+    new JoystickButton(joystick1, 9).whenPressed(
+       new StartEndCommand(
+         ()-> climber.climberAux(SmartDashboard.getNumber("Climber Target Height:",0)),
+         ()->climber.stopClimb(), climber
+        )
+     );
+    new JoystickButton(joystick1, 10).whenPressed(
+      new StartEndCommand(
+        ()-> climber.setClimbZero(), 
+        ()-> climber.stopClimbZero(), climber
+      )
+    );
+    new JoystickButton(joystick1,11).whileHeld(
+      new RunCommand(
+        ()->climber.zeroClimbEncoders(.4*joystick1.getZ()), climber
+      )
     );
   }
 
@@ -180,17 +222,17 @@ public class RobotContainer {
   
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    new SequentialCommandGroup(
-      new RunCommand(
-        ()-> drivetrain.motionMagic(1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
-        drivetrain
-      )
-        ,
-    new StartEndCommand(
-      ()-> drivetrain.motionMagic(-1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
-      ()-> drivetrain.stop(),drivetrain
-      )
-      );
+    // new SequentialCommandGroup(
+    //   new RunCommand(
+    //     ()-> drivetrain.motionMagic(1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
+    //     drivetrain
+    //   )
+    //     ,
+    // new StartEndCommand(
+    //   ()-> drivetrain.motionMagic(-1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
+    //   ()-> drivetrain.stop(),drivetrain
+    //   )
+    //   );
     SmartDashboard.putBoolean("AUTOFINISH", false);
     return null;
   }
