@@ -23,11 +23,11 @@ public final class Constants {
 
         //shooter devices(motors)
         public static final int kshootLeft = 8;
-        public static final int kshootRight = 9;
+        public static final int kshootRight = 7;
         public static final int karm = 11;
 
          //intake devices(motors)
-         public static final int kSpinner = 7;
+         public static final int kSpinner = 12;
     
     }
 
@@ -49,7 +49,7 @@ public final class Constants {
         public static final int kDoubleSolenoidLeftSlot = 0;
         public static final int kDoubleSolenoidRightSlot = 1;
         /* 	                                    			  kP   kI   kD   kF   Iz  PeakOut */
-        public static final Gains kShooterGains = new Gains( 1.0, 0.0,  0.0, 0.0, 0,  1 );
+        public static final Gains kShooterGains = new Gains( 5.0, 0.0,  0.0, 0.0, 0,  1 );
         public static final int kSlot0 = 0;
         public static final int kPIDprimary = 0;
     }

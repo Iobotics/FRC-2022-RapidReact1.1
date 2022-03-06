@@ -78,14 +78,14 @@ public class Shooter extends SubsystemBase{
 
         //configure acceleration and cruise velocity
         arm.configMotionAcceleration(1000);
-        arm.configMotionCruiseVelocity(3000);
+        arm.configMotionCruiseVelocity(1000);
         
         //select the PID Slot to be used for primary PID loop
         arm.selectProfileSlot(ShooterConstants.kSlot0, ShooterConstants.kPIDprimary);
 
         //enable soft limits
-        arm.configForwardSoftLimitThreshold(300);
-        arm.configReverseSoftLimitThreshold(100);
+        arm.configForwardSoftLimitThreshold(250);
+        arm.configReverseSoftLimitThreshold(60);
 
         arm.configForwardSoftLimitEnable(true);
         arm.configReverseSoftLimitEnable(true);
@@ -108,7 +108,16 @@ public class Shooter extends SubsystemBase{
 
     //Aim the shooter using PID with the Potentiometer
     public void setArmPosition(double armPosition){
-        arm.set(ControlMode.MotionMagic, armPosition);
+        int kMeasuredPosHorizontal = 291;
+        double kTicksPerDegree = (1023/10)*(170.0/20.0);
+        int currentPos = (int)arm.getSelectedSensorPosition();
+        double degrees = (currentPos - kMeasuredPosHorizontal) / kTicksPerDegree;
+        double radians = java.lang.Math.toRadians(degrees);
+        double cosineScalar = java.lang.Math.cos(radians);
+
+        double maxGravityFF = -.1;
+        arm.set(ControlMode.MotionMagic, armPosition,DemandType.ArbitraryFeedForward,maxGravityFF * cosineScalar);
+        SmartDashboard.putNumber("FEEDFORWARD:",cosineScalar);
     }
 
     //170 - big gear
