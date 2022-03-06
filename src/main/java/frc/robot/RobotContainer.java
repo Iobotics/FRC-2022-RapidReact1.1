@@ -87,34 +87,41 @@ public class RobotContainer {
 
     new JoystickButton(joystick1, 2).whileHeld(
       new StartEndCommand(
-        ()->shooter.setArmPosition(250), 
+        ()->shooter.setArmPosition(SmartDashboard.getNumber("Arm Position",0)), 
         ()->shooter.stopArm(), shooter
       )
     );
 
-    new JoystickButton(joystick1,3).whileHeld(
-      new RunCommand(
+    new JoystickButton(joystick1,3).whenPressed(
+      new InstantCommand(
         ()->shooter.getPosition(),
         shooter
       )
     );
+
+    new JoystickButton(joystick1, 4).whenPressed(
+      new InstantCommand(
+        ()->shooter.refreshSmart(), 
+        shooter
+      )
+    );
     
-    // new JoystickButton(joystick1, 5).whileHeld(
-    //   new StartEndCommand(
-    //     ()-> shooter.extendPneumatic(true),
-    //     ()-> shooter.extendPneumatic(false), shooter
-    //   )
-    // );  
+    new JoystickButton(joystick1, 5).whileHeld(
+      new StartEndCommand(
+        ()-> shooter.extendPneumatic(true),
+        ()-> shooter.extendPneumatic(false), shooter
+      )
+    );  
     // new JoystickButton(joystick1,6).whenPressed(
     //   new InstantCommand(
     //     ()-> shooter.stop(),shooter
     //   )
     // );
-    new JoystickButton(joystick2, 1).whileHeld(
-        new StartEndCommand(
-          ()-> intake.setPower(joystick2.getZ()),
-          ()-> intake.stop())
-        );
+    // new JoystickButton(joystick2, 1).whileHeld(
+    //     new StartEndCommand(
+    //       ()-> intake.setPower(joystick2.getZ()),
+    //       ()-> intake.stop())
+    //     );
   }
 
   /**

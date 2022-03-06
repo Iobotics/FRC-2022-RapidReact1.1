@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -40,7 +41,7 @@ public class Shooter extends SubsystemBase{
 
         //------Double Solenoid setup------
         //initalize the solenoid to start in the Forward Position
-        pitchSolenoid.set(kForward);
+        pitchSolenoid.set(kReverse);
 
         //-----Shooter Direction/arm setup---
         //make sure arm is powered off
@@ -83,8 +84,8 @@ public class Shooter extends SubsystemBase{
         arm.selectProfileSlot(ShooterConstants.kSlot0, ShooterConstants.kPIDprimary);
 
         //enable soft limits
-        arm.configForwardSoftLimitThreshold(400);
-        arm.configReverseSoftLimitThreshold(250);
+        arm.configForwardSoftLimitThreshold(300);
+        arm.configReverseSoftLimitThreshold(100);
 
         arm.configForwardSoftLimitEnable(true);
         arm.configReverseSoftLimitEnable(true);
@@ -96,6 +97,10 @@ public class Shooter extends SubsystemBase{
         // shootRight.follow(shootLeft);
     }
 
+    public void refreshSmart() {
+        SmartDashboard.putNumber("Arm Position",0);
+    }
+
     public void setPower(double leftPower, double rightPower){
         shootLeft.set(ControlMode.PercentOutput, leftPower);
         shootRight.set(ControlMode.PercentOutput, rightPower);
@@ -104,6 +109,21 @@ public class Shooter extends SubsystemBase{
     //Aim the shooter using PID with the Potentiometer
     public void setArmPosition(double armPosition){
         arm.set(ControlMode.MotionMagic, armPosition);
+    }
+
+    //170 - big gear
+    //30 - motor gear
+    //20
+    // horizonal position - current posiiton
+    // (potentiometer ticks/rotations)(ratio of pot gear to motor gear)(ratio of motor gear to arm gear)
+    // (1023/10)
+    //
+
+
+
+    public void setArm(float speed)
+    {
+        arm.set(ControlMode.PercentOutput,speed);
     }
 
     public void stopArm()
