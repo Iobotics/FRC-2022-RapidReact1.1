@@ -35,7 +35,7 @@ public class Drivetrain extends SubsystemBase {
         rightMaster = new TalonFX(RobotMap.kRightMaster); //CAN 2
         rightSlave = new TalonFX(RobotMap.kRightSlave); //CAN 3
 
-        rightMaster.configFactoryDefault();
+      
 
         LMSensor = leftMaster.getSensorCollection();
 
@@ -46,7 +46,7 @@ public class Drivetrain extends SubsystemBase {
 
         leftSlave.follow(leftMaster); //sets slave to follow master
         rightSlave.follow(rightMaster); //sets slave to follow master
-        rightMaster.follow(leftMaster);
+        
 
         //Config Slave Deadband
         leftSlave.configNeutralDeadband(0);
