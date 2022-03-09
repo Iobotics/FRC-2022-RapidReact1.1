@@ -16,6 +16,7 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -48,7 +49,6 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-
     SmartDashboard.putNumber("Distance",10);
     SmartDashboard.putNumber("P",0);
     SmartDashboard.putNumber("I",0);
@@ -59,7 +59,7 @@ public class RobotContainer {
 
     configureButtonBindings();
 
-
+    
   }
 
   /**
@@ -78,28 +78,27 @@ public class RobotContainer {
     //   )
     // );
 
-    new JoystickButton(joystick1, 5).whileHeld(
-      new StartEndCommand(
-        ()-> shooter.setPower(.3, .3),
-        ()-> shooter.stopWheels(),shooter
+    new JoystickButton(joystick1, 1).whileHeld(
+      new ParallelCommandGroup(
+        new StartEndCommand(
+          ()-> shooter.setPower(.3, .3),
+          ()-> shooter.stopWheels(), shooter
+        ),
+        new StartEndCommand(
+          ()-> intake.setPower(-.8),
+          ()-> intake.stop(), intake
       )
-    );
-    new JoystickButton(joystick1,1).whileHeld(
-      new StartEndCommand(
-        ()-> intake.setPower(-.8),
-        ()-> intake.stop(), 
-        intake
-      ) 
+    )
     );
 
     new JoystickButton(joystick1, 2).whileHeld(
       new InstantCommand(
-        ()->shooter.setArmPosition(SmartDashboard.getNumber("Arm Position",0)), 
+        ()->shooter.setArmPosition(SmartDashboard.getNumber("Arm Articulate",0)), 
          shooter
       )
     );
 
-    new JoystickButton(joystick1,3).whileHeld(
+    new JoystickButton(joystick2,1).whileHeld(
       new StartEndCommand(
         ()->shooter.setPower(-.9,-.9),
         ()->shooter.stopWheels(),
@@ -107,7 +106,7 @@ public class RobotContainer {
       )
     );
 
-    new JoystickButton(joystick1, 4).whileHeld(
+    new JoystickButton(joystick2, 2).whileHeld(
       new StartEndCommand(
         ()->shooter.extendPneumatic(true),
         ()->shooter.extendPneumatic(false),
@@ -115,9 +114,8 @@ public class RobotContainer {
       )
     );
     new JoystickButton(joystick1, 6).whileHeld(
-      new StartEndCommand(
-        ()->shooter.extendPneumatic(true),
-        ()->shooter.stopWheels(),
+      new InstantCommand(
+        ()->shooter.shooterRefresh(),
         shooter
       )
     );

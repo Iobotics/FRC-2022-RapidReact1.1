@@ -11,6 +11,8 @@ import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.revrobotics.AnalogInput;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -91,15 +93,6 @@ public class Shooter extends SubsystemBase{
         arm.configReverseSoftLimitEnable(true);
     }
 
-    public void getPosition() 
-    {
-        SmartDashboard.putNumber("Poteniometer position",arm.getSelectedSensorPosition());
-        // shootRight.follow(shootLeft);
-    }
-
-    public void refreshSmart() {
-        SmartDashboard.putNumber("Arm Position",0);
-    }
 
     public void setPower(double leftPower, double rightPower){
         shootLeft.set(ControlMode.PercentOutput, leftPower);
@@ -159,5 +152,9 @@ public class Shooter extends SubsystemBase{
             return;
         }
         pitchSolenoid.set(kReverse);
+    }
+
+    public void shooterRefresh(){
+        SmartDashboard.putNumber("Arm Articulate", arm.getSelectedSensorPosition());
     }
 }
