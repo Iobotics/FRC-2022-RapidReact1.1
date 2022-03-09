@@ -187,7 +187,7 @@ public class RobotContainer {
     );
     new JoystickButton(joystick1, 7).whenPressed(
       new StartEndCommand(
-        ()-> climber.setClimbPower(joystick1.getZ(),joystick1.getZ()), 
+        ()-> climber.setClimbPower(0,joystick1.getZ()), 
         ()-> climber.stopClimb(), climber
       )
     );

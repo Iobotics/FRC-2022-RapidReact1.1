@@ -163,19 +163,19 @@ public class Climber extends SubsystemBase{
 		rightClimber.selectProfileSlot(PIDConstants.kSlot1, PIDConstants.kPIDturn);
 
 		//Configure Limit Switches to prevent lift from pulling too far
-		rightClimber.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
-		leftClimber.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
+		// rightClimber.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
+		// leftClimber.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
 
 		//Configure soft limits to prevent lift from pulling / pushing too far
 		//NOTE: MAY NEED TO FIX FOR rightClimber!!!! USES ACTIVE SENSOR (REMOTE SENSOR) I THINK
 		rightClimber.configForwardSoftLimitThreshold(10000,Delay.kTimeoutMs);
 		rightClimber.configReverseSoftLimitThreshold(0,Delay.kTimeoutMs);
-		rightClimber.configForwardSoftLimitEnable(true,Delay.kTimeoutMs);
-		rightClimber.configReverseSoftLimitEnable(true,Delay.kTimeoutMs);
+		rightClimber.configForwardSoftLimitEnable(false,Delay.kTimeoutMs);
+		rightClimber.configReverseSoftLimitEnable(false,Delay.kTimeoutMs);
 		leftClimber.configForwardSoftLimitThreshold(10000,Delay.kTimeoutMs);
 		leftClimber.configReverseSoftLimitThreshold(0,Delay.kTimeoutMs);
-		leftClimber.configForwardSoftLimitEnable(true,Delay.kTimeoutMs);
-		leftClimber.configReverseSoftLimitEnable(true,Delay.kTimeoutMs);
+		leftClimber.configForwardSoftLimitEnable(false,Delay.kTimeoutMs);
+		leftClimber.configReverseSoftLimitEnable(false,Delay.kTimeoutMs);
 
 		//define the acceleration and cruise Velocity of the lift
 		rightClimber.configMotionAcceleration(1000);
@@ -290,6 +290,7 @@ public class Climber extends SubsystemBase{
 	public void getArmPos()
 	{
 		SmartDashboard.putNumber("arm Position",REncoder.getPosition());
+		SmartDashboard.putNumber("ClimbPOS",rightClimber.getSelectedSensorPosition());
 	}
 
 	//move motors until they reach limit switches
