@@ -102,9 +102,9 @@ public class Climber extends SubsystemBase{
 														Delay.kTimeoutMs);
 		
 		/* Configure output and sensor direction */
-		leftClimber.setSensorPhase(true);
+		leftClimber.setSensorPhase(false);
 		leftClimber.setInverted(false);
-		rightClimber.setSensorPhase(false);
+		rightClimber.setSensorPhase(true);
 		rightClimber.setInverted(false);
 		
 		
@@ -163,8 +163,10 @@ public class Climber extends SubsystemBase{
 		rightClimber.selectProfileSlot(PIDConstants.kSlot1, PIDConstants.kPIDturn);
 
 		//Configure Limit Switches to prevent lift from pulling too far
-		// rightClimber.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
-		// leftClimber.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
+		rightClimber.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.Disabled);
+		leftClimber.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.Disabled);
+		// rightClimber.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
+		// leftClimber.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
 
 		//Configure soft limits to prevent lift from pulling / pushing too far
 		//NOTE: MAY NEED TO FIX FOR rightClimber!!!! USES ACTIVE SENSOR (REMOTE SENSOR) I THINK
