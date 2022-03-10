@@ -17,6 +17,7 @@ import frc.robot.subsystems.Drivetrain;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -90,11 +91,18 @@ public class RobotContainer {
     );*/
 
     new JoystickButton(joystick1, 1).whileHeld(
-      new StartEndCommand(
-        ()-> shooter.setPower(joystick1.getZ(), joystick1.getZ()),
-        ()-> shooter.stop()
+      new ParallelCommandGroup(
+        new StartEndCommand(
+          ()-> shooter.setPower(.3, .3),
+          ()-> shooter.stopWheels(), shooter
+        ),
+        new StartEndCommand(
+          ()-> intake.setPower(-.3),
+          ()-> intake.stop(), intake
+      )
       )
     );
+    
 
     new JoystickButton(joystick1, 2).whileHeld(
       new StartEndCommand(
