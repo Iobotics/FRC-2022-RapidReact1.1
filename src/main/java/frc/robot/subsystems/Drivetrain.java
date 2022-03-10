@@ -74,29 +74,47 @@ public class Drivetrain extends SubsystemBase {
         rightMaster.set(ControlMode.PercentOutput, 0);
       }
       
-      public void setTank(double leftPower, double rightPower){
+    public void setTank(double leftPower, double rightPower){
         leftMaster.set(ControlMode.PercentOutput, leftPower);
         rightMaster.set(ControlMode.PercentOutput, rightPower);
       }
 
-      public void motionMagic (double distance, double speed,double P,double I,double D) {
+    public void motionMagic (double distance, double speed) {
         double rotations = (distance * DrivetrainConstants.kGearRatio)/(DrivetrainConstants.kWheelDiameter*Math.PI);
         double targetPos = rotations*2048;
         //Convert target speed from inches / second to encoder units / 100 ms
         double targetSpeed = (speed *DrivetrainConstants.kGearRatio * 2048 * 10) / (DrivetrainConstants.kWheelDiameter * Math.PI);
-    
+      
         rightSlave.follow(leftMaster);
         rightMaster.follow(leftMaster);
         leftMaster.configMotionCruiseVelocity((int)targetSpeed);
         leftMaster.configMotionAcceleration((int)targetSpeed);
-
-        leftMaster.config_kP(0, P);
-        leftMaster.config_kI(0, I);
-        leftMaster.config_kD(0, D);
-
+        leftMaster.setSelectedSensorPosition(0);
         leftMaster.set(ControlMode.MotionMagic, targetPos);
-        getPosition();
       }
+
+      /**
+   * Reconfigures the motors to the drive settings
+   */
+  
+    public void config () {
+    rightMaster.configFactoryDefault();
+    rightMaster.setInverted(true);
+    rightSlave.follow(rightMaster);
+  } 
+      
+    public boolean isTargetAchieved (double distance, double error) {
+        double rotations = (distance * DrivetrainConstants.kGearRatio)/(DrivetrainConstants.kWheelDiameter*Math.PI);
+        double targetPos = rotations*2048;
+        //converting allowed error from inches to encoder units
+        double allowedError = ((error * DrivetrainConstants.kGearRatio)/(DrivetrainConstants.kWheelDiameter * Math.PI) * 2048);
+        if(Math.abs(leftMaster.getSelectedSensorPosition() - targetPos) <= allowedError && leftMaster.getSelectedSensorVelocity() == 0.0 && leftMaster.getActiveTrajectoryVelocity() < 3) {
+          return true;
+        } else{
+          return false;
+        }
+      }
+      
 
       public void getPosition(){
         SmartDashboard.putNumber("LM Position",LMSensor.getIntegratedSensorPosition());      

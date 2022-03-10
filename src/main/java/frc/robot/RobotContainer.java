@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Commands.AutoDrive;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Drivetrain;
@@ -53,6 +54,7 @@ public class RobotContainer {
     SmartDashboard.putNumber("P",0);
     SmartDashboard.putNumber("I",0);
     SmartDashboard.putNumber("D",0);
+    SmartDashboard.putNumber("AutoDrive",0);
     // Configure the button bindings
     drivetrain.setDefaultCommand(new RunCommand(
       () -> drivetrain.setTank(joystick1.getY(), joystick2.getY()), drivetrain));
@@ -156,22 +158,9 @@ public class RobotContainer {
    */
   
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    // new SequentialCommandGroup(
-    //   new RunCommand(
-    //     ()-> drivetrain.motionMagic(1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
-    //     drivetrain
-    //   )
-    //     ,
-    // new StartEndCommand(
-    //   ()-> drivetrain.motionMagic(-1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
-    //   ()-> drivetrain.stop(),drivetrain
-    //   )
-    //   );
-    SmartDashboard.putBoolean("AUTOFINISH", false);
-    return null;
+    return new AutoDrive(drivetrain, SmartDashboard.getNumber("AutoDrive", 0));
   }
-  }
+}
 
   
    
