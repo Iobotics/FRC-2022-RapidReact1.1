@@ -195,7 +195,7 @@ public class RobotContainer {
       new InstantCommand(
         ()-> climber.stop(), climber)
     );
-    new JoystickButton(joystick1, 9).whenPressed(
+    new JoystickButton(joystick1, 9).whileHeld(
        new StartEndCommand(
          ()-> climber.climberAux(SmartDashboard.getNumber("Climber Target Height:",0)),
          ()->climber.stopClimb(), climber

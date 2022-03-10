@@ -163,8 +163,8 @@ public class Climber extends SubsystemBase{
 		rightClimber.selectProfileSlot(PIDConstants.kSlot1, PIDConstants.kPIDturn);
 
 		//Configure Limit Switches to prevent lift from pulling too far
-		rightClimber.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.Disabled);
-		leftClimber.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.Disabled);
+		rightClimber.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
+		leftClimber.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
 		// rightClimber.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
 		// leftClimber.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
 
@@ -222,8 +222,8 @@ public class Climber extends SubsystemBase{
 	//Uses PID and AUX PID to move both climbers to a position while staying relatively at the same height
     public void climberAux(double position)
     { 
+		leftClimber.follow(rightClimber);
         rightClimber.set(ControlMode.Position, position,DemandType.AuxPID,rightClimber.getSelectedSensorPosition(1));
-		leftClimber.follow(rightClimber,FollowerType.AuxOutput1);
     }
 
 	//Runs lift at a given power
@@ -293,6 +293,7 @@ public class Climber extends SubsystemBase{
 	{
 		SmartDashboard.putNumber("arm Position",REncoder.getPosition());
 		SmartDashboard.putNumber("ClimbPOS",rightClimber.getSelectedSensorPosition());
+		SmartDashboard.putNumber("ClimbPOS2",leftClimber.getSelectedSensorPosition());
 	}
 
 	//move motors until they reach limit switches
