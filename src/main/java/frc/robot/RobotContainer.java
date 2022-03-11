@@ -55,9 +55,11 @@ public class RobotContainer {
     SmartDashboard.putNumber("I",0);
     SmartDashboard.putNumber("D",0);
     SmartDashboard.putNumber("AutoDrive",0);
+    SmartDashboard.getNumber("Verks",2438);
+    
     // Configure the button bindings
-    drivetrain.setDefaultCommand(new RunCommand(
-      () -> drivetrain.setTank(joystick1.getY(), joystick2.getY()), drivetrain));
+    // drivetrain.setDefaultCommand(new RunCommand(
+    //   () -> drivetrain.setTank(joystick1.getY(), joystick2.getY()), drivetrain));
 
     configureButtonBindings();
 
@@ -80,47 +82,47 @@ public class RobotContainer {
     //   )
     // );
 
-    new JoystickButton(joystick1, 1).whileHeld(
-      new ParallelCommandGroup(
-        new StartEndCommand(
-          ()-> shooter.setPower(.3, .3),
-          ()-> shooter.stopWheels(), shooter
-        ),
-        new StartEndCommand(
-          ()-> intake.setPower(-.8),
-          ()-> intake.stop(), intake
-      )
-    )
-    );
+    // new JoystickButton(joystick1, 1).whileHeld(
+    //   new ParallelCommandGroup(
+    //     new StartEndCommand(
+    //       ()-> shooter.setPower(.3, .3),
+    //       ()-> shooter.stopWheels(), shooter
+    //     ),
+    //     new StartEndCommand(
+    //       ()-> intake.setPower(-.8),
+    //       ()-> intake.stop(), intake
+    //   )
+    // )
+    // );
 
-    new JoystickButton(joystick1, 2).whileHeld(
-      new InstantCommand(
-        ()->shooter.setArmPosition(SmartDashboard.getNumber("Arm Articulate",0)), 
-         shooter
-      )
-    );
+    // new JoystickButton(joystick1, 2).whileHeld(
+    //   new InstantCommand(
+    //     ()->shooter.setArmPosition(SmartDashboard.getNumber("Arm Articulate",0)), 
+    //      shooter
+    //   )
+    // );
 
-    new JoystickButton(joystick2,1).whileHeld(
-      new StartEndCommand(
-        ()->shooter.setPower(-.9,-.9),
-        ()->shooter.stopWheels(),
-        shooter
-      )
-    );
+    // new JoystickButton(joystick2,1).whileHeld(
+    //   new StartEndCommand(
+    //     ()->shooter.setPower(-.9,-.9),
+    //     ()->shooter.stopWheels(),
+    //     shooter
+    //   )
+    // );
 
-    new JoystickButton(joystick2, 2).whileHeld(
-      new StartEndCommand(
-        ()->shooter.extendPneumatic(true),
-        ()->shooter.extendPneumatic(false),
-        shooter
-      )
-    );
-    new JoystickButton(joystick1, 6).whileHeld(
-      new InstantCommand(
-        ()->shooter.shooterRefresh(),
-        shooter
-      )
-    );
+    // new JoystickButton(joystick2, 2).whileHeld(
+    //   new StartEndCommand(
+    //     ()->shooter.extendPneumatic(true),
+    //     ()->shooter.extendPneumatic(false),
+    //     shooter
+    //   )
+    // );
+    // new JoystickButton(joystick1, 6).whileHeld(
+    //   new InstantCommand(
+    //     ()->shooter.shooterRefresh(),
+    //     shooter
+    //   )
+    // );
     
     // new JoystickButton(joystick1, 5).whileHeld(
     //   new StartEndCommand(
@@ -158,7 +160,8 @@ public class RobotContainer {
    */
   
   public Command getAutonomousCommand() {
-    return new AutoDrive(drivetrain, SmartDashboard.getNumber("AutoDrive", 0));
+    return new SequentialCommandGroup(
+        new AutoDrive(drivetrain, SmartDashboard.getNumber("TARGETGOTO:",0)));
   }
 }
 
