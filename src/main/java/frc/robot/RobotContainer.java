@@ -183,11 +183,11 @@ public class RobotContainer {
     new JoystickButton(joystick1,6).whenPressed(
       new InstantCommand(
         ()-> climber.refreshDash(), climber
-      )
+      ) 
     );
-    new JoystickButton(joystick1, 7).whenPressed(
+    new JoystickButton(joystick1, 7).whileHeld(
       new StartEndCommand(
-        ()-> climber.setClimbPower(0,joystick1.getZ()), 
+        ()-> climber.setClimbPower(joystick1.getZ(),joystick1.getZ()), 
         ()-> climber.stopClimb(), climber
       )
     );
@@ -195,10 +195,10 @@ public class RobotContainer {
       new InstantCommand(
         ()-> climber.stop(), climber)
     );
-    new JoystickButton(joystick1, 9).whileHeld(
-       new StartEndCommand(
+    new JoystickButton(joystick1, 9).whenPressed(
+       new InstantCommand(
          ()-> climber.climberAux(SmartDashboard.getNumber("Climber Target Height:",0)),
-         ()->climber.stopClimb(), climber
+         climber
         )
      );
     new JoystickButton(joystick1, 10).whenPressed(

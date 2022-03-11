@@ -78,8 +78,8 @@ public class Climber extends SubsystemBase{
 		rightClimber.configSensorTerm(SensorTerm.Sum1, FeedbackDevice.CTRE_MagEncoder_Relative, Delay.kTimeoutMs);	// Quadrature Encoder of current Talon
 		
 		/* Setup Difference signal to be used for Turn */
-		rightClimber.configSensorTerm(SensorTerm.Diff1, FeedbackDevice.RemoteSensor0, Delay.kTimeoutMs);
-		rightClimber.configSensorTerm(SensorTerm.Diff0, FeedbackDevice.CTRE_MagEncoder_Relative, Delay.kTimeoutMs);
+		rightClimber.configSensorTerm(SensorTerm.Diff0, FeedbackDevice.RemoteSensor0, Delay.kTimeoutMs);
+		rightClimber.configSensorTerm(SensorTerm.Diff1, FeedbackDevice.CTRE_MagEncoder_Relative, Delay.kTimeoutMs);
 		
 		/* Configure Sum [Sum of both QuadEncoders] to be used for Primary PID Index */
 		rightClimber.configSelectedFeedbackSensor(	FeedbackDevice.SensorSum, 
@@ -87,7 +87,7 @@ public class Climber extends SubsystemBase{
 													Delay.kTimeoutMs);
 		
 		/* Scale Feedback by 0.5 to half the sum of Distance */
-		rightClimber.configSelectedFeedbackCoefficient(	0.5, 						// Coefficient
+		rightClimber.configSelectedFeedbackCoefficient(	0, 						// Coefficient
 														PIDConstants.kPIDprimary,		// PID Slot of Source 
 														Delay.kTimeoutMs);		// Configuration Timeout
 		
@@ -100,6 +100,10 @@ public class Climber extends SubsystemBase{
 		rightClimber.configSelectedFeedbackCoefficient(	1,
 														PIDConstants.kPIDturn, 
 														Delay.kTimeoutMs);
+
+													// 	rightClimber.configSelectedFeedbackSensor(	FeedbackDevice.QuadEncoder,				// Local Feedback Source
+													// PIDConstants.kPIDprimary,					// PID Slot for Source [0, 1]
+													// Delay.kTimeoutMs);					// Configuration Timeout
 		
 		/* Configure output and sensor direction */
 		leftClimber.setSensorPhase(false);
@@ -156,7 +160,8 @@ public class Climber extends SubsystemBase{
 		 * false means talon's local output is PID0 + PID1, and other side Talon is PID0 - PID1
 		 * true means talon's local output is PID0 - PID1, and other side Talon is PID0 + PID1
 		 */
-		rightClimber.configAuxPIDPolarity(false, Delay.kTimeoutMs);
+		rightClimber.configAuxPIDPolarity(true, Delay.kTimeoutMs);
+		leftClimber.configAuxPIDPolarity(false, Delay.kTimeoutMs);
 
 		/* Determine which slot affects which PID */
 		rightClimber.selectProfileSlot(PIDConstants.kSlot0, PIDConstants.kPIDprimary);
@@ -170,21 +175,22 @@ public class Climber extends SubsystemBase{
 
 		//Configure soft limits to prevent lift from pulling / pushing too far
 		//NOTE: MAY NEED TO FIX FOR rightClimber!!!! USES ACTIVE SENSOR (REMOTE SENSOR) I THINK
-		rightClimber.configForwardSoftLimitThreshold(10000,Delay.kTimeoutMs);
-		rightClimber.configReverseSoftLimitThreshold(0,Delay.kTimeoutMs);
+		// rightClimber.configForwardSoftLimitThreshold(10000,Delay.kTimeoutMs);
+		// rightClimber.configReverseSoftLimitThreshold(0,Delay.kTimeoutMs);
 		rightClimber.configForwardSoftLimitEnable(false,Delay.kTimeoutMs);
 		rightClimber.configReverseSoftLimitEnable(false,Delay.kTimeoutMs);
-		leftClimber.configForwardSoftLimitThreshold(10000,Delay.kTimeoutMs);
-		leftClimber.configReverseSoftLimitThreshold(0,Delay.kTimeoutMs);
+		// leftClimber.configForwardSoftLimitThreshold(10000,Delay.kTimeoutMs);
+		// leftClimber.configReverseSoftLimitThreshold(0,Delay.kTimeoutMs);
 		leftClimber.configForwardSoftLimitEnable(false,Delay.kTimeoutMs);
 		leftClimber.configReverseSoftLimitEnable(false,Delay.kTimeoutMs);
 
 		//define the acceleration and cruise Velocity of the lift
 		rightClimber.configMotionAcceleration(1000);
-		rightClimber.configMotionCruiseVelocity(100);
+		rightClimber.configMotionCruiseVelocity(1000);
+		leftClimber.follow(rightClimber);
        
         /* Initialize */
-        setClimbZero();
+        // setClimbZero();
         //--------------------CAN SPARK MAX SETUP-----------------
         //restore factory defaults to prevent unexpected behavior
         rightRotaryArt.restoreFactoryDefaults();
@@ -222,9 +228,12 @@ public class Climber extends SubsystemBase{
 	//Uses PID and AUX PID to move both climbers to a position while staying relatively at the same height
     public void climberAux(double position)
     { 
-		leftClimber.follow(rightClimber);
-        rightClimber.set(ControlMode.Position, position,DemandType.AuxPID,rightClimber.getSelectedSensorPosition(1));
+		
+        rightClimber.set(ControlMode.MotionMagic,0,DemandType.AuxPID,0);
+		leftClimber.follow(rightClimber,FollowerType.AuxOutput1);
     }
+
+	// public void climberPID
 
 	//Runs lift at a given power
     public void setClimbPower(double leftpower,double rightpower){
@@ -292,8 +301,9 @@ public class Climber extends SubsystemBase{
 	public void getArmPos()
 	{
 		SmartDashboard.putNumber("arm Position",REncoder.getPosition());
-		SmartDashboard.putNumber("ClimbPOS",rightClimber.getSelectedSensorPosition());
-		SmartDashboard.putNumber("ClimbPOS2",leftClimber.getSelectedSensorPosition());
+		SmartDashboard.putNumber("rightFirstClimb",rightClimber.getSelectedSensorPosition(0));
+		SmartDashboard.putNumber("rightSecondClimb",rightClimber.getSelectedSensorPosition(1));
+		SmartDashboard.putNumber("leftClimb",leftClimber.getSelectedSensorPosition());
 	}
 
 	//move motors until they reach limit switches

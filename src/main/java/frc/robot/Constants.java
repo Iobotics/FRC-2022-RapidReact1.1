@@ -36,7 +36,7 @@ public final class Constants {
     }
 
     public static final class Delay{
-        public static final int kTimeoutMs = 0;
+        public static final int kTimeoutMs = 30;
     }
 
     public static final class OIConstants{
@@ -74,9 +74,9 @@ public final class Constants {
         public static final int kRemoteFilter0 = 0;
         public static final int kRemoteFilter1 = 1;
         //PID GAINS 	                                      kP     kI   kD   kF   Iz  PeakOut 
-        public final static Gains kGainsDistanc = new Gains( 1.0, 0.0, 0.0, 0.0, 0,  1.00 );
-        public final static Gains kGainsTurning = new Gains( 1.0, 0.0, 0.0, 0.0, 0,  1.00 );
-        public final static Gains kGainsRotArm = new Gains( .0005, 0.0, 0.0, 0.0, 0,  1.00 );
+        public final static Gains kGainsDistanc = new Gains( .1, 0.0, 0.0, 0.0, 0,  1.00 );
+        public final static Gains kGainsTurning = new Gains( .1, 0.0, 0.0, 0.0, 0,  1.00 );
+        public final static Gains kGainsRotArm = new Gains( .0002, 0.0, 0.0, 0.0, 0,  1.00 );
 
         public final static int kSlot0 = 0;
         public final static int kSlot1 = 1;
