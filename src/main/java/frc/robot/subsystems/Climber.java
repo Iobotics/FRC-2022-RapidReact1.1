@@ -87,7 +87,7 @@ public class Climber extends SubsystemBase{
 													Delay.kTimeoutMs);
 		
 		/* Scale Feedback by 0.5 to half the sum of Distance */
-		rightClimber.configSelectedFeedbackCoefficient(	0, 						// Coefficient
+		rightClimber.configSelectedFeedbackCoefficient(	.5, 						// Coefficient
 														PIDConstants.kPIDprimary,		// PID Slot of Source 
 														Delay.kTimeoutMs);		// Configuration Timeout
 		
@@ -107,9 +107,9 @@ public class Climber extends SubsystemBase{
 		
 		/* Configure output and sensor direction */
 		leftClimber.setSensorPhase(false);
-		leftClimber.setInverted(false);
+		// leftClimber.setInverted(false);
 		rightClimber.setSensorPhase(true);
-		rightClimber.setInverted(false);
+		// rightClimber.setInverted(false);
 		
 		
 		/* Set status frame periods to ensure we don't have stale data */
@@ -119,8 +119,8 @@ public class Climber extends SubsystemBase{
 		leftClimber.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5, Delay.kTimeoutMs);
 
 		/* Configure neutral deadband */
-		rightClimber.configNeutralDeadband(PIDConstants.kNeutralDeadband, Delay.kTimeoutMs);
-		leftClimber.configNeutralDeadband(PIDConstants.kNeutralDeadband, Delay.kTimeoutMs);
+		// rightClimber.configNeutralDeadband(PIDConstants.kNeutralDeadband, Delay.kTimeoutMs);
+		// leftClimber.configNeutralDeadband(PIDConstants.kNeutralDeadband, Delay.kTimeoutMs);
 
 		/* Max out the peak output (for all modes).  
 		 * However you can limit the output of a given PID object with configClosedLoopPeakOutput().
@@ -160,8 +160,8 @@ public class Climber extends SubsystemBase{
 		 * false means talon's local output is PID0 + PID1, and other side Talon is PID0 - PID1
 		 * true means talon's local output is PID0 - PID1, and other side Talon is PID0 + PID1
 		 */
-		rightClimber.configAuxPIDPolarity(true, Delay.kTimeoutMs);
-		leftClimber.configAuxPIDPolarity(false, Delay.kTimeoutMs);
+		rightClimber.configAuxPIDPolarity(false);
+		// leftClimber.configAuxPIDPolarity(false, Delay.kTimeoutMs);
 
 		/* Determine which slot affects which PID */
 		rightClimber.selectProfileSlot(PIDConstants.kSlot0, PIDConstants.kPIDprimary);
@@ -170,6 +170,10 @@ public class Climber extends SubsystemBase{
 		//Configure Limit Switches to prevent lift from pulling too far
 		rightClimber.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
 		leftClimber.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
+		rightClimber.configSoftLimitDisableNeutralOnLOS(true,Delay.kTimeoutMs);
+		leftClimber.configSoftLimitDisableNeutralOnLOS(true,Delay.kTimeoutMs);
+		rightClimber.configClearPositionOnLimitR(true, Delay.kTimeoutMs);
+		leftClimber.configClearPositionOnLimitR(true, Delay.kTimeoutMs);
 		// rightClimber.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
 		// leftClimber.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
 
@@ -186,8 +190,8 @@ public class Climber extends SubsystemBase{
 
 		//define the acceleration and cruise Velocity of the lift
 		rightClimber.configMotionAcceleration(1000);
-		rightClimber.configMotionCruiseVelocity(1000);
-		leftClimber.follow(rightClimber);
+		rightClimber.configMotionCruiseVelocity(100);
+		// leftClimber.follow(rightClimber);
        
         /* Initialize */
         // setClimbZero();
@@ -229,7 +233,7 @@ public class Climber extends SubsystemBase{
     public void climberAux(double position)
     { 
 		
-        rightClimber.set(ControlMode.MotionMagic,0,DemandType.AuxPID,0);
+        rightClimber.set(ControlMode.Position,0,DemandType.AuxPID,0);
 		leftClimber.follow(rightClimber,FollowerType.AuxOutput1);
     }
 
