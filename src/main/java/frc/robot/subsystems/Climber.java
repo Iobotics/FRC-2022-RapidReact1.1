@@ -60,6 +60,12 @@ public class Climber extends SubsystemBase{
 		/* Set Neutral Mode */
 		leftClimber.setNeutralMode(NeutralMode.Brake);
 		rightClimber.setNeutralMode(NeutralMode.Brake);
+
+		/* Configure output and sensor direction */
+		rightClimber.setInverted(false);
+		leftClimber.setInverted(false);
+		leftClimber.setSensorPhase(true);
+		rightClimber.setSensorPhase(false);
 		
 		/** Feedback Sensor Configuration */
 		/* Configure the left Talon's selected sensor as local QuadEncoder */
@@ -105,11 +111,7 @@ public class Climber extends SubsystemBase{
 													// PIDConstants.kPIDprimary,					// PID Slot for Source [0, 1]
 													// Delay.kTimeoutMs);					// Configuration Timeout
 		
-		/* Configure output and sensor direction */
-		leftClimber.setSensorPhase(false);
-		// leftClimber.setInverted(false);
-		rightClimber.setSensorPhase(true);
-		// rightClimber.setInverted(false);
+		
 		
 		
 		/* Set status frame periods to ensure we don't have stale data */
@@ -160,7 +162,7 @@ public class Climber extends SubsystemBase{
 		 * false means talon's local output is PID0 + PID1, and other side Talon is PID0 - PID1
 		 * true means talon's local output is PID0 - PID1, and other side Talon is PID0 + PID1
 		 */
-		rightClimber.configAuxPIDPolarity(false);
+		rightClimber.configAuxPIDPolarity(true);
 		// leftClimber.configAuxPIDPolarity(false, Delay.kTimeoutMs);
 
 		/* Determine which slot affects which PID */
@@ -170,10 +172,10 @@ public class Climber extends SubsystemBase{
 		//Configure Limit Switches to prevent lift from pulling too far
 		rightClimber.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
 		leftClimber.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
-		rightClimber.configSoftLimitDisableNeutralOnLOS(true,Delay.kTimeoutMs);
-		leftClimber.configSoftLimitDisableNeutralOnLOS(true,Delay.kTimeoutMs);
-		rightClimber.configClearPositionOnLimitR(true, Delay.kTimeoutMs);
-		leftClimber.configClearPositionOnLimitR(true, Delay.kTimeoutMs);
+		rightClimber.configSoftLimitDisableNeutralOnLOS(false,Delay.kTimeoutMs);
+		leftClimber.configSoftLimitDisableNeutralOnLOS(false,Delay.kTimeoutMs);
+		rightClimber.configClearPositionOnLimitR(false, Delay.kTimeoutMs);
+		leftClimber.configClearPositionOnLimitR(false, Delay.kTimeoutMs);
 		// rightClimber.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
 		// leftClimber.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
 
@@ -190,7 +192,7 @@ public class Climber extends SubsystemBase{
 
 		//define the acceleration and cruise Velocity of the lift
 		rightClimber.configMotionAcceleration(1000);
-		rightClimber.configMotionCruiseVelocity(100);
+		rightClimber.configMotionCruiseVelocity(500);
 		// leftClimber.follow(rightClimber);
        
         /* Initialize */
@@ -224,16 +226,19 @@ public class Climber extends SubsystemBase{
     }
 
     //use PID to move arm to artTarget
+	//(inches) * units / rot * rot/inch
+	//arm motion: turns per rev: 4096, rot/inch: (1/(((diameter/2)^2)*PI)), diameter = .787in
     public void artSetPoint(double artTarget)
     {
-        rightCanController.setReference(artTarget, CANSparkMax.ControlType.kSmartMotion,0);
+		rightCanController.setReference(artTarget, CANSparkMax.ControlType.kSmartMotion,0);
     }
 
 	//Uses PID and AUX PID to move both climbers to a position while staying relatively at the same height
-    public void climberAux(double position)
+    public void climberAux(double inches)
     { 
-		
-        rightClimber.set(ControlMode.Position,0,DemandType.AuxPID,0);
+		double encPerIn = (double)ClimberConstants.kClimberCountsPerRev * (1.0/(java.lang.Math.PI*ClimberConstants.kSpoolDiameter));
+		SmartDashboard.putNumber("circumfrence:",(java.lang.Math.PI*ClimberConstants.kSpoolDiameter/2));
+        rightClimber.set(ControlMode.MotionMagic,inches * encPerIn,DemandType.AuxPID,0);
 		leftClimber.follow(rightClimber,FollowerType.AuxOutput1);
     }
 
@@ -244,6 +249,7 @@ public class Climber extends SubsystemBase{
         leftClimber.set(ControlMode.PercentOutput, leftpower);
         rightClimber.set(ControlMode.PercentOutput, rightpower);
     }
+	
 
 	//----------ARM FUNCTIONS--------
 
@@ -255,6 +261,11 @@ public class Climber extends SubsystemBase{
     {
         rightCanController.setReference(degree * (ClimberConstants.kBeltGearRatio)*((double)(ClimberConstants.kArmCountsPerRev)/360),CANSparkMax.ControlType.kSmartMotion,PIDConstants.kPIDprimary);
     }
+
+	public void armClimb()
+	{
+		// double degree = 
+	}
 
     //zero's arm position - should be done when the arm is pointed DIRECTLY UP.
     public void zeroArm(){

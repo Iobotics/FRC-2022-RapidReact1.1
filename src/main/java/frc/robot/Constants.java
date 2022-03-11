@@ -29,8 +29,8 @@ public final class Constants {
         public static final int kshootLeft = 8;
         public static final int kshootRight = 7;
         public static final int karm = 0;
-        public static final int kLeftClimber = 5;
-        public static final int kRightClimber = 6;
+        public static final int kLeftClimber = 6;
+        public static final int kRightClimber = 5;
         public static final int kLeftRotary = 9;
         public static final int kRightRotary = 4;
     }
@@ -65,6 +65,8 @@ public final class Constants {
     public static final class ClimberConstants{
         public static final int kArmCountsPerRev = 1680;
         public static final double kBeltGearRatio = (24.0/60.0);
+        public static final int kClimberCountsPerRev = 4096;
+        public static final double kSpoolDiameter = .88;
     }
 
     public static final class PIDConstants{
@@ -74,8 +76,8 @@ public final class Constants {
         public static final int kRemoteFilter0 = 0;
         public static final int kRemoteFilter1 = 1;
         //PID GAINS 	                                      kP     kI   kD   kF   Iz  PeakOut 
-        public final static Gains kGainsDistanc = new Gains( 0.0, 0.0, 0.0, 0.0, 0,  1.00 );
-        public final static Gains kGainsTurning = new Gains( 1.0, 0.0, 0.0, 0.0, 0,  1.00 );
+        public final static Gains kGainsDistanc = new Gains( 0.7, 0.0, 0.0, 0.0, 0,  1.00 );
+        public final static Gains kGainsTurning = new Gains( .7, 0.0, 0.0, 0.0, 0,  1.00 );
         public final static Gains kGainsRotArm = new Gains( .0002, 0.0, 0.0, 0.0, 0,  1.00 );
 
         public final static int kSlot0 = 0;
