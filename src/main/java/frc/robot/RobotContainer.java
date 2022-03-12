@@ -177,8 +177,10 @@ public class RobotContainer {
     );
     
     new JoystickButton(joystick1,5).whenPressed(
-      new InstantCommand(
-        ()-> climber.armPidVal(SmartDashboard.getNumber("PVal", PIDConstants.kGainsRotArm.kP),SmartDashboard.getNumber("IVal", PIDConstants.kGainsRotArm.kI),SmartDashboard.getNumber("DVal", PIDConstants.kGainsRotArm.kD)), climber)
+      new RunCommand(
+        ()-> climber.armClimb(),
+        climber
+      )
     );
     new JoystickButton(joystick1,6).whenPressed(
       new InstantCommand(

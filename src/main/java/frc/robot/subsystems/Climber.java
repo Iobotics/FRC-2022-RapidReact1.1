@@ -213,8 +213,8 @@ public class Climber extends SubsystemBase{
         rightRotaryArt.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse,false);
 
         rightCanController.setOutputRange(-1, 1);
-        rightCanController.setSmartMotionMaxVelocity(100000,0);
-        rightCanController.setSmartMotionMaxAccel(200000, 0);
+        rightCanController.setSmartMotionMaxVelocity(1600000,0);
+        rightCanController.setSmartMotionMaxAccel(800000, 0);
         //set PID values
         rightCanController.setP(PIDConstants.kGainsRotArm.kP);
         rightCanController.setI(PIDConstants.kGainsRotArm.kI);
@@ -259,12 +259,21 @@ public class Climber extends SubsystemBase{
     //toward the front of bot = forward, so positive degree = down on the bot
     public void armDeg(double degree)
     {
-        rightCanController.setReference(degree * (ClimberConstants.kBeltGearRatio)*((double)(ClimberConstants.kArmCountsPerRev)/360),CANSparkMax.ControlType.kSmartMotion,PIDConstants.kPIDprimary);
+        rightCanController.setReference(degree * (((ClimberConstants.kBeltGearRatio)*(double)(ClimberConstants.kArmCountsPerRev))/360),CANSparkMax.ControlType.kSmartMotion,PIDConstants.kPIDprimary);
     }
 
 	public void armClimb()
 	{
-		// double degree = 
+		double encPerIn = (double)ClimberConstants.kClimberCountsPerRev * (1.0/(java.lang.Math.PI*ClimberConstants.kSpoolDiameter));
+		double a = 28.5;
+		double b = 40.0;
+		double c = 38.5 + rightClimber.getSelectedSensorPosition(0) / encPerIn;
+		double radianTarget = java.lang.Math.acos((java.lang.Math.pow(a,2)-java.lang.Math.pow(b,2)-java.lang.Math.pow(c,2))/(-2*b*c));
+		SmartDashboard.putNumber("curent Inches:",c);
+		SmartDashboard.putNumber("Raidan Target:",radianTarget);
+		double degreeTarget = radianTarget * (180.0/java.lang.Math.PI);
+		SmartDashboard.putNumber("Degree Target:",degreeTarget);
+		armDeg(-degreeTarget);
 	}
 
     //zero's arm position - should be done when the arm is pointed DIRECTLY UP.
