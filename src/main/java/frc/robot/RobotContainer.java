@@ -48,22 +48,16 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
-    SmartDashboard.putNumber("Art Target Position:",0);
-    SmartDashboard.putNumber("Shooter Arm Position", 0);
-    SmartDashboard.putNumber("Distance",10);
-    SmartDashboard.putNumber("P",0);
-    SmartDashboard.putNumber("I",0);
-    SmartDashboard.putNumber("D",0);
-    SmartDashboard.putNumber("AutoDrive",0);
-    SmartDashboard.getNumber("Verks",2438);
-    
-    
-    drivetrain.setDefaultCommand(new RunCommand(
-      () -> drivetrain.setTank(joystick1.getY(), joystick2.getY()), drivetrain));
-    // Configure the button bindings
-    configureButtonBindings();
 
-
+    SmartDashboard.putNumber("Drivetrain Target (in):", 0);
+    
+    // Configure drivetrain to run Joystick control by default.
+    drivetrain.setDefaultCommand(
+      new RunCommand(
+        () -> drivetrain.setTank(joystick1.getY(), joystick2.getY()),
+        drivetrain
+      )
+    );
     
   }
 
@@ -74,8 +68,6 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-
-
 
     new JoystickButton(joystick1, 1).whileHeld(
       // new ParallelCommandGroup(
@@ -116,8 +108,8 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     return new SequentialCommandGroup(
-        new AutoDrive(drivetrain, SmartDashboard.getNumber("TARGETGOTO:",0)));
-
+      new AutoDrive(drivetrain, SmartDashboard.getNumber("Drivetrain Target (in):",0))
+    );
   }
 }
 
