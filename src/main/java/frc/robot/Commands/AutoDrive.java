@@ -34,7 +34,6 @@ public class AutoDrive extends CommandBase {
 
     drivetrain.stop();
     drivetrain.motionMagic(distance, 4);
-    SmartDashboard.putNumber("TARGETGOTO:",0);
 
   }
 
@@ -54,7 +53,6 @@ public class AutoDrive extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
-    // return drivetrain.isTargetAchieved(distance, 10);
+    return drivetrain.isTargetAchieved(distance, 50);
   }
 }
