@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Commands.AutoDrive;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Drivetrain;
@@ -53,6 +54,9 @@ public class RobotContainer {
     SmartDashboard.putNumber("P",0);
     SmartDashboard.putNumber("I",0);
     SmartDashboard.putNumber("D",0);
+    SmartDashboard.putNumber("AutoDrive",0);
+    SmartDashboard.getNumber("Verks",2438);
+    
     // Configure the button bindings
     drivetrain.setDefaultCommand(new RunCommand(
       () -> drivetrain.setTank(joystick1.getY(), joystick2.getY()), drivetrain));
@@ -79,46 +83,46 @@ public class RobotContainer {
     // );
 
     new JoystickButton(joystick1, 1).whileHeld(
-      new ParallelCommandGroup(
+      // new ParallelCommandGroup(
+      //   new StartEndCommand(
+      //     ()-> shooter.setPower(.3, .3),
+      //     ()-> shooter.stopWheels(), shooter
+      //   ),
         new StartEndCommand(
-          ()-> shooter.setPower(.3, .3),
-          ()-> shooter.stopWheels(), shooter
-        ),
-        new StartEndCommand(
-          ()-> intake.setPower(-.8),
+          ()-> intake.setPower(joystick1.getZ()),
           ()-> intake.stop(), intake
-      )
+      // )
     )
     );
 
-    new JoystickButton(joystick1, 2).whileHeld(
-      new InstantCommand(
-        ()->shooter.setArmPosition(SmartDashboard.getNumber("Arm Articulate",0)), 
-         shooter
-      )
-    );
+    // new JoystickButton(joystick1, 2).whileHeld(
+    //   new InstantCommand(
+    //     ()->shooter.setArmPosition(SmartDashboard.getNumber("Arm Articulate",0)), 
+    //      shooter
+    //   )
+    // );
 
-    new JoystickButton(joystick2,1).whileHeld(
-      new StartEndCommand(
-        ()->shooter.setPower(-.9,-.9),
-        ()->shooter.stopWheels(),
-        shooter
-      )
-    );
+    // new JoystickButton(joystick2,1).whileHeld(
+    //   new StartEndCommand(
+    //     ()->shooter.setPower(-.9,-.9),
+    //     ()->shooter.stopWheels(),
+    //     shooter
+    //   )
+    // );
 
-    new JoystickButton(joystick2, 2).whileHeld(
-      new StartEndCommand(
-        ()->shooter.extendPneumatic(true),
-        ()->shooter.extendPneumatic(false),
-        shooter
-      )
-    );
-    new JoystickButton(joystick1, 6).whileHeld(
-      new InstantCommand(
-        ()->shooter.shooterRefresh(),
-        shooter
-      )
-    );
+    // new JoystickButton(joystick2, 2).whileHeld(
+    //   new StartEndCommand(
+    //     ()->shooter.extendPneumatic(true),
+    //     ()->shooter.extendPneumatic(false),
+    //     shooter
+    //   )
+    // );
+    // new JoystickButton(joystick1, 6).whileHeld(
+    //   new InstantCommand(
+    //     ()->shooter.shooterRefresh(),
+    //     shooter
+    //   )
+    // );
     
     // new JoystickButton(joystick1, 5).whileHeld(
     //   new StartEndCommand(
@@ -156,22 +160,10 @@ public class RobotContainer {
    */
   
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    // new SequentialCommandGroup(
-    //   new RunCommand(
-    //     ()-> drivetrain.motionMagic(1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
-    //     drivetrain
-    //   )
-    //     ,
-    // new StartEndCommand(
-    //   ()-> drivetrain.motionMagic(-1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
-    //   ()-> drivetrain.stop(),drivetrain
-    //   )
-    //   );
-    SmartDashboard.putBoolean("AUTOFINISH", false);
-    return null;
+    return new SequentialCommandGroup(
+        new AutoDrive(drivetrain, SmartDashboard.getNumber("TARGETGOTO:",0)));
   }
-  }
+}
 
   
    
