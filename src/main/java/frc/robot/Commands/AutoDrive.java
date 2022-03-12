@@ -47,7 +47,6 @@ public class AutoDrive extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    drivetrain.config();
     drivetrain.stop();
     SmartDashboard.putNumber("didrun",7);
   }
