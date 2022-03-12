@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.subsystems.Limelight;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -49,7 +50,7 @@ public class RobotContainer {
   private final Joystick joystick1 = new Joystick(OIConstants.kJoystick1);
   private final Joystick joystick2 = new Joystick(OIConstants.kJoystick2);
 
-
+  private final Limelight limelight = new Limelight();
   public final Shooter shooter = new Shooter();
 
   private final Intake intake = new Intake();
@@ -102,7 +103,11 @@ public class RobotContainer {
       )
       )
     );
-    
+    new JoystickButton(joystick1, 7).whenPressed(
+      new InstantCommand(
+        ()-> limelight.outputs()
+      )
+    );
 
     new JoystickButton(joystick1, 2).whileHeld(
       new StartEndCommand(
