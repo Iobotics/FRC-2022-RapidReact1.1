@@ -29,12 +29,11 @@ public final class Constants {
         public static final int kshootLeft = 8;
         public static final int kshootRight = 7;
         public static final int karm = 11;
-        public static final int kLeftClimber = 5;
-        public static final int kRightClimber = 6;
-        public static final int kLeftRotary = 9;
-        public static final int kRightRotary = 10;
-    }
 
+         //intake devices(motors)
+         public static final int kSpinner = 12;
+    }
+  
     public static final class Delay{
         public static final int kTimeoutMs = 30;
     }
@@ -45,7 +44,7 @@ public final class Constants {
     }
 
     public static final class DrivetrainConstants{
-        public static final double kP = 0.001;
+        public static final double kP = 0.005;
         public static final double kI = 0;
         public static final double kD = 0;
         public static final double kF = 0;
@@ -57,7 +56,7 @@ public final class Constants {
         public static final int kDoubleSolenoidLeftSlot = 0;
         public static final int kDoubleSolenoidRightSlot = 1;
         /* 	                                    			  kP   kI   kD   kF   Iz  PeakOut */
-        public static final Gains kShooterGains = new Gains( 1.0, 0.0,  0.0, 0.1, 0,  1 );
+        public static final Gains kShooterGains = new Gains( 5.0, 0.0,  0.0, 0.0, 0,  1 );
         public static final int kSlot0 = 0;
         public static final int kPIDprimary = 0;
     }

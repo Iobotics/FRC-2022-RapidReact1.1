@@ -7,9 +7,12 @@ package frc.robot.subsystems;
 
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.revrobotics.AnalogInput;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -40,7 +43,7 @@ public class Shooter extends SubsystemBase{
 
         //------Double Solenoid setup------
         //initalize the solenoid to start in the Forward Position
-        pitchSolenoid.set(kForward);
+        pitchSolenoid.set(kReverse);
 
         //-----Shooter Direction/arm setup---
         //make sure arm is powered off
@@ -51,7 +54,7 @@ public class Shooter extends SubsystemBase{
 
         //Set Neutral Mode
         arm.setNeutralMode(NeutralMode.Brake);
-        
+
         //PID SETUP CONFIGURATION
         //configure Potenientometer (analog input) as PID feedback
         arm.configSelectedFeedbackSensor(FeedbackDevice.Analog,
@@ -76,11 +79,18 @@ public class Shooter extends SubsystemBase{
         arm.configClosedLoopPeriod(ShooterConstants.kSlot0, closedLoopTimeMs);
 
         //configure acceleration and cruise velocity
-        arm.configMotionAcceleration(100);
-        arm.configMotionCruiseVelocity(30);
-
+        arm.configMotionAcceleration(1000);
+        arm.configMotionCruiseVelocity(1000);
+        
         //select the PID Slot to be used for primary PID loop
         arm.selectProfileSlot(ShooterConstants.kSlot0, ShooterConstants.kPIDprimary);
+
+        //enable soft limits
+//         arm.configForwardSoftLimitThreshold(250);
+//         arm.configReverseSoftLimitThreshold(60);
+
+//         arm.configForwardSoftLimitEnable(true);
+//         arm.configReverseSoftLimitEnable(true);
     }
 
     public void getPosition() 
@@ -89,7 +99,6 @@ public class Shooter extends SubsystemBase{
         shootRight.follow(shootLeft);
     }    
 
-
     public void setPower(double leftPower, double rightPower){
         shootLeft.set(ControlMode.PercentOutput, leftPower);
         shootRight.set(ControlMode.PercentOutput, rightPower);
@@ -97,12 +106,36 @@ public class Shooter extends SubsystemBase{
 
     //Aim the shooter using PID with the Potentiometer
     public void setArmPosition(double armPosition){
-        arm.set(ControlMode.MotionMagic, armPosition);
+        int kMeasuredPosHorizontal = 291;
+        double kTicksPerDegree = (1023/10)*(170.0/20.0);
+        int currentPos = (int)arm.getSelectedSensorPosition();
+        double degrees = (currentPos - kMeasuredPosHorizontal) / kTicksPerDegree;
+        double radians = java.lang.Math.toRadians(degrees);
+        double cosineScalar = java.lang.Math.cos(radians);
+
+        double maxGravityFF = -.1;
+        arm.set(ControlMode.MotionMagic, armPosition,DemandType.ArbitraryFeedForward,maxGravityFF * cosineScalar);
+        SmartDashboard.putNumber("FEEDFORWARD:",cosineScalar);
+    }
+
+    //170 - big gear
+    //30 - motor gear
+    //20
+    // horizonal position - current posiiton
+    // (potentiometer ticks/rotations)(ratio of pot gear to motor gear)(ratio of motor gear to arm gear)
+    // (1023/10)
+    //
+
+
+
+    public void setArm(float speed)
+    {
+        arm.set(ControlMode.PercentOutput,speed);
     }
 
     public void stopArm()
     {
-
+        arm.set(ControlMode.PercentOutput,0);
     }
 
     public void stopWheels()
@@ -124,5 +157,9 @@ public class Shooter extends SubsystemBase{
             return;
         }
         pitchSolenoid.set(kReverse);
+    }
+
+    public void shooterRefresh(){
+        SmartDashboard.putNumber("Arm Articulate", arm.getSelectedSensorPosition());
     }
 }

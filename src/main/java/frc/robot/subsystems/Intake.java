@@ -15,19 +15,15 @@ public class Intake extends SubsystemBase {
 
     private TalonSRX spinner;
 
-
-
-    public void intake(){
-        // spinner = new TalonSRX(RobotMap.kSpinner); //CAN 0
-
-
+    public Intake(){
+        spinner = new TalonSRX(RobotMap.kSpinner); //CAN 0
     }
 
     public void setPower(double power){
         spinner.set(ControlMode.PercentOutput, power);
     }
 
-    public Object stop() {
-        return null;
+    public void stop() {
+       spinner.set(ControlMode.PercentOutput,0);
     }
 }
