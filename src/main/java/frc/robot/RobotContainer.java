@@ -58,8 +58,8 @@ public class RobotContainer {
     SmartDashboard.getNumber("Verks",2438);
     
     // Configure the button bindings
-    // drivetrain.setDefaultCommand(new RunCommand(
-    //   () -> drivetrain.setTank(joystick1.getY(), joystick2.getY()), drivetrain));
+    drivetrain.setDefaultCommand(new RunCommand(
+      () -> drivetrain.setTank(joystick1.getY(), joystick2.getY()), drivetrain));
 
     configureButtonBindings();
 
@@ -82,18 +82,18 @@ public class RobotContainer {
     //   )
     // );
 
-    // new JoystickButton(joystick1, 1).whileHeld(
-    //   new ParallelCommandGroup(
-    //     new StartEndCommand(
-    //       ()-> shooter.setPower(.3, .3),
-    //       ()-> shooter.stopWheels(), shooter
-    //     ),
-    //     new StartEndCommand(
-    //       ()-> intake.setPower(-.8),
-    //       ()-> intake.stop(), intake
-    //   )
-    // )
-    // );
+    new JoystickButton(joystick1, 1).whileHeld(
+      // new ParallelCommandGroup(
+      //   new StartEndCommand(
+      //     ()-> shooter.setPower(.3, .3),
+      //     ()-> shooter.stopWheels(), shooter
+      //   ),
+        new StartEndCommand(
+          ()-> intake.setPower(joystick1.getZ()),
+          ()-> intake.stop(), intake
+      // )
+    )
+    );
 
     // new JoystickButton(joystick1, 2).whileHeld(
     //   new InstantCommand(
