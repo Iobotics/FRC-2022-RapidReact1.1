@@ -86,13 +86,18 @@ public class Shooter extends SubsystemBase{
         arm.selectProfileSlot(ShooterConstants.kSlot0, ShooterConstants.kPIDprimary);
 
         //enable soft limits
-        arm.configForwardSoftLimitThreshold(250);
-        arm.configReverseSoftLimitThreshold(60);
+//         arm.configForwardSoftLimitThreshold(250);
+//         arm.configReverseSoftLimitThreshold(60);
 
-        arm.configForwardSoftLimitEnable(true);
-        arm.configReverseSoftLimitEnable(true);
+//         arm.configForwardSoftLimitEnable(true);
+//         arm.configReverseSoftLimitEnable(true);
     }
 
+    public void getPosition() 
+    {
+        SmartDashboard.putNumber("Poteniometer position",arm.getSelectedSensorPosition());
+        shootRight.follow(shootLeft);
+    }    
 
     public void setPower(double leftPower, double rightPower){
         shootLeft.set(ControlMode.PercentOutput, leftPower);

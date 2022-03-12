@@ -15,12 +15,16 @@ package frc.robot;
 public final class Constants {
     public static final class RobotMap{
         
+
         // Drivetrain devices (motors) 
         public static final int kLeftMaster = 1;
         public static final int kLeftSlave = 4;
         public static final int kRightMaster = 3;
         public static final int kRightSlave = 2;
 
+         //intake devices(motors)
+         public static final int kSpinner = 12;
+    
         //shooter devices(motors)
         public static final int kshootLeft = 8;
         public static final int kshootRight = 7;
@@ -28,7 +32,10 @@ public final class Constants {
 
          //intake devices(motors)
          public static final int kSpinner = 12;
-    
+    }
+  
+    public static final class Delay{
+        public static final int kTimeoutMs = 30;
     }
 
     public static final class OIConstants{
@@ -54,9 +61,22 @@ public final class Constants {
         public static final int kPIDprimary = 0;
     }
 
-    public static final class Delay{
-        public static final int kTimeoutMs = 0;
+    
+
+
+
+    public static final class PIDConstants{
+        public static final double kNeutralDeadband = 0.00;
+        public static final int kPIDprimary = 0;
+        public static final int kPIDturn = 1;
+        public static final int kRemoteFilter0 = 0;
+        public static final int kRemoteFilter1 = 1;
+        //PID GAINS 	                                      kP     kI   kD   kF   Iz  PeakOut 
+        public final static Gains kGainsDistanc = new Gains( 1.0, 0.0, 0.0, 0.0, 0,  1.00 );
+        public final static Gains kGainsTurning = new Gains( 1.0, 0.0, 0.0, 0.0, 0,  1.00 );
+        public final static Gains kGainsRotArm = new Gains( .003, 0.0, 0.0, 0.0, 0,  1.00 );
+
+        public final static int kSlot0 = 0;
+        public final static int kSlot1 = 1;
     }
 }
-
-
