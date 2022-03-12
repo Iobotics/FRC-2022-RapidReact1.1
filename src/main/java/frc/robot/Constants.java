@@ -29,9 +29,6 @@ public final class Constants {
         public static final int kshootLeft = 8;
         public static final int kshootRight = 7;
         public static final int karm = 11;
-
-         //intake devices(motors)
-         public static final int kSpinner = 12;
     }
   
     public static final class Delay{
