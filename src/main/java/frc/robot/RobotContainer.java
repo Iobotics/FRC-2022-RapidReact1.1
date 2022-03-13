@@ -51,8 +51,6 @@ public class RobotContainer {
 
   private final Limelight limelight = new Limelight();
   public final Shooter shooter = new Shooter();
-  public final Drivetrain drivetrain = new Drivetrain();
-
   private final Intake intake = new Intake();
 
   //private final Climber climber = new Climber();
@@ -121,7 +119,6 @@ public class RobotContainer {
       new StartEndCommand(
         ()-> intake.setPower(joystick1.getZ()),
         ()-> intake.stop(), intake)
-      )
     );
 
     new JoystickButton(joystick1, 5).whileHeld(
@@ -148,7 +145,7 @@ public class RobotContainer {
     );
   }
    
-  }
+  
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -178,7 +175,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return new SequentialCommandGroup(
         new AutoDrive(drivetrain, SmartDashboard.getNumber("TARGETGOTO:", 0)),
-        new AutoAlign(shooter, SmartDashboard.getNumber("Shooter Arm Position", 300)),
+        new AutoAlign(shooter, SmartDashboard.getNumber("Shooter Arm Position", 0)),
         new AutoShoot(shooter)
 
         
