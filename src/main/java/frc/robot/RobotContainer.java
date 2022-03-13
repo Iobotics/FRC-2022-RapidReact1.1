@@ -51,8 +51,8 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
-    SmartDashboard.putNumber("TARGETGOTO:",0);
-    SmartDashboard.putNumber("Shooter Arm Position", 300);
+    SmartDashboard.putNumber("Drivetrain Target (in):", 0);
+    SmartDashboard.putNumber("Shooter Arm Position", 0);
     SmartDashboard.putNumber("Art Target Position:",0);
     SmartDashboard.putNumber("Distance",10);
     SmartDashboard.putNumber("P",0);
@@ -61,13 +61,10 @@ public class RobotContainer {
     SmartDashboard.putNumber("AutoDrive",0);
     SmartDashboard.getNumber("Verks",2438);
     
-    
-    drivetrain.setDefaultCommand(new RunCommand(
-      () -> drivetrain.setTank(joystick1.getY(), joystick2.getY()), drivetrain));
     // Configure the button bindings
     configureButtonBindings();
 
-    SmartDashboard.putNumber("Drivetrain Target (in):", 0);
+    
     
     // Configure drivetrain to run Joystick control by default.
     drivetrain.setDefaultCommand(
@@ -107,7 +104,7 @@ public class RobotContainer {
     );  
     new JoystickButton(joystick1,6).whenPressed(
       new InstantCommand(
-        ()-> shooter.stop(),shooter
+        ()-> shooter.getArmPosition(),shooter
       )
     );
     new JoystickButton(joystick2, 1).whileHeld(
@@ -126,9 +123,9 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     return new SequentialCommandGroup(
-        new AutoDrive(drivetrain, SmartDashboard.getNumber("TARGETGOTO:", 0)),
-        new AutoAlign(shooter, SmartDashboard.getNumber("Shooter Arm Position", 300)),
-        new AutoShoot(shooter)
+        //new AutoDrive(drivetrain, SmartDashboard.getNumber("Drivetrain Target (in):", 0)),
+        new AutoAlign(shooter, SmartDashboard.getNumber("Shooter Arm Position", 0))
+        //new AutoShoot(shooter)
 
         
         );

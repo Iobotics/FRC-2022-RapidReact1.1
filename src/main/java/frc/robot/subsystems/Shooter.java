@@ -90,8 +90,8 @@ public class Shooter extends SubsystemBase{
         arm.selectProfileSlot(PIDConstants.kSlot0, PIDConstants.kPIDprimary);
 
         //enable soft limits
-        // arm.configForwardSoftLimitThreshold(250);
-        // arm.configReverseSoftLimitThreshold(60);
+        // arm.configForwardSoftLimitThreshold(-90);
+        // arm.configReverseSoftLimitThreshold(0);
 
         // arm.configForwardSoftLimitEnable(true);
         // arm.configReverseSoftLimitEnable(true);
@@ -102,12 +102,12 @@ public class Shooter extends SubsystemBase{
    */
     public void getArmPosition() 
     {
-        SmartDashboard.putNumber("Current Degrees",(arm.getSelectedSensorPosition() - ShooterConstants.kMeasuredPosHorizontal)/ShooterConstants.kTicksPerDegree);
+        SmartDashboard.putNumber("Current Degrees", (arm.getSelectedSensorPosition() - ShooterConstants.kMeasuredPosHorizontal)/ShooterConstants.kTicksPerDegree);
     }    
 
     /**
    * Aim the shooter using PID
-   * @param degrees the target angle (in degrees) assuming horizontal is 0 and vertical is 90
+   * @param degrees the target angle (in degrees) assuming horizontal is 0 and vertical is -90
    */
     public void setArmPosition(double degrees){
         //generate PID FeedFoward Calucations
@@ -120,6 +120,18 @@ public class Shooter extends SubsystemBase{
         
         //set PID to run to a target Degrees
         arm.set(ControlMode.MotionMagic,targetPosition,DemandType.ArbitraryFeedForward,ShooterConstants.kMaxGravityFF * cosineScalar);
+    }
+
+    public boolean isTargetAchieved(double degrees, double error){
+        //generate Target units from degrees
+        double targetPos = ShooterConstants.kMeasuredPosHorizontal - degrees * ShooterConstants.kTicksPerDegree;
+        double allowedError = targetPos - error;
+        if(Math.abs(arm.getSelectedSensorPosition() - targetPos) <= allowedError && arm.getSelectedSensorVelocity() == 0.0 && arm.getActiveTrajectoryVelocity() < 3) {
+            return true;
+          } else{
+            return false;
+          }
+
     }
 
     /**

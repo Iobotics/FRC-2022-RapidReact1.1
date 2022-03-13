@@ -13,7 +13,7 @@ import frc.robot.subsystems.Shooter;
 public class AutoAlign extends CommandBase {
   /** Creates a new AutoAlign. */
   Shooter shooter;
-
+  
   double angle;
 
   public AutoAlign(Shooter shooter, double angle) {
@@ -45,6 +45,6 @@ public class AutoAlign extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return true;
+    return shooter.isTargetAchieved(angle, 1);
   }
 }
