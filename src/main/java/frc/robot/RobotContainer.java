@@ -22,7 +22,16 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
-
+import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.Constants.OIConstants;
+import frc.robot.subsystems.Climber;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.subsystems.Limelight;
+import frc.robot.Commands.LimeAlign;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -40,8 +49,9 @@ public class RobotContainer {
   private final Joystick joystick1 = new Joystick(OIConstants.kJoystick1);
   private final Joystick joystick2 = new Joystick(OIConstants.kJoystick2);
 
-
+  private final Limelight limelight = new Limelight();
   public final Shooter shooter = new Shooter();
+  public final Drivetrain drivetrain = new Drivetrain();
 
   private final Intake intake = new Intake();
 
@@ -93,6 +103,21 @@ public class RobotContainer {
           ()-> shooter.setShootPower(.3),
           ()-> shooter.stopWheels(), shooter
         ),
+
+        new StartEndCommand(
+          ()-> intake.setPower(-.3),
+          ()-> intake.stop(), intake
+      )
+      )
+    );
+    new JoystickButton(joystick1, 7).whenPressed(
+      new InstantCommand(
+        ()-> limelight.outputs()
+      )
+    );
+
+    new JoystickButton(joystick1, 2).whileHeld(
+
       new StartEndCommand(
         ()-> intake.setPower(joystick1.getZ()),
         ()-> intake.stop(), intake)
@@ -115,6 +140,14 @@ public class RobotContainer {
           ()-> shooter.setShootPower(.9),
           ()-> shooter.stop(), shooter)
         );
+
+
+    new JoystickButton(joystick2, 2).whileHeld(
+      new LimeAlign(limelight,drivetrain),
+      SmartDashboard.putNumber("DB/Slider 3", 7)
+    );
+  }
+   
   }
 
   /**
@@ -123,6 +156,24 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   
+  /*public Command getAutonomousCommand() {
+    // An ExampleCommand will run in autonomous
+    new SequentialCommandGroup(
+      new RunCommand(
+        ()-> drivetrain.motionMagic(1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
+        drivetrain
+      )
+        ,
+    new StartEndCommand(
+      ()-> drivetrain.motionMagic(-1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
+      ()-> drivetrain.stop(),drivetrain
+      )
+      );
+    SmartDashboard.putBoolean("AUTOFINISH", false);
+    return null;
+  }*/
+  
+
 
   public Command getAutonomousCommand() {
     return new SequentialCommandGroup(
@@ -134,6 +185,7 @@ public class RobotContainer {
         );
   }
 }
+
 
   
    
