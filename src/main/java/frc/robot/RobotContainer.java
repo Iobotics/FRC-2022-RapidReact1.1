@@ -90,7 +90,7 @@ public class RobotContainer {
     new JoystickButton(joystick1, 1).whileHeld(
       new ParallelCommandGroup(
         new StartEndCommand(
-          ()-> shooter.setPower(.3, .3),
+          ()-> shooter.setShootPower(.3),
           ()-> shooter.stopWheels(), shooter
         ),
       new StartEndCommand(
@@ -112,7 +112,7 @@ public class RobotContainer {
     );
     new JoystickButton(joystick2, 1).whileHeld(
         new StartEndCommand(
-          ()-> shooter.setPower(.9, .9),
+          ()-> shooter.setShootPower(.9),
           ()-> shooter.stop(), shooter)
         );
   }
