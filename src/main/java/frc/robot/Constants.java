@@ -14,25 +14,10 @@ package frc.robot;
  */
 public final class Constants {
     public static final class RobotMap{
-        
-
-        // Drivetrain devices (motors) 
-        public static final int kLeftMaster = 1;
-        public static final int kLeftSlave = 10;
-        public static final int kRightMaster = 3;
-        public static final int kRightSlave = 2;
-
-         //intake devices(motors)
-         public static final int kSpinner = 7;
-    
-        //shooter devices(motors)
-        public static final int kshootLeft = 8;
-        public static final int kshootRight = 7;
-        public static final int karm = 0;
+        //climber devices
         public static final int kLeftClimber = 6;
         public static final int kRightClimber = 5;
-        public static final int kLeftRotary = 9;
-        public static final int kRightRotary = 4;
+        public static final int kRotaryArm = 4;
     }
 
     public static final class Delay{
@@ -44,42 +29,27 @@ public final class Constants {
         public static final int kJoystick2 = 1;
     }
 
-    public static final class DrivetrainConstants{
-        public static final double kP = 0.001;
-        public static final double kI = 0;
-        public static final double kD = 0;
-        public static final double kF = 0;
-        public static final int kGearRatio = 2;
-        public static final int kWheelDiameter = 6;
-    }
-
-    public static final class ShooterConstants{
-        public static final int kDoubleSolenoidLeftSlot = 0;
-        public static final int kDoubleSolenoidRightSlot = 1;
-        /* 	                                    			  kP   kI   kD   kF   Iz  PeakOut */
-        public static final Gains kShooterGains = new Gains( 1.0, 0.0,  0.0, 0.0, 0,  1 );
-        public static final int kSlot0 = 0;
-        public static final int kPIDprimary = 0;
-    }
-
     public static final class ClimberConstants{
+        public static final double kNeutralDeadband = 0.00;
+        public static final double kClimberVelocity = 2.00; //cruise velocity in inches / second
+        public static final double kArmVelocity = 5.00; //cruise velocity in degrees / second
         public static final int kArmCountsPerRev = 1680;
         public static final double kBeltGearRatio = (24.0/60.0) * (18.0/72.0) * (25.0/10.0);
         public static final int kClimberCountsPerRev = 4096;
         public static final double kSpoolDiameter = .88;
+        public static final double kEncoderPerDegree = (((ClimberConstants.kBeltGearRatio)*(double)(ClimberConstants.kArmCountsPerRev))/360);
+        public static final double kEncoderPerInch = (double)ClimberConstants.kClimberCountsPerRev * (1.0/(java.lang.Math.PI*ClimberConstants.kSpoolDiameter));
+        //PID GAINS 	                                      kP   kI   kD   kF  Iz  PeakOut 
+        public final static Gains kGainsDistanc = new Gains( 0.7, 0.0, 0.0, 0.0, 0,  1.00 );
+        public final static Gains kGainsTurning = new Gains( 0.7, .00, 0.0, 0.0, 0,  1.00 );
+        public final static Gains kGainsRotArm = new Gains( .0002, 0.0, 0.0, 0.0, 0,  1.00 );
     }
 
     public static final class PIDConstants{
-        public static final double kNeutralDeadband = 0.00;
         public static final int kPIDprimary = 0;
         public static final int kPIDturn = 1;
         public static final int kRemoteFilter0 = 0;
         public static final int kRemoteFilter1 = 1;
-        //PID GAINS 	                                      kP     kI   kD   kF   Iz  PeakOut 
-        public final static Gains kGainsDistanc = new Gains( 0.7, 0.0, 0.0, 0.0, 0,  1.00 );
-        public final static Gains kGainsTurning = new Gains( 0.7, 0.0, 0.0, 0.0, 0,  1.00 );
-        public final static Gains kGainsRotArm = new Gains( .00002, 0.0, 0.0, 0.0, 0,  1.00 );
-
         public final static int kSlot0 = 0;
         public final static int kSlot1 = 1;
     }

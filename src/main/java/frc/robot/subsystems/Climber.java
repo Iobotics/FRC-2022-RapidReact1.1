@@ -11,12 +11,10 @@ import com.ctre.phoenix.motorcontrol.FollowerType;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.SensorTerm;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.TalonSRXPIDSetConfiguration;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxRelativeEncoder;
@@ -30,24 +28,18 @@ import frc.robot.Constants.Delay;
 import frc.robot.Constants.PIDConstants;
 import frc.robot.Constants.RobotMap;
 
-/** Add your docs here. */
 public class Climber extends SubsystemBase{
     private TalonSRX leftClimber;
     private TalonSRX rightClimber;
-    private CANSparkMax leftRotaryArt;
-    private CANSparkMax rightRotaryArt;
-    private SparkMaxPIDController leftCanController;
-    private SparkMaxPIDController rightCanController;
-    private RelativeEncoder LEncoder;
-    private RelativeEncoder REncoder;
+    private CANSparkMax rotaryArm;
+    private SparkMaxPIDController rotaryCanController;
+    private RelativeEncoder armEncoder;
 
     public Climber() {
-		SmartDashboard.putNumber("Art Target Angle:",0);
         leftClimber = new TalonSRX(RobotMap.kLeftClimber);
         rightClimber = new TalonSRX(RobotMap.kRightClimber);
 
-        leftRotaryArt = new  CANSparkMax(RobotMap.kLeftRotary, MotorType.kBrushless);
-        rightRotaryArt = new  CANSparkMax(RobotMap.kRightRotary, MotorType.kBrushless);
+        rotaryArm = new  CANSparkMax(RobotMap.kRotaryArm, MotorType.kBrushless);
         
         //-------------TALON SETUP-------------------
         rightClimber.set(ControlMode.PercentOutput, 0);
@@ -69,15 +61,19 @@ public class Climber extends SubsystemBase{
 		
 		/** Feedback Sensor Configuration */
 		/* Configure the left Talon's selected sensor as local QuadEncoder */
-		leftClimber.configSelectedFeedbackSensor(	FeedbackDevice.QuadEncoder,				// Local Feedback Source
-													PIDConstants.kPIDprimary,					// PID Slot for Source [0, 1]
-													Delay.kTimeoutMs);					// Configuration Timeout
+		leftClimber.configSelectedFeedbackSensor(	
+			FeedbackDevice.QuadEncoder,				// Local Feedback Source
+			PIDConstants.kPIDprimary,					// PID Slot for Source [0, 1]
+			Delay.kTimeoutMs					// Configuration Timeout
+		);
 
 		/* Configure the Remote Talon's selected sensor as a remote sensor for the right Talon */
-		rightClimber.configRemoteFeedbackFilter(leftClimber.getDeviceID(),					// Device ID of Source
-												RemoteSensorSource.TalonSRX_SelectedSensor,	// Remote Feedback Source
-												PIDConstants.kRemoteFilter0,							// Source number [0, 1]
-												Delay.kTimeoutMs);						// Configuration Timeout
+		rightClimber.configRemoteFeedbackFilter(
+			leftClimber.getDeviceID(),					// Device ID of Source
+			RemoteSensorSource.TalonSRX_SelectedSensor,	// Remote Feedback Source
+			PIDConstants.kRemoteFilter0,							// Source number [0, 1]
+			Delay.kTimeoutMs						// Configuration Timeout
+		);
 		
 		/* Setup Sum signal to be used for Distance */
 		rightClimber.configSensorTerm(SensorTerm.Sum0, FeedbackDevice.RemoteSensor0, Delay.kTimeoutMs);				// Feedback Device of Remote Talon
@@ -88,31 +84,32 @@ public class Climber extends SubsystemBase{
 		rightClimber.configSensorTerm(SensorTerm.Diff1, FeedbackDevice.CTRE_MagEncoder_Relative, Delay.kTimeoutMs);
 		
 		/* Configure Sum [Sum of both QuadEncoders] to be used for Primary PID Index */
-		rightClimber.configSelectedFeedbackSensor(	FeedbackDevice.SensorSum, 
-													PIDConstants.kPIDprimary,
-													Delay.kTimeoutMs);
+		rightClimber.configSelectedFeedbackSensor(	
+			FeedbackDevice.SensorSum, 
+			PIDConstants.kPIDprimary,
+			Delay.kTimeoutMs
+			);
 		
 		/* Scale Feedback by 0.5 to half the sum of Distance */
-		rightClimber.configSelectedFeedbackCoefficient(	.5, 						// Coefficient
-														PIDConstants.kPIDprimary,		// PID Slot of Source 
-														Delay.kTimeoutMs);		// Configuration Timeout
+		rightClimber.configSelectedFeedbackCoefficient(	
+			.5, 						// Coefficient
+			PIDConstants.kPIDprimary,		// PID Slot of Source 
+			Delay.kTimeoutMs         // Configuration Timeout
+			);		
 		
 		/* Configure Difference [Difference between both QuadEncoders] to be used for Auxiliary PID Index */
-		rightClimber.configSelectedFeedbackSensor(	FeedbackDevice.SensorDifference, 
-													PIDConstants.kPIDturn, 
-													Delay.kTimeoutMs);
+		rightClimber.configSelectedFeedbackSensor(	
+			FeedbackDevice.SensorDifference, 
+			PIDConstants.kPIDturn, 
+			Delay.kTimeoutMs
+		);
 		
 		/* Scale the Feedback Sensor using a coefficient */
-		rightClimber.configSelectedFeedbackCoefficient(	1,
-														PIDConstants.kPIDturn, 
-														Delay.kTimeoutMs);
-
-													// 	rightClimber.configSelectedFeedbackSensor(	FeedbackDevice.QuadEncoder,				// Local Feedback Source
-													// PIDConstants.kPIDprimary,					// PID Slot for Source [0, 1]
-													// Delay.kTimeoutMs);					// Configuration Timeout
-		
-		
-		
+		rightClimber.configSelectedFeedbackCoefficient(	
+			1,
+			PIDConstants.kPIDturn, 
+			Delay.kTimeoutMs
+		);
 		
 		/* Set status frame periods to ensure we don't have stale data */
 		rightClimber.setStatusFramePeriod(StatusFrame.Status_12_Feedback1, 20, Delay.kTimeoutMs);
@@ -121,8 +118,8 @@ public class Climber extends SubsystemBase{
 		leftClimber.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5, Delay.kTimeoutMs);
 
 		/* Configure neutral deadband */
-		// rightClimber.configNeutralDeadband(PIDConstants.kNeutralDeadband, Delay.kTimeoutMs);
-		// leftClimber.configNeutralDeadband(PIDConstants.kNeutralDeadband, Delay.kTimeoutMs);
+		rightClimber.configNeutralDeadband(ClimberConstants.kNeutralDeadband, Delay.kTimeoutMs);
+		leftClimber.configNeutralDeadband(ClimberConstants.kNeutralDeadband, Delay.kTimeoutMs);
 
 		/* Max out the peak output (for all modes).  
 		 * However you can limit the output of a given PID object with configClosedLoopPeakOutput().
@@ -133,21 +130,20 @@ public class Climber extends SubsystemBase{
 		rightClimber.configPeakOutputReverse(-1.0, Delay.kTimeoutMs);
 
 		/* FPID Gains for distance servo */
-		rightClimber.config_kP(PIDConstants.kSlot0, PIDConstants.kGainsDistanc.kP, Delay.kTimeoutMs);
-		rightClimber.config_kI(PIDConstants.kSlot0, PIDConstants.kGainsDistanc.kI, Delay.kTimeoutMs);
-		rightClimber.config_kD(PIDConstants.kSlot0, PIDConstants.kGainsDistanc.kD, Delay.kTimeoutMs);
-		// rightClimber.config_kF(PIDConstants.kSlot0, PIDConstants.kGains_Distanc.kF, Delay.kTimeoutMs);
-		// rightClimber.config_IntegralZone(PIDConstants.kSlot0, PIDConstants.kGains_Distanc.kIzone, Delay.kTimeoutMs);
-		// rightClimber.configClosedLoopPeakOutput(PIDConstants.kSlot0, PIDConstants.kGains_Distanc.kPeakOutput, Delay.kTimeoutMs);
+		rightClimber.config_kP(PIDConstants.kSlot0, ClimberConstants.kGainsDistanc.kP, Delay.kTimeoutMs);
+		rightClimber.config_kI(PIDConstants.kSlot0, ClimberConstants.kGainsDistanc.kI, Delay.kTimeoutMs);
+		rightClimber.config_kD(PIDConstants.kSlot0, ClimberConstants.kGainsDistanc.kD, Delay.kTimeoutMs);
+		rightClimber.config_kF(PIDConstants.kSlot0, ClimberConstants.kGainsDistanc.kF, Delay.kTimeoutMs);
+		rightClimber.config_IntegralZone(PIDConstants.kSlot0, ClimberConstants.kGainsDistanc.kIzone, Delay.kTimeoutMs);
+		rightClimber.configClosedLoopPeakOutput(PIDConstants.kSlot0, ClimberConstants.kGainsDistanc.kPeakOutput, Delay.kTimeoutMs);
 
 		/* FPID Gains for turn servo */
-		rightClimber.config_kP(PIDConstants.kSlot1, PIDConstants.kGainsTurning.kP, Delay.kTimeoutMs);
-		rightClimber.config_kI(PIDConstants.kSlot1, PIDConstants.kGainsTurning.kI, Delay.kTimeoutMs);
-		rightClimber.config_kD(PIDConstants.kSlot1, PIDConstants.kGainsTurning.kD, Delay.kTimeoutMs);
-		// rightClimber.config_kF(PIDConstants.kSlot1, PIDConstants.kGains_Turning.kF, Delay.kTimeoutMs);
-		// rightClimber.config_IntegralZone(PIDConstants.kSlot1, PIDConstants.kGains_Turning.kIzone, Delay.kTimeoutMs);
-		// rightClimber.configClosedLoopPeakOutput(PIDConstants.kSlot1, PIDConstants.kGains_Turning.kPeakOutput, Delay.kTimeoutMs);
-			
+		rightClimber.config_kP(PIDConstants.kSlot1, ClimberConstants.kGainsTurning.kP, Delay.kTimeoutMs);
+		rightClimber.config_kI(PIDConstants.kSlot1, ClimberConstants.kGainsTurning.kI, Delay.kTimeoutMs);
+		rightClimber.config_kD(PIDConstants.kSlot1, ClimberConstants.kGainsTurning.kD, Delay.kTimeoutMs);
+		rightClimber.config_kF(PIDConstants.kSlot1, ClimberConstants.kGainsTurning.kF, Delay.kTimeoutMs);
+		rightClimber.config_IntegralZone(PIDConstants.kSlot1, ClimberConstants.kGainsTurning.kIzone, Delay.kTimeoutMs);
+		rightClimber.configClosedLoopPeakOutput(PIDConstants.kSlot1, ClimberConstants.kGainsTurning.kPeakOutput, Delay.kTimeoutMs);
 		/* 1ms per loop.  PID loop can be slowed down if need be.
 		 * For example,
 		 * - if sensor updates are too slow
@@ -163,7 +159,6 @@ public class Climber extends SubsystemBase{
 		 * true means talon's local output is PID0 - PID1, and other side Talon is PID0 + PID1
 		 */
 		rightClimber.configAuxPIDPolarity(true);
-		// leftClimber.configAuxPIDPolarity(false, Delay.kTimeoutMs);
 
 		/* Determine which slot affects which PID */
 		rightClimber.selectProfileSlot(PIDConstants.kSlot0, PIDConstants.kPIDprimary);
@@ -192,37 +187,37 @@ public class Climber extends SubsystemBase{
 
 		//define the acceleration and cruise Velocity of the lift
 		rightClimber.configMotionAcceleration(1000);
-		rightClimber.configMotionCruiseVelocity(500);
-		// leftClimber.follow(rightClimber);
+		rightClimber.configMotionCruiseVelocity(ClimberConstants.kClimberVelocity * ClimberConstants.kEncoderPerInch/10);
        
-        /* Initialize */
-        // setClimbZero();
         //--------------------CAN SPARK MAX SETUP-----------------
         //restore factory defaults to prevent unexpected behavior
-        rightRotaryArt.restoreFactoryDefaults();
-        leftRotaryArt.restoreFactoryDefaults();
+        rotaryArm.restoreFactoryDefaults();
 		
-        leftCanController = leftRotaryArt.getPIDController();
-        rightCanController = rightRotaryArt.getPIDController();
-
-        LEncoder = leftRotaryArt.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor,42);
-        REncoder = rightRotaryArt.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor,42);
+		//setup rotary arm PID Controller and encoder
+        rotaryCanController = rotaryArm.getPIDController();
+        armEncoder = rotaryArm.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor,42);
 
         //enable motor soft limits
-        rightRotaryArt.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward,false);
-        rightRotaryArt.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse,false);
+        rotaryArm.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward,false);
+        rotaryArm.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse,false);
 
-        rightCanController.setOutputRange(-1, 1);
-        rightCanController.setSmartMotionMaxVelocity(1600000,0);
-        rightCanController.setSmartMotionMaxAccel(800000, 0);
+        rotaryCanController.setOutputRange(-1, 1);
+
+		//set max velocity and acceleration. Motion is in rotations / minute
+		//encoder / rot * rot /min
+		//gear rotations/
+		// rot/min = degrees/second * seconds/minute * encoders/degree * encoder / encoder
+		// ClimberConstants.kArmVelocity * 60/1 * ClimberConstants.kEncodersPerDegree * (1680/1)
+        rotaryCanController.setSmartMotionMaxVelocity(800,0);
+			//ClimberConstants.kArmVelocity*ClimberConstants.kEncoderPerDegree,0);
+        rotaryCanController.setSmartMotionMaxAccel(800, 0);
         //set PID values
-        rightCanController.setP(PIDConstants.kGainsRotArm.kP);
-        rightCanController.setI(PIDConstants.kGainsRotArm.kI);
-        rightCanController.setD(PIDConstants.kGainsRotArm.kD);
+        rotaryCanController.setP(ClimberConstants.kGainsRotArm.kP);
+        rotaryCanController.setI(ClimberConstants.kGainsRotArm.kI);
+        rotaryCanController.setD(ClimberConstants.kGainsRotArm.kD);
 
         //left motor follows right
-        leftRotaryArt.follow(rightRotaryArt,true);
-		rightCanController.setFeedbackDevice(REncoder);
+		rotaryCanController.setFeedbackDevice(armEncoder);
     }
 
     //use PID to move arm to artTarget
@@ -230,15 +225,13 @@ public class Climber extends SubsystemBase{
 	//arm motion: turns per rev: 4096, rot/inch: (1/(((diameter/2)^2)*PI)), diameter = .787in
     public void artSetPoint(double artTarget)
     {
-		rightCanController.setReference(artTarget, CANSparkMax.ControlType.kSmartMotion,0);
+		rotaryCanController.setReference(artTarget, CANSparkMax.ControlType.kSmartMotion,0);
     }
 
 	//Uses PID and AUX PID to move both climbers to a position while staying relatively at the same height
     public void climberAux(double inches)
     { 
-		double encPerIn = (double)ClimberConstants.kClimberCountsPerRev * (1.0/(java.lang.Math.PI*ClimberConstants.kSpoolDiameter));
-		SmartDashboard.putNumber("circumfrence:",(java.lang.Math.PI*ClimberConstants.kSpoolDiameter/2));
-        rightClimber.set(ControlMode.MotionMagic,inches * encPerIn,DemandType.AuxPID,0);
+        rightClimber.set(ControlMode.MotionMagic,inches * ClimberConstants.kEncoderPerInch,DemandType.AuxPID,0);
 		leftClimber.follow(rightClimber,FollowerType.AuxOutput1);
     }
 
@@ -259,57 +252,56 @@ public class Climber extends SubsystemBase{
     //toward the front of bot = forward, so positive degree = down on the bot
     public void armDeg(double degree)
     {
-        rightCanController.setReference(degree * (((ClimberConstants.kBeltGearRatio)*(double)(ClimberConstants.kArmCountsPerRev))/360),CANSparkMax.ControlType.kSmartMotion,PIDConstants.kPIDprimary);
+        rotaryCanController.setReference( -1 * degree * ClimberConstants.kEncoderPerDegree,CANSparkMax.ControlType.kSmartMotion,PIDConstants.kPIDprimary);
     }
 
 	public void armClimb()
 	{
-		double encPerIn = (double)ClimberConstants.kClimberCountsPerRev * (1.0/(java.lang.Math.PI*ClimberConstants.kSpoolDiameter));
-		double a = 28.5;
+		double a = 26.7;
 		double b = 40.0;
-		double c = 38.5 + rightClimber.getSelectedSensorPosition(0) / encPerIn;
+		double c = 38.5 + rightClimber.getSelectedSensorPosition(0) / ClimberConstants.kEncoderPerInch;
 		double radianTarget = java.lang.Math.acos((java.lang.Math.pow(a,2)-java.lang.Math.pow(b,2)-java.lang.Math.pow(c,2))/(-2*b*c));
 		SmartDashboard.putNumber("curent Inches:",c);
 		SmartDashboard.putNumber("Raidan Target:",radianTarget);
 		double degreeTarget = radianTarget * (180.0/java.lang.Math.PI);
 		SmartDashboard.putNumber("Degree Target:",degreeTarget);
-		armDeg(-degreeTarget);
+		armDeg(degreeTarget);
 	}
 
     //zero's arm position - should be done when the arm is pointed DIRECTLY UP.
     public void zeroArm(){
-        REncoder.setPosition(0);
+        armEncoder.setPosition(0);
 		SmartDashboard.putNumber("Art Target Angle:",0);
-		SmartDashboard.putNumber("PVal", PIDConstants.kGainsRotArm.kP);
-		SmartDashboard.putNumber("IVal", PIDConstants.kGainsRotArm.kI);
-		SmartDashboard.putNumber("DVal", PIDConstants.kGainsRotArm.kD);
+		SmartDashboard.putNumber("PVal", ClimberConstants.kGainsRotArm.kP);
+		SmartDashboard.putNumber("IVal", ClimberConstants.kGainsRotArm.kI);
+		SmartDashboard.putNumber("DVal", ClimberConstants.kGainsRotArm.kD);
     } 
 
 	//set static arm speed
 	public void armSpeed(double speed)
 	{
-		rightCanController.setReference(speed,CANSparkMax.ControlType.kVoltage);
+		rotaryCanController.setReference(speed,CANSparkMax.ControlType.kVoltage);
 	}
 
 	//adjust pid
 	public void armPidVal(double P, double I, double D)
 	{
-		rightCanController.setP(P);
-        rightCanController.setI(I);
-        rightCanController.setD(D);
-		SmartDashboard.putNumber("ReadP", rightCanController.getP());
-		SmartDashboard.putNumber("ReadI", rightCanController.getI());
-		SmartDashboard.putNumber("ReadD", rightCanController.getD());
+		rotaryCanController.setP(P);
+        rotaryCanController.setI(I);
+        rotaryCanController.setD(D);
+		SmartDashboard.putNumber("ReadP", rotaryCanController.getP());
+		SmartDashboard.putNumber("ReadI", rotaryCanController.getI());
+		SmartDashboard.putNumber("ReadD", rotaryCanController.getD());
     
 	}
 
 	public void refreshDash() {
-		SmartDashboard.putNumber("ReadP", rightCanController.getP());
-		SmartDashboard.putNumber("ReadI", rightCanController.getI());
-		SmartDashboard.putNumber("ReadD", rightCanController.getD());
-		SmartDashboard.putNumber("PVal", PIDConstants.kGainsRotArm.kP);
-		SmartDashboard.putNumber("IVal", PIDConstants.kGainsRotArm.kI);
-		SmartDashboard.putNumber("DVal", PIDConstants.kGainsRotArm.kD);
+		SmartDashboard.putNumber("ReadP", rotaryCanController.getP());
+		SmartDashboard.putNumber("ReadI", rotaryCanController.getI());
+		SmartDashboard.putNumber("ReadD", rotaryCanController.getD());
+		SmartDashboard.putNumber("PVal", ClimberConstants.kGainsRotArm.kP);
+		SmartDashboard.putNumber("IVal", ClimberConstants.kGainsRotArm.kI);
+		SmartDashboard.putNumber("DVal", ClimberConstants.kGainsRotArm.kD);
 		SmartDashboard.putNumber("Art Target Angle:",0);
 		SmartDashboard.putNumber("Climber Target Height:",0);
     
@@ -317,17 +309,29 @@ public class Climber extends SubsystemBase{
 	}
 	//stops arm motion
     public void stopArm() {
-        rightCanController.setReference(0.00,CANSparkMax.ControlType.kVoltage);
-        leftCanController.setReference(0.00,CANSparkMax.ControlType.kVoltage);
+        rotaryCanController.setReference(0.00,CANSparkMax.ControlType.kVoltage);
     }
 
-	//returns the encoder position of the Arm
-	public void getArmPos()
+	/** Returns the position of the Arm in Degrees */
+	public double getArmPos()
 	{
-		SmartDashboard.putNumber("arm Position",REncoder.getPosition());
-		SmartDashboard.putNumber("rightFirstClimb",rightClimber.getSelectedSensorPosition(0));
-		SmartDashboard.putNumber("rightSecondClimb",rightClimber.getSelectedSensorPosition(1));
-		SmartDashboard.putNumber("leftClimb",leftClimber.getSelectedSensorPosition());
+		return (double)armEncoder.getPosition() / ClimberConstants.kEncoderPerDegree;
+	}
+
+	/**Returns the position of the Climber in Inches */
+	public double getClimbPos() 
+	{
+		return (double)rightClimber.getSelectedSensorPosition(0) / ClimberConstants.kEncoderPerInch;
+	}
+
+	public boolean isClimberWithinError(double error)
+	{
+		return ((double)rightClimber.getClosedLoopError(0)/ClimberConstants.kEncoderPerInch<=error);
+	}
+
+	public boolean isArmWithinError(double error,double targetDegree)
+	{
+		return (Math.abs(targetDegree - ((double)armEncoder.getPosition()/ClimberConstants.kEncoderPerDegree)) <= error);
 	}
 
 	//move motors until they reach limit switches
