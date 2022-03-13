@@ -10,19 +10,26 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotMap;
 
-/** Add your docs here. */
 public class Intake extends SubsystemBase {
 
     private TalonSRX spinner;
 
     public Intake(){
-        spinner = new TalonSRX(RobotMap.kSpinner); //CAN 0
+        //initalize spinner Motor
+        spinner = new TalonSRX(RobotMap.kSpinner); 
     }
 
+    /**
+    * Sets the power of intake
+    * @param power percent to output (0-1)
+    */
     public void setPower(double power){
         spinner.set(ControlMode.PercentOutput, power);
     }
 
+    /**
+    * Stops intake
+    */
     public void stop() {
        spinner.set(ControlMode.PercentOutput,0);
     }

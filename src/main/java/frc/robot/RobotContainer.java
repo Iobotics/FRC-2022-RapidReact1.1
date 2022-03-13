@@ -67,7 +67,15 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
-
+    SmartDashboard.putNumber("Drivetrain Target (in):", 0);
+    
+    // Configure drivetrain to run Joystick control by default.
+    drivetrain.setDefaultCommand(
+      new RunCommand(
+        () -> drivetrain.setTank(joystick1.getY(), joystick2.getY()),
+        drivetrain
+      )
+    );
     
   }
 
@@ -78,8 +86,6 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-
-
 
     new JoystickButton(joystick1, 1).whileHeld(
       new ParallelCommandGroup(
@@ -126,7 +132,6 @@ public class RobotContainer {
 
         
         );
-
   }
 }
 

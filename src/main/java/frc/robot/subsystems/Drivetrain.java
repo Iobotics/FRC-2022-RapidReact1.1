@@ -10,37 +10,38 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.RobotMap;
 
 public class Drivetrain extends SubsystemBase {
 
-  private WPI_TalonFX leftMaster;
-  private WPI_TalonFX rightMaster;
-  private WPI_TalonFX leftSlave;
-  private WPI_TalonFX rightSlave;
+  private TalonFX leftMaster;
+  private TalonFX rightMaster;
+  private TalonFX leftSlave;
+  private TalonFX rightSlave;
 
   public Drivetrain() {
-    leftMaster = new WPI_TalonFX(RobotMap.kLeftMaster);
-    rightMaster = new WPI_TalonFX(RobotMap.kRightMaster);
-    leftSlave = new WPI_TalonFX(RobotMap.kLeftSlave);
-    rightSlave = new WPI_TalonFX(RobotMap.kRightSlave);
-    SmartDashboard.putNumber("TARGETGOTO:",0);
-
+    //initalize Talon FX motors
+    leftMaster = new TalonFX(RobotMap.kLeftMaster);
+    rightMaster = new TalonFX(RobotMap.kRightMaster);
+    leftSlave = new TalonFX(RobotMap.kLeftSlave);
+    rightSlave = new TalonFX(RobotMap.kRightSlave);
+  
+    //restore facotry settings to ensure consitant behavior
     leftMaster.configFactoryDefault();
     rightMaster.configFactoryDefault();
     leftSlave.configFactoryDefault();
     rightSlave.configFactoryDefault();
+    
     //Set Motor Polarities
     leftMaster.setInverted(false);
     leftSlave.setInverted(false);
     rightMaster.setInverted(true);
     rightSlave.setInverted(true);
 
-    //SetupSensor
+    //Configure feedback sensor and Phase
     leftMaster.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
     leftMaster.setSensorPhase(false);
 
@@ -53,36 +54,27 @@ public class Drivetrain extends SubsystemBase {
     rightSlave.configNeutralDeadband(0);
 
     //Config Ramp Rate
-    leftMaster.configOpenloopRamp(1);
-    rightMaster.configOpenloopRamp(1);
+    leftMaster.configOpenloopRamp(.2);
+    rightMaster.configOpenloopRamp(.2);
 
-    //Config NeutralMode to brake
-    leftMaster.setNeutralMode(NeutralMode.Coast);
-    rightMaster.setNeutralMode(NeutralMode.Coast);
+    //Config NeutralMode 
+    leftMaster.setNeutralMode(NeutralMode.Brake);
+    rightMaster.setNeutralMode(NeutralMode.Brake);
     leftSlave.setNeutralMode(NeutralMode.Coast);
     rightSlave.setNeutralMode(NeutralMode.Coast);
 
     //Configure PIDF values for Auto drive, the Left Master is the master controller for PID
-    leftMaster.config_kP(0, DrivetrainConstants.kP);
-    leftMaster.config_kI(0, DrivetrainConstants.kI);
-    leftMaster.config_kD(0, DrivetrainConstants.kD);
-    leftMaster.config_kF(0, DrivetrainConstants.kF);
+    leftMaster.config_kP(0, DrivetrainConstants.kDrivetrainGains.kP);
+    leftMaster.config_kI(0, DrivetrainConstants.kDrivetrainGains.kI);
+    leftMaster.config_kD(0, DrivetrainConstants.kDrivetrainGains.kD);
+    leftMaster.config_kF(0, DrivetrainConstants.kDrivetrainGains.kF);
   }
 
   /**
-   * Reconfigures the motors to the drive settings
+   * Function that will Drive the motors in tank mode
+   * @param leftPower Power output to left wheels
+   * @param rightPower Power output to right wheels
    */
-  public void config () {
-    rightMaster.configFactoryDefault();
-    rightMaster.setInverted(true);
-    rightSlave.follow(rightMaster);
-  } 
-
-  public void stop() {
-    leftMaster.set(ControlMode.PercentOutput, 0);
-    rightMaster.set(ControlMode.PercentOutput, 0);
-  }
-  
   public void setTank(double leftPower, double rightPower){
     leftMaster.set(ControlMode.PercentOutput, leftPower);
     rightMaster.set(ControlMode.PercentOutput, rightPower);
@@ -102,16 +94,18 @@ public class Drivetrain extends SubsystemBase {
     leftSlave.follow(leftMaster);
     rightMaster.follow(leftMaster);
     rightSlave.follow(rightMaster);
-    leftMaster.configMotionCruiseVelocity(10000);
+    leftMaster.configMotionCruiseVelocity(targetSpeed);
     leftMaster.configMotionAcceleration(1000);
     leftMaster.setSelectedSensorPosition(0);
     leftMaster.set(ControlMode.MotionMagic, targetPos);
-    SmartDashboard.putNumber("targetSpeed", targetSpeed);
-    SmartDashboard.putNumber("target", targetPos);
-    SmartDashboard.putNumber("current", leftMaster.getSelectedSensorPosition());
   }
 
-  //Are we there yet
+  /**
+   * Check if Drivetrain is has gotten to a target distance within a particular error
+   * @param distance Target distance to move (inches)
+   * @param error Allowable error between current position and target distance
+   * @return true if current position is within error of distance
+   */
   public boolean isTargetAchieved (double distance, double error) {
     double rotations = (distance * DrivetrainConstants.kGearRatio)/(DrivetrainConstants.kWheelDiameter*Math.PI);
     double targetPos = rotations*2048;
@@ -124,9 +118,13 @@ public class Drivetrain extends SubsystemBase {
     }
   }
 
-  @Override
-  public void periodic() {
-    
-    // This method will be called once per scheduler run
+  /**
+   * Stops motion of Drivetrain
+   */
+  public void stop() {
+    leftMaster.set(ControlMode.PercentOutput, 0);
+    rightMaster.set(ControlMode.PercentOutput, 0);
   }
+  
+
 }

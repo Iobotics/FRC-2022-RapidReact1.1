@@ -42,10 +42,8 @@ public final class Constants {
     }
 
     public static final class DrivetrainConstants{
-        public static final double kP = 0.005;
-        public static final double kI = 0;
-        public static final double kD = 0;
-        public static final double kF = 0;
+        /* 	                                    			  kP   kI   kD   kF   Iz  PeakOut */
+        public static final Gains kDrivetrainGains = new Gains( 0.005, 0.0,  0.0, 0.0, 0,  1 ); //ARM PID values
         public static final int kGearRatio = 2;
         public static final int kWheelDiameter = 6;
     }
@@ -54,26 +52,19 @@ public final class Constants {
         public static final int kDoubleSolenoidLeftSlot = 0;
         public static final int kDoubleSolenoidRightSlot = 1;
         /* 	                                    			  kP   kI   kD   kF   Iz  PeakOut */
-        public static final Gains kShooterGains = new Gains( 5.0, 0.0,  0.0, 0.0, 0,  1 );
-        public static final int kSlot0 = 0;
-        public static final int kPIDprimary = 0;
+        public static final Gains kShooterGains = new Gains( 5.0, 0.0,  0.0, 0.0, 0,  1 ); //ARM PID values
+        public static final double kTicksPerDegree = (1023.0/10.0) * (170.0 /30.0) * (30.0/20.0); 
+        public static final int kMeasuredPosHorizontal = 291;
+        public static final double kMaxGravityFF = .1;
+        //Target speed is in Degrees/second
+        public static final double kArmTargetSpeed = 10;
     }
 
-    
-
-
-
     public static final class PIDConstants{
-        public static final double kNeutralDeadband = 0.00;
         public static final int kPIDprimary = 0;
         public static final int kPIDturn = 1;
         public static final int kRemoteFilter0 = 0;
         public static final int kRemoteFilter1 = 1;
-        //PID GAINS 	                                      kP     kI   kD   kF   Iz  PeakOut 
-        public final static Gains kGainsDistanc = new Gains( 1.0, 0.0, 0.0, 0.0, 0,  1.00 );
-        public final static Gains kGainsTurning = new Gains( 1.0, 0.0, 0.0, 0.0, 0,  1.00 );
-        public final static Gains kGainsRotArm = new Gains( .003, 0.0, 0.0, 0.0, 0,  1.00 );
-
         public final static int kSlot0 = 0;
         public final static int kSlot1 = 1;
     }
