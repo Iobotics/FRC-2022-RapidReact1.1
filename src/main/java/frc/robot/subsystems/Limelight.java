@@ -16,7 +16,8 @@ public class Limelight extends SubsystemBase {
   /**
    * Creates a new Limelight.
    */
-
+  
+  private  double x = 0;
   private NetworkTable table;
   private NetworkTableEntry tx;
   private NetworkTableEntry ty;
@@ -29,10 +30,12 @@ public class Limelight extends SubsystemBase {
     ty = table.getEntry("ty");
     ta = table.getEntry("ta");
 
-  
+
     double x = tx.getDouble(0.0);
     double y = ty.getDouble(0.0);
     double area = ta.getDouble(0.0);
+
+    
 
     SmartDashboard.putNumber("LimelightX", x);
     SmartDashboard.putNumber("LimelightY", y);
@@ -40,11 +43,18 @@ public class Limelight extends SubsystemBase {
 
 
   }
+  
+  public double getTX(){ //returns distance in degrees from the target
+    x = tx.getDouble(0.0);
+    return x;
+  }
 
 public void outputs(){
     SmartDashboard.putNumber("LimelightX", tx.getDouble(0.0));
     SmartDashboard.putNumber("LimelightY", ty.getDouble(0.0));
     SmartDashboard.putNumber("LimelightArea", ta.getDouble(0.0));
+    //Ignore this part.
+    //  SmartDashboard.putBoolean("Limelight TV", this.isTargetDetected());
   }
 
   
@@ -56,6 +66,8 @@ public void outputs(){
       SmartDashboard.putNumber("LimelightX", tx.getDouble(0.0));
       SmartDashboard.putNumber("LimelightY", ty.getDouble(0.0));
       SmartDashboard.putNumber("LimelightArea", ta.getDouble(0.0));
+      //Ignore this part in the future
+      //SmartDashboard.putBoolean("Limelight TV", this.isTargetDetected());
 
       Boolean onTarget;
       if (5>tx.getDouble(0.0) && -5<tx.getDouble(0.0) && 5>ty.getDouble(0.0) && -5<ty.getDouble(0.0)){

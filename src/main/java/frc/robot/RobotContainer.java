@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.Limelight;
+import frc.robot.Commands.LimeAlign;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -52,6 +53,7 @@ public class RobotContainer {
 
   private final Limelight limelight = new Limelight();
   public final Shooter shooter = new Shooter();
+  public final Drivetrain drivetrain = new Drivetrain();
 
   private final Intake intake = new Intake();
 
@@ -139,6 +141,13 @@ public class RobotContainer {
           ()-> intake.setPower(joystick2.getZ()),
           ()-> intake.stop())
         );
+
+    new JoystickButton(joystick2, 2).whileHeld(
+      new LimeAlign(limelight,drivetrain),
+      SmartDashboard.putNumber("DB/Slider 3", 7)
+    );
+  }
+    
     /*new JoystickButton(joystick1, 2).whileHeld(
       new StartEndCommand(
         ()-> climber.setPower(.4*joystick1.getZ(),.4*joystick1.getZ()),
@@ -205,7 +214,7 @@ public class RobotContainer {
     SmartDashboard.putBoolean("AUTOFINISH", false);
     return null;
   }*/
-  }
+  
 
   
    
