@@ -18,9 +18,8 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Commands.ClimbCommand.ClimbArmAdjust;
 import frc.robot.Commands.ClimbCommand.ClimbArmSet;
-import frc.robot.Commands.ClimbCommand.ClimbPullUp;
-import frc.robot.Commands.ClimbCommand.ZeroArm;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Climber;
 
@@ -36,16 +35,9 @@ public class RobotContainer {
 
   //private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
-  // private final Drivetrain drivetrain = new Drivetrain();
   private final Joystick joystick1 = new Joystick(OIConstants.kJoystick1);
   private final Joystick joystick2 = new Joystick(OIConstants.kJoystick2);
 
-
-  // public final Shooter shooter = new Shooter();
-
-  // private final Intake intake = new Intake();
-  
-  //private final Joystick joystick2 = new Joystick(OIConstants.kJoystick2);
 
   private final Climber climber = new Climber();
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -87,11 +79,17 @@ public class RobotContainer {
     );
     
     new JoystickButton(joystick1,5).whenPressed(
+      //this sequential Command Group should automatically climb.
       new SequentialCommandGroup(
         new ClimbArmSet(climber,0,-5),
         new ClimbArmSet(climber,0,0),
         new ClimbArmSet(climber,5,0),
-        new ClimbArmSet(climber,25,10)
+        new ClimbArmSet(climber,25,10),
+        new ClimbArmSet(climber,25,8),
+        new ClimbArmAdjust(climber, 7),
+        new ClimbArmSet(climber,0,climber.getArmPos()),
+        new ClimbArmSet(climber,6,-5),
+        new ClimbArmSet(climber,0,-5)
       )
     );
     new JoystickButton(joystick1,6).whenPressed(
@@ -135,22 +133,9 @@ public class RobotContainer {
    */
   
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    // new SequentialCommandGroup(
-    //   new RunCommand(
-    //     ()-> drivetrain.motionMagic(1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
-    //     drivetrain
-    //   )
-    //     ,
-    // new StartEndCommand(
-    //   ()-> drivetrain.motionMagic(-1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
-    //   ()-> drivetrain.stop(),drivetrain
-    //   )
-    //   );
-    SmartDashboard.putBoolean("AUTOFINISH", false);
     return null;
   }
-  }
+}
 
   
    

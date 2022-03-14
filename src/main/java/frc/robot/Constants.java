@@ -15,8 +15,8 @@ package frc.robot;
 public final class Constants {
     public static final class RobotMap{
         //climber devices
-        public static final int kLeftClimber = 6;
-        public static final int kRightClimber = 5;
+        public static final int kSlaveClimber = 6;
+        public static final int kMasterClimber = 5;
         public static final int kRotaryArm = 4;
     }
 
@@ -32,7 +32,8 @@ public final class Constants {
     public static final class ClimberConstants{
         public static final double kNeutralDeadband = 0.00;
         public static final double kClimberVelocity = 2.00; //cruise velocity in inches / second
-        public static final double kArmVelocity = 5.00; //cruise velocity in degrees / second
+        public static final double kArmVelocity = 15.00; //cruise velocity in degrees / second'
+        public static final double kArmAcceleration = 15.00; // maximum acceleration in degrees / second^2
         public static final int kArmCountsPerRev = 1680;
         public static final double kBeltGearRatio = (24.0/60.0) * (18.0/72.0) * (25.0/10.0);
         public static final int kClimberCountsPerRev = 4096;
