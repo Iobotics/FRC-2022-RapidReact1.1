@@ -126,7 +126,7 @@ public class Shooter extends SubsystemBase{
         //generate Target units from degrees
         double targetPos = ShooterConstants.kMeasuredPosHorizontal - degrees * ShooterConstants.kTicksPerDegree;
         double allowedError = targetPos - error;
-        if(Math.abs(arm.getSelectedSensorPosition() - targetPos) <= allowedError && arm.getSelectedSensorVelocity() == 0.0 && arm.getActiveTrajectoryVelocity() < 3) {
+        if(Math.abs(arm.getSelectedSensorPosition() - targetPos) >= allowedError && arm.getSelectedSensorVelocity() == 0.0 && arm.getActiveTrajectoryVelocity() < 3) {
             return true;
           } else{
             return false;

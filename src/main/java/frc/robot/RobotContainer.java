@@ -124,8 +124,8 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return new SequentialCommandGroup(
         //new AutoDrive(drivetrain, SmartDashboard.getNumber("Drivetrain Target (in):", 0)),
-        new AutoAlign(shooter, SmartDashboard.getNumber("Shooter Arm Position", 0))
-        //new AutoShoot(shooter)
+        new AutoAlign(shooter, SmartDashboard.getNumber("Shooter Arm Position", 0)),
+        new AutoShoot(shooter)
 
         
         );

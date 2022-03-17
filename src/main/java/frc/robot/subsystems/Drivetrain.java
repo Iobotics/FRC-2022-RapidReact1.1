@@ -111,7 +111,7 @@ public class Drivetrain extends SubsystemBase {
     double targetPos = rotations*2048;
     //converting allowed error from inches to encoder units
     double allowedError = ((error * DrivetrainConstants.kGearRatio)/(DrivetrainConstants.kWheelDiameter * Math.PI) * 2048);
-    if(Math.abs(leftMaster.getSelectedSensorPosition() - targetPos) <= allowedError && leftMaster.getSelectedSensorVelocity() == 0.0 && leftMaster.getActiveTrajectoryVelocity() < 3) {
+    if(Math.abs(leftMaster.getSelectedSensorPosition() - targetPos) >= allowedError && leftMaster.getSelectedSensorVelocity() == 0.0 && leftMaster.getActiveTrajectoryVelocity() < 3) {
       return true;
     } else{
       return false;
