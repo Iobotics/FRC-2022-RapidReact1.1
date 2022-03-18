@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.Limelight;
 import frc.robot.Commands.LimeAlign;
+import frc.robot.Commands.LimeShoot;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -52,6 +53,7 @@ public class RobotContainer {
   private final Limelight limelight = new Limelight();
   public final Shooter shooter = new Shooter();
   private final Intake intake = new Intake();
+  
 
   //private final Climber climber = new Climber();
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -72,6 +74,9 @@ public class RobotContainer {
     
     drivetrain.setDefaultCommand(new RunCommand(
       () -> drivetrain.setTank(joystick1.getY(), joystick2.getY()), drivetrain));
+
+    shooter.setDefaultCommand(new RunCommand(
+      ()-> shooter.setArmPosition(SmartDashboard.getNumber("Current Degrees", 0)), shooter));  
     // Configure the button bindings
     configureButtonBindings();
 
@@ -96,18 +101,23 @@ public class RobotContainer {
   private void configureButtonBindings() {
 
     new JoystickButton(joystick1, 1).whileHeld(
-      new ParallelCommandGroup(
-        new StartEndCommand(
-          ()-> shooter.setShootPower(.3),
-          ()-> shooter.stopWheels(), shooter
-        ),
+      new SequentialCommandGroup(
+        new RunCommand(
+          ()-> shooter.setArmPosition(0), shooter),
+        new ParallelCommandGroup(
+          new StartEndCommand(
+            ()-> shooter.setShootPower(.3),
+            ()-> shooter.stopWheels(), shooter
+          ),
 
-        new StartEndCommand(
-          ()-> intake.setPower(-.3),
-          ()-> intake.stop(), intake
+          new StartEndCommand(
+            ()-> intake.setPower(-.3),
+            ()-> intake.stop(), intake
+        )
+        )
       )
-      )
-    );
+      );
+
     new JoystickButton(joystick1, 7).whenPressed(
       new InstantCommand(
         ()-> limelight.outputs()
@@ -126,12 +136,14 @@ public class RobotContainer {
         ()-> shooter.extendPneumatic(true),
         ()-> shooter.extendPneumatic(false), shooter
       )
-    );  
+    );
+
     new JoystickButton(joystick1,6).whenPressed(
       new InstantCommand(
-        ()-> shooter.stop(),shooter
+        ()-> shooter.setArmPosition(-45),shooter
       )
     );
+
     new JoystickButton(joystick2, 1).whileHeld(
         new StartEndCommand(
           ()-> shooter.setShootPower(.9),
@@ -142,6 +154,16 @@ public class RobotContainer {
     new JoystickButton(joystick2, 2).whileHeld(
       new LimeAlign(limelight,drivetrain),
       SmartDashboard.putNumber("DB/Slider 3", 7)
+    );
+    
+    new JoystickButton(joystick2, 9).whenPressed(
+      new SequentialCommandGroup(
+        new RunCommand(
+          ()-> shooter.setArmPosition(-45), shooter),
+        new LimeShoot(limelight, shooter),
+        new RunCommand(
+          ()-> shooter.getArmPosition(), shooter)
+      )  
     );
   }
    

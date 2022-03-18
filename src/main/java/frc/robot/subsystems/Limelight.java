@@ -18,6 +18,7 @@ public class Limelight extends SubsystemBase {
    */
   
   private  double x = 0;
+  private  double y = 0;
   private NetworkTable table;
   private NetworkTableEntry tx;
   private NetworkTableEntry ty;
@@ -48,6 +49,12 @@ public class Limelight extends SubsystemBase {
     x = tx.getDouble(0.0);
     return x;
   }
+  
+  public double getTY(){ //returns distance in degrees from the target
+    y = ty.getDouble(0.0);
+    return y;
+  }
+
 
 public void outputs(){
     SmartDashboard.putNumber("LimelightX", tx.getDouble(0.0));

@@ -100,8 +100,7 @@ public class Shooter extends SubsystemBase{
     /**
    * Returns the position (in degrees) of the shooter
    */
-    public void getArmPosition() 
-    {
+    public void getArmPosition() {
         SmartDashboard.putNumber("Current Degrees",(arm.getSelectedSensorPosition() - ShooterConstants.kMeasuredPosHorizontal)/ShooterConstants.kTicksPerDegree);
     }    
 
@@ -109,6 +108,10 @@ public class Shooter extends SubsystemBase{
    * Aim the shooter using PID
    * @param degrees the target angle (in degrees) assuming horizontal is 0 and vertical is 90
    */
+    public void setArmPower(double power){
+        arm.set(ControlMode.PercentOutput, power);
+    }
+
     public void setArmPosition(double degrees){
         //generate PID FeedFoward Calucations
         double currentDegrees = (arm.getSelectedSensorPosition() - ShooterConstants.kMeasuredPosHorizontal) / ShooterConstants.kTicksPerDegree;
@@ -175,4 +178,5 @@ public class Shooter extends SubsystemBase{
     public void shooterRefresh(){
         getArmPosition();
     }
+
 }
