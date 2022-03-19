@@ -83,12 +83,12 @@ public class RobotContainer {
     SmartDashboard.putNumber("Drivetrain Target (in):", 0);
     
     // Configure drivetrain to run Joystick control by default.
-    drivetrain.setDefaultCommand(
-      new RunCommand(
-        () -> drivetrain.setTank(joystick1.getY(), joystick2.getY()),
-        drivetrain
-      )
-    );
+    // drivetrain.setDefaultCommand(
+    //   new RunCommand(
+    //     () -> drivetrain.setTank(joystick1.getY(), joystick2.getY()),
+    //     drivetrain
+    //   )
+    // );
     
   }
 
@@ -152,8 +152,8 @@ public class RobotContainer {
 
 
     new JoystickButton(joystick2, 2).whileHeld(
-      new LimeAlign(limelight,drivetrain),
-      SmartDashboard.putNumber("DB/Slider 3", 7)
+      new LimeAlign(limelight,drivetrain)
+      // SmartDashboard.putNumber("DB/Slider 3", 7)
     );
     
     new JoystickButton(joystick2, 9).whenPressed(
@@ -199,8 +199,6 @@ public class RobotContainer {
         new AutoDrive(drivetrain, SmartDashboard.getNumber("TARGETGOTO:", 0)),
         new AutoAlign(shooter, SmartDashboard.getNumber("Shooter Arm Position", 0)),
         new AutoShoot(shooter)
-
-        
         );
   }
 }

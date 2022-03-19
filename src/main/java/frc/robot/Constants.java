@@ -18,17 +18,17 @@ public final class Constants {
 
         // Drivetrain devices (motors) 
         public static final int kLeftMaster = 1;
-        public static final int kLeftSlave = 4;
+        public static final int kLeftSlave = 2;
         public static final int kRightMaster = 3;
-        public static final int kRightSlave = 2;
+        public static final int kRightSlave = 4;
 
          //intake devices(motors)
-         public static final int kSpinner = 12;
+         public static final int kSpinner = 9;
     
         //shooter devices(motors)
-        public static final int kshootLeft = 8;
-        public static final int kshootRight = 7;
-        public static final int karm = 11;
+        public static final int kshootLeft = 6;
+        public static final int kshootRight = 5;
+        public static final int karm = 10;
     }
   
     public static final class Delay{
@@ -52,8 +52,8 @@ public final class Constants {
         public static final int kDoubleSolenoidLeftSlot = 0;
         public static final int kDoubleSolenoidRightSlot = 1;
         /* 	                                    			  kP   kI   kD   kF   Iz  PeakOut */
-        public static final Gains kShooterGains = new Gains( 5.0, 0.0,  0.0, 0.0, 0,  1 ); //ARM PID values
-        public static final double kTicksPerDegree = (1023.0/10.0) * (170.0 /30.0) * (30.0/20.0) * (1.0/360.0); 
+        public static final Gains kShooterGains = new Gains( 0.001, 0.0,  0.0, 0.0, 0,  1 ); //ARM PID values
+        public static final double kTicksPerDegree = (1023.0/10.0) * (170.0 /30.0) * (30.0/20.0); 
         public static final int kMeasuredPosHorizontal = 291;
         public static final double kMaxGravityFF = .1;
         //Target speed is in Degrees/second
