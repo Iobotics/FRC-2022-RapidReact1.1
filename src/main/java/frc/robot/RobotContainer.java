@@ -68,7 +68,7 @@ public class RobotContainer {
     );
     new JoystickButton(joystick1,3).whileHeld(
       new InstantCommand(
-        ()-> climber.getArmPos(), climber
+        ()-> climber.armClimb(), climber
       )
     );
     new JoystickButton(joystick1,4).whileHeld(
@@ -82,12 +82,12 @@ public class RobotContainer {
       //this sequential Command Group should automatically climb.
       new SequentialCommandGroup(
         new ClimbArmSet(climber,0,-5),
-        new ClimbArmSet(climber,0,0),
+        new ClimbArmSet(climber,69,2),
         new ClimbArmSet(climber,5,0),
-        new ClimbArmSet(climber,25,10),
-        new ClimbArmSet(climber,25,8),
+        new ClimbArmSet(climber,23,30),
+        new ClimbArmSet(climber,23,24),
         new ClimbArmAdjust(climber, 7),
-        new ClimbArmSet(climber,0,climber.getArmPos()),
+        new ClimbArmSet(climber,4,climber.getArmPos()),
         new ClimbArmSet(climber,6,-5),
         new ClimbArmSet(climber,0,-5)
       )

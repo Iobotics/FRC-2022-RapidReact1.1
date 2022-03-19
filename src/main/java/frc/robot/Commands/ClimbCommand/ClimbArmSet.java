@@ -29,8 +29,15 @@ public class ClimbArmSet extends CommandBase {
   @Override
   public void initialize() {
     SmartDashboard.putBoolean("FINISHED!", false);
+    if(climbTargetInch != 69)
+    {
+      climber.climberAux(climbTargetInch);
+    }
+    else
+    {
+      climber.setClimbPower(-.4, -.4);
+    }
     climber.armDeg(armTargetDegree);
-    climber.climberAux(climbTargetInch);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -46,8 +53,9 @@ public class ClimbArmSet extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    SmartDashboard.putBoolean("Climberwithin:",climber.isClimberWithinError(.2));
+    SmartDashboard.putBoolean("Climberwithin:",climber.isClimberWithinError(.2,climbTargetInch));
     SmartDashboard.putBoolean("ArmWithin:", climber.isArmWithinError(.2, armTargetDegree));
-    return(climber.isClimberWithinError(.2) && climber.isArmWithinError(.2, armTargetDegree));
+    SmartDashboard.putNumber("ClimberPOS:",climber.getClimbPos());
+    return((climber.isClimberWithinError(.2,climbTargetInch)||(climbTargetInch==69)) && climber.isArmWithinError(.2, armTargetDegree));
   }
 }

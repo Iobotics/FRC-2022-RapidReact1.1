@@ -17,6 +17,7 @@ import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.SparkMaxRelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -32,7 +33,9 @@ public class Climber extends SubsystemBase{
     private TalonSRX slaveClimber;
     private TalonSRX masterClimber;
     private CANSparkMax rotaryArm;
-    private SparkMaxPIDController rotaryCanController;
+    private SparkMaxPIDController armCanController;
+	private SparkMaxLimitSwitch armLimitSwitch;
+	private SparkMaxLimitSwitch armLimitSwitch2;
     private RelativeEncoder armEncoder;
 
     public Climber() {
@@ -178,11 +181,11 @@ public class Climber extends SubsystemBase{
 
 		//Configure soft limits to prevent lift from pulling / pushing too far
 		//NOTE: MAY NEED TO FIX FOR masterClimber!!!! USES ACTIVE SENSOR (REMOTE SENSOR) I THINK
-		// masterClimber.configForwardSoftLimitThreshold(10000,Delay.kTimeoutMs);
+		masterClimber.configForwardSoftLimitThreshold(24.75 * ClimberConstants.kEncoderPerInch,Delay.kTimeoutMs);
 		// masterClimber.configReverseSoftLimitThreshold(0,Delay.kTimeoutMs);
 		masterClimber.configForwardSoftLimitEnable(false,Delay.kTimeoutMs);
 		masterClimber.configReverseSoftLimitEnable(false,Delay.kTimeoutMs);
-		// slaveClimber.configForwardSoftLimitThreshold(10000,Delay.kTimeoutMs);
+		slaveClimber.configForwardSoftLimitThreshold(24.75 * ClimberConstants.kEncoderPerInch,Delay.kTimeoutMs);
 		// slaveClimber.configReverseSoftLimitThreshold(0,Delay.kTimeoutMs);
 		slaveClimber.configForwardSoftLimitEnable(false,Delay.kTimeoutMs);
 		slaveClimber.configReverseSoftLimitEnable(false,Delay.kTimeoutMs);
@@ -197,27 +200,35 @@ public class Climber extends SubsystemBase{
         rotaryArm.restoreFactoryDefaults();
 		
 		//setup rotary arm PID Controller and encoder
-        rotaryCanController = rotaryArm.getPIDController();
+        armCanController = rotaryArm.getPIDController();
         armEncoder = rotaryArm.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor,42);
+		
+		armLimitSwitch = rotaryArm.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+		armLimitSwitch2 = rotaryArm.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+
 
         //enable motor soft limits
         rotaryArm.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward,false);
         rotaryArm.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse,false);
+		armLimitSwitch.enableLimitSwitch(false);
+		armLimitSwitch2.enableLimitSwitch(false);
 
-        rotaryCanController.setOutputRange(-1, 1);
+        armCanController.setOutputRange(-1, 1);
 
 		//set max velocity and acceleration. Motion is in rotations / minute
 		// rot/min = degrees/second * seconds/minute * encoders/degree * encoder / encoder
-        rotaryCanController.setSmartMotionMaxVelocity(ClimberConstants.kArmVelocity * 60.0 * (72.0/18.0)*(60.0/24.0)*(40.0)*(1.0/360.0), 0);
-        rotaryCanController.setSmartMotionMaxAccel(ClimberConstants.kArmAcceleration * 60.0 * (72.0/18.0)*(60.0/24.0)*(40.0)*(1.0/360.0), 0);
+        armCanController.setSmartMotionMaxVelocity(ClimberConstants.kArmVelocity * 60.0 * (72.0/18.0)*(60.0/24.0)*(40.0)*(1.0/360.0), 0);
+        armCanController.setSmartMotionMaxAccel(ClimberConstants.kArmAcceleration * 60.0 * (72.0/18.0)*(60.0/24.0)*(40.0)*(1.0/360.0), 0);
 
         //set PID values
-        rotaryCanController.setP(ClimberConstants.kGainsRotArm.kP);
-        rotaryCanController.setI(ClimberConstants.kGainsRotArm.kI);
-        rotaryCanController.setD(ClimberConstants.kGainsRotArm.kD);
+        armCanController.setP(ClimberConstants.kGainsRotArm.kP);
+        armCanController.setI(ClimberConstants.kGainsRotArm.kI);
+        armCanController.setD(ClimberConstants.kGainsRotArm.kD);
 
         //ensures that the arm is using the potentiometer as it's feedback device
-		rotaryCanController.setFeedbackDevice(armEncoder);
+		armCanController.setFeedbackDevice(armEncoder);
+
+		rotaryArm.burnFlash();
     }
 
 
@@ -282,7 +293,7 @@ public class Climber extends SubsystemBase{
 	/**Run the arm using a set Speed */
 	public void armSpeed(double speed)
 	{
-		rotaryCanController.setReference(speed,CANSparkMax.ControlType.kVoltage);
+		armCanController.setReference(speed,CANSparkMax.ControlType.kVoltage);
 	}
 
 	/**Runs the arm to a given degree using PID
@@ -290,7 +301,7 @@ public class Climber extends SubsystemBase{
 	 */
     public void armDeg(double degree)
     {
-        rotaryCanController.setReference( -1 * degree * ClimberConstants.kEncoderPerDegree,CANSparkMax.ControlType.kSmartMotion,PIDConstants.kPIDprimary);
+        armCanController.setReference( degree * ClimberConstants.kEncoderPerDegree,CANSparkMax.ControlType.kSmartMotion,PIDConstants.kPIDprimary);
     }
 
 	/**Function that will set the target Seperation between the lift and climber arms to stay consistant while the climber arm is moving NOTE: this function must be continously called */
@@ -311,7 +322,7 @@ public class Climber extends SubsystemBase{
 
 	/**Stops arm motion */
     public void stopArm() {
-        rotaryCanController.setReference(0.00,CANSparkMax.ControlType.kVoltage);
+        armCanController.setReference(0.00,CANSparkMax.ControlType.kVoltage);
     }
 
 
@@ -323,6 +334,9 @@ public class Climber extends SubsystemBase{
 
 		SmartDashboard.putNumber("Art Target Angle:",0);
 		SmartDashboard.putNumber("Climber Target Height:",0);
+		SmartDashboard.putNumber("MasterClimber: ",masterClimber.getSensorCollection().getQuadraturePosition());
+		SmartDashboard.putNumber("SlaveClimber: ",slaveClimber.getSensorCollection().getQuadraturePosition());
+		SmartDashboard.putNumber("ArmPosition: ",armEncoder.getPosition());
 	}
 
 	/** Returns the position of the Arm in Degrees */
@@ -339,11 +353,13 @@ public class Climber extends SubsystemBase{
 
 	/**Checks if the Climber is within a given error of it's PID target
 	 * @param error the allowable error from the target PID position
+	 * @param targetInch the current PID target of the climber (in inches)
 	 * @return true if climber is within error
 	 */
-	public boolean isClimberWithinError(double error)
+	public boolean isClimberWithinError(double error,double targetInch)
 	{
-		return ((double)masterClimber.getClosedLoopError(0)/ClimberConstants.kEncoderPerInch<=error);
+		SmartDashboard.putNumber("TEST1:", (double)masterClimber.getSelectedSensorPosition(0)/ClimberConstants.kEncoderPerInch);
+		return (Math.abs(targetInch - ((double)masterClimber.getSelectedSensorPosition(0)/ClimberConstants.kEncoderPerInch))<=error);
 	}
 
 	/**Checks if the arm is within a given error for a target Degree

@@ -15,9 +15,9 @@ package frc.robot;
 public final class Constants {
     public static final class RobotMap{
         //climber devices
-        public static final int kSlaveClimber = 6;
-        public static final int kMasterClimber = 5;
-        public static final int kRotaryArm = 4;
+        public static final int kSlaveClimber = 8;
+        public static final int kMasterClimber = 7;
+        public static final int kRotaryArm = 11;
     }
 
     public static final class Delay{

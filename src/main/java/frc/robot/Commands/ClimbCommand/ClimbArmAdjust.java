@@ -11,7 +11,7 @@ import frc.robot.subsystems.Climber;
 public class ClimbArmAdjust extends CommandBase {
   Climber climber;
   double climbTargetInch;
-  /** Command that will set pull the climber while dynamicall adjusting the arm angle to ensure the arms maintain optimal distance 
+  /** Command that will set pull the climber while dynamically adjusting the arm angle to ensure the arms maintain optimal distance 
    * @param subClimber the climber subsystem
    * @param subClimbTargetInch the target of the climber in inches
   */
@@ -43,6 +43,7 @@ public class ClimbArmAdjust extends CommandBase {
   @Override
   public boolean isFinished() {
     SmartDashboard.putBoolean("FINISHED!", true);
-    return(climber.isClimberWithinError(.2));
+    SmartDashboard.putBoolean("CLIMbeRTEST:",climber.isClimberWithinError(.2,climbTargetInch));
+    return(climber.isClimberWithinError(.2,climbTargetInch));
   }
 }
