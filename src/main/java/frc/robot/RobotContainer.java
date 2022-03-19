@@ -20,16 +20,10 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Shooter;
-import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.Commands.ClimbCommand.ClimbArmAdjust;
+import frc.robot.Commands.ClimbCommand.ClimbArmSet;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Climber;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.Limelight;
 import frc.robot.Commands.LimeAlign;
 import frc.robot.Commands.LimeShoot;
@@ -46,21 +40,17 @@ public class RobotContainer {
 
   //private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
-  private final Drivetrain drivetrain = new Drivetrain();
   private final Joystick joystick1 = new Joystick(OIConstants.kJoystick1);
   private final Joystick joystick2 = new Joystick(OIConstants.kJoystick2);
 
+  private final Climber climber = new Climber();
   private final Limelight limelight = new Limelight();
   public final Shooter shooter = new Shooter();
   private final Intake intake = new Intake();
   
-
-  //private final Climber climber = new Climber();
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-
-    // Configure the button bindings
-    configureButtonBindings();
+    
     SmartDashboard.putNumber("TARGETGOTO:",0);
     SmartDashboard.putNumber("Shooter Arm Position", 300);
     SmartDashboard.putNumber("Art Target Position:",0);
@@ -70,26 +60,18 @@ public class RobotContainer {
     SmartDashboard.putNumber("D",0);
     SmartDashboard.putNumber("AutoDrive",0);
     SmartDashboard.getNumber("Verks",2438);
-    
-    
-    drivetrain.setDefaultCommand(new RunCommand(
-      () -> drivetrain.setTank(joystick1.getY(), joystick2.getY()), drivetrain));
-
-    shooter.setDefaultCommand(new RunCommand(
-      ()-> shooter.setArmPosition(SmartDashboard.getNumber("Current Degrees", 0)), shooter));  
-    // Configure the button bindings
-    configureButtonBindings();
-
     SmartDashboard.putNumber("Drivetrain Target (in):", 0);
     
-    // Configure drivetrain to run Joystick control by default.
-    // drivetrain.setDefaultCommand(
-    //   new RunCommand(
-    //     () -> drivetrain.setTank(joystick1.getY(), joystick2.getY()),
-    //     drivetrain
-    //   )
-    // );
+    drivetrain.setDefaultCommand(new RunCommand(
+      () -> drivetrain.setTank(joystick1.getY(), joystick2.getY()), drivetrain)
+    );
+
+    shooter.setDefaultCommand(new RunCommand(
+      ()-> shooter.setArmPosition(SmartDashboard.getNumber("Current Degrees", 0)), shooter)
+     );  
     
+    // Configure the button bindings
+    configureButtonBindings();
   }
 
   /**
@@ -100,7 +82,70 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
 
-    new JoystickButton(joystick1, 1).whileHeld(
+//     new JoystickButton(joystick1,1).whileHeld(
+//       new StartEndCommand(
+//       ()-> climber.armDeg(SmartDashboard.getNumber("Art Target Angle:",0)), 
+//       ()-> climber.stopArm(), climber
+//       )
+//     );
+    new JoystickButton(joystick1,2).whenPressed(
+      new InstantCommand(
+        ()-> climber.zeroArm(), climber
+      )
+    );
+    new JoystickButton(joystick1,4).whileHeld(
+      new StartEndCommand(
+        ()->climber.armSpeed(joystick1.getZ()),
+        ()-> climber.stopArm(), climber
+      )
+    );
+    
+    new JoystickButton(joystick1,5).whenPressed(
+      //this sequential Command Group should automatically climb.
+      new SequentialCommandGroup(
+        new ClimbArmSet(climber,0,-5),
+        new ClimbArmSet(climber,69,2),
+        new ClimbArmSet(climber,5,0),
+        new ClimbArmSet(climber,23,30),
+        new ClimbArmSet(climber,23,24),
+        new ClimbArmAdjust(climber, 7),
+        new ClimbArmSet(climber,4,climber.getArmPos()),
+        new ClimbArmSet(climber,6,-5),
+        new ClimbArmSet(climber,0,-5)
+      )
+    );
+    new JoystickButton(joystick1,6).whenPressed(
+      new InstantCommand(
+        ()-> climber.refreshDash(), climber
+      ) 
+    );
+    new JoystickButton(joystick1, 7).whileHeld(
+      new StartEndCommand(
+        ()-> climber.setClimbPower(joystick1.getZ(),joystick1.getZ()), 
+        ()-> climber.stopClimb(), climber
+      )
+    );
+    new JoystickButton(joystick1,8).whenPressed(
+      new InstantCommand(
+        ()-> climber.stop(), climber)
+    );
+//     new JoystickButton(joystick1, 9).whenPressed(
+//        new InstantCommand(
+//          ()-> climber.climberAux(SmartDashboard.getNumber("Climber Target Height:",0)),
+//          climber
+//         )
+//      );
+    new JoystickButton(joystick1, 10).whenPressed(
+      new StartEndCommand(
+        ()-> climber.setClimbZero(), 
+        ()-> climber.stopClimbZero(), climber
+      )
+    );
+//     new JoystickButton(joystick1,11).whileHeld(
+//       new RunCommand(
+//         ()->climber.zeroClimbEncoders(.4*joystick1.getZ()), climber
+//       )
+    new JoystickButton(joystick2, 1).whileHeld(
       new SequentialCommandGroup(
         new RunCommand(
           ()-> shooter.setArmPosition(0), shooter),
@@ -118,40 +163,40 @@ public class RobotContainer {
       )
       );
 
-    new JoystickButton(joystick1, 7).whenPressed(
+    new JoystickButton(joystick2, 7).whenPressed(
       new InstantCommand(
         ()-> limelight.outputs()
       )
     );
 
-    new JoystickButton(joystick1, 2).whileHeld(
+    new JoystickButton(joystick2, 2).whileHeld(
 
       new StartEndCommand(
         ()-> intake.setPower(joystick1.getZ()),
         ()-> intake.stop(), intake)
     );
 
-    new JoystickButton(joystick1, 5).whileHeld(
+    new JoystickButton(joystick2, 5).whileHeld(
       new StartEndCommand(
         ()-> shooter.extendPneumatic(true),
         ()-> shooter.extendPneumatic(false), shooter
       )
     );
 
-    new JoystickButton(joystick1,6).whenPressed(
+    new JoystickButton(joystick2,6).whenPressed(
       new InstantCommand(
         ()-> shooter.setArmPosition(-45),shooter
       )
     );
 
-    new JoystickButton(joystick2, 1).whileHeld(
+    new JoystickButton(joystick2, 3).whileHeld(
         new StartEndCommand(
           ()-> shooter.setShootPower(.9),
           ()-> shooter.stop(), shooter)
         );
 
 
-    new JoystickButton(joystick2, 2).whileHeld(
+    new JoystickButton(joystick2, 4).whileHeld(
       new LimeAlign(limelight,drivetrain)
       // SmartDashboard.putNumber("DB/Slider 3", 7)
     );
@@ -175,34 +220,33 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   
-  /*public Command getAutonomousCommand() {
+
+  public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    new SequentialCommandGroup(
-      new RunCommand(
-        ()-> drivetrain.motionMagic(1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
-        drivetrain
-      )
-        ,
-    new StartEndCommand(
-      ()-> drivetrain.motionMagic(-1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
-      ()-> drivetrain.stop(),drivetrain
-      )
-      );
-    SmartDashboard.putBoolean("AUTOFINISH", false);
+//     new SequentialCommandGroup(
+//       new RunCommand(
+//         ()-> drivetrain.motionMagic(1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
+//         drivetrain
+//       )
+//         ,
+//     new StartEndCommand(
+//       ()-> drivetrain.motionMagic(-1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
+//       ()-> drivetrain.stop(),drivetrain
+//       )
+//       );
+//     SmartDashboard.putBoolean("AUTOFINISH", false);
     return null;
-  }*/
+  }
   
 
 
-  public Command getAutonomousCommand() {
-    return new SequentialCommandGroup(
-        new AutoDrive(drivetrain, SmartDashboard.getNumber("TARGETGOTO:", 0)),
-        new AutoAlign(shooter, SmartDashboard.getNumber("Shooter Arm Position", 0)),
-        new AutoShoot(shooter)
-        );
-  }
-}
-
-
+//   public Command getAutonomousCommand() {
+//     return new SequentialCommandGroup(
+//         new AutoDrive(drivetrain, SmartDashboard.getNumber("TARGETGOTO:", 0)),
+//         new AutoAlign(shooter, SmartDashboard.getNumber("Shooter Arm Position", 0)),
+//         new AutoShoot(shooter)
+//         );
+//   }
+// }
   
    

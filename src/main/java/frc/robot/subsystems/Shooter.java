@@ -22,7 +22,6 @@ import frc.robot.Constants.RobotMap;
 import frc.robot.Constants.ShooterConstants;
 import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.*;
 
-/** Add your docs here. */
 public class Shooter extends SubsystemBase{
 
     //create Motor/Solenoid Objects
@@ -178,5 +177,4 @@ public class Shooter extends SubsystemBase{
     public void shooterRefresh(){
         getArmPosition();
     }
-
 }
