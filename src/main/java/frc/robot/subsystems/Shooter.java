@@ -28,12 +28,12 @@ public class Shooter extends SubsystemBase{
     private TalonSRX shootLeft;
     private TalonSRX shootRight;
     private TalonSRX arm;
-    private DoubleSolenoid pitchSolenoid;
+    //private DoubleSolenoid pitchSolenoid;
 
 
     public Shooter(){
         //initalize Solenoid / Motors
-        pitchSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, ShooterConstants.kDoubleSolenoidLeftSlot, ShooterConstants.kDoubleSolenoidRightSlot);
+        //pitchSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, ShooterConstants.kDoubleSolenoidLeftSlot, ShooterConstants.kDoubleSolenoidRightSlot);
         shootLeft = new TalonSRX(RobotMap.kshootLeft);
         shootRight = new TalonSRX(RobotMap.kshootRight);
         arm = new TalonSRX(RobotMap.karm);
@@ -44,7 +44,7 @@ public class Shooter extends SubsystemBase{
 
         //------Double Solenoid setup------
         //initalize the solenoid to start in the Forward Position
-        pitchSolenoid.set(kReverse);
+        //pitchSolenoid.set(kReverse);
 
         //-----Shooter Direction/arm setup---
         //make sure arm is powered off
@@ -65,7 +65,7 @@ public class Shooter extends SubsystemBase{
         );
 
         //configure sensor direciton
-        arm.setSensorPhase(false);
+        arm.setSensorPhase(true);
         arm.setInverted(false);
 
         //Peak output
@@ -99,9 +99,13 @@ public class Shooter extends SubsystemBase{
     /**
    * Returns the position (in degrees) of the shooter
    */
-    public void getArmPosition() {
-        SmartDashboard.putNumber("Current Degrees",(arm.getSelectedSensorPosition() - ShooterConstants.kMeasuredPosHorizontal)/ShooterConstants.kTicksPerDegree);
+    public double getArmPosition() {
+       return (arm.getSelectedSensorPosition() - ShooterConstants.kMeasuredPosHorizontal)/ShooterConstants.kTicksPerDegree;
     }    
+
+    public boolean isShooterWithinError(double targetPosition, double error) {
+        return (Math.abs(getArmPosition() - targetPosition)) <= error;
+    }
 
     /**
    * Aim the shooter using PID
@@ -162,14 +166,14 @@ public class Shooter extends SubsystemBase{
    * enables the Pneumatic Piston to extend
    * @param extend extends the pneumatic if true
    */
-    public void extendPneumatic(boolean extend){
-        if(extend)
-        {
-            pitchSolenoid.set(kForward);
-            return;
-        }
-        pitchSolenoid.set(kReverse);
-    }
+    // public void extendPneumatic(boolean extend){
+    //     if(extend)
+    //     {
+    //         pitchSolenoid.set(kForward);
+    //         return;
+    //     }
+    //     pitchSolenoid.set(kReverse);
+    // }
     
     /**
    * Refreshes SmartDashboard values associated with Shooter

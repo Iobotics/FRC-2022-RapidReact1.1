@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Commands.AutoAlign;
 import frc.robot.Commands.AutoDrive;
@@ -25,6 +26,7 @@ import frc.robot.Commands.ClimbCommand.ClimbArmAdjust;
 import frc.robot.Commands.ClimbCommand.ClimbArmSet;
 import frc.robot.Commands.LimeCommand.LimeAlign;
 import frc.robot.Commands.LimeCommand.LimeShoot;
+import frc.robot.Commands.ShootCommand.ShootPosition;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Limelight;
@@ -50,9 +52,23 @@ public class RobotContainer {
   private final Shooter shooter = new Shooter();
   private final Intake intake = new Intake();
   private final Drivetrain drivetrain = new Drivetrain();
+
+  private final Command AutoShooter = new SequentialCommandGroup(
+    new ShootPosition(shooter, 45.0,.3),
+    new LimeAlign(limelight,drivetrain),
+    new LimeShoot(limelight,shooter),
+    new AutoShoot(shooter)
+  );
+
+  SendableChooser<Command> AutoChooser = new SendableChooser<>();
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    // Add commands to the autonomous command chooser
+    AutoChooser.setDefaultOption("LimeLight Alignment", AutoShooter);
+
+    // Put the chooser on the dashboard
+    SmartDashboard.putData(AutoChooser);
     
     SmartDashboard.putNumber("TARGETGOTO:",0);
     SmartDashboard.putNumber("Shooter Arm Position", 300);
@@ -65,13 +81,13 @@ public class RobotContainer {
     SmartDashboard.getNumber("Verks",2438);
     SmartDashboard.putNumber("Drivetrain Target (in):", 0);
     
-    drivetrain.setDefaultCommand(new RunCommand(
-      () -> drivetrain.setTank(joystick1.getY(), joystick2.getY()), drivetrain)
-    );
+    // drivetrain.setDefaultCommand(new RunCommand(
+    //   () -> drivetrain.setTank(joystick1.getY(), joystick2.getY()), drivetrain)
+    // );
 
-    shooter.setDefaultCommand(new RunCommand(
-      ()-> shooter.setArmPosition(SmartDashboard.getNumber("Current Degrees", 0)), shooter)
-     );  
+    // shooter.setDefaultCommand(new RunCommand(
+    //   ()-> shooter.setArmPosition(SmartDashboard.getNumber("Current Degrees", 0)), shooter)
+    //  );  
     
     // Configure the button bindings
     configureButtonBindings();
@@ -85,15 +101,20 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
 
-//     new JoystickButton(joystick1,1).whileHeld(
-//       new StartEndCommand(
-//       ()-> climber.armDeg(SmartDashboard.getNumber("Art Target Angle:",0)), 
-//       ()-> climber.stopArm(), climber
-//       )
-//     );
+    new JoystickButton(joystick1,1).whileHeld(
+      new StartEndCommand(
+      ()-> climber.armDeg(SmartDashboard.getNumber("Art Target Angle:",0)), 
+      ()-> climber.stopArm(), climber
+      )
+    );
     new JoystickButton(joystick1,2).whenPressed(
       new InstantCommand(
         ()-> climber.zeroArm(), climber
+      )
+    );
+    new JoystickButton(joystick1,3).whileHeld(
+      new RunCommand(
+        ()-> climber.armClimb(), climber
       )
     );
     new JoystickButton(joystick1,4).whileHeld(
@@ -111,7 +132,7 @@ public class RobotContainer {
         new ClimbArmSet(climber,5,0),
         new ClimbArmSet(climber,23,30),
         new ClimbArmSet(climber,23,24),
-        new ClimbArmAdjust(climber, 7),
+        new ClimbArmAdjust(climber, 5),
         new ClimbArmSet(climber,4,climber.getArmPos()),
         new ClimbArmSet(climber,6,-5),
         new ClimbArmSet(climber,0,-5)
@@ -132,12 +153,12 @@ public class RobotContainer {
       new InstantCommand(
         ()-> climber.stop(), climber)
     );
-//     new JoystickButton(joystick1, 9).whenPressed(
-//        new InstantCommand(
-//          ()-> climber.climberAux(SmartDashboard.getNumber("Climber Target Height:",0)),
-//          climber
-//         )
-//      );
+    new JoystickButton(joystick1, 9).whenPressed(
+       new InstantCommand(
+         ()-> climber.climberAux(SmartDashboard.getNumber("Climber Target Height:",0)),
+         climber
+        )
+     );
     new JoystickButton(joystick1, 10).whenPressed(
       new StartEndCommand(
         ()-> climber.setClimbZero(), 
@@ -148,71 +169,71 @@ public class RobotContainer {
 //       new RunCommand(
 //         ()->climber.zeroClimbEncoders(.4*joystick1.getZ()), climber
 //       )
-    new JoystickButton(joystick2, 1).whileHeld(
-      new SequentialCommandGroup(
-        new RunCommand(
-          ()-> shooter.setArmPosition(0), shooter),
-        new ParallelCommandGroup(
-          new StartEndCommand(
-            ()-> shooter.setShootPower(.3),
-            ()-> shooter.stopWheels(), shooter
-          ),
+    // new JoystickButton(joystick2, 1).whileHeld(
+    //   new SequentialCommandGroup(
+    //     new RunCommand(
+    //       ()-> shooter.setArmPosition(0), shooter),
+    //     new ParallelCommandGroup(
+    //       new StartEndCommand(
+    //         ()-> shooter.setShootPower(.3),
+    //         ()-> shooter.stopWheels(), shooter
+    //       ),
 
-          new StartEndCommand(
-            ()-> intake.setPower(-.3),
-            ()-> intake.stop(), intake
-        )
-        )
-      )
-      );
+    //       new StartEndCommand(
+    //         ()-> intake.setPower(-.3),
+    //         ()-> intake.stop(), intake
+    //     )
+    //     )
+    //   )
+    //   );
 
-    new JoystickButton(joystick2, 7).whenPressed(
-      new InstantCommand(
-        ()-> limelight.outputs()
-      )
-    );
+    // new JoystickButton(joystick2, 7).whenPressed(
+    //   new InstantCommand(
+    //     ()-> limelight.outputs()
+    //   )
+    // );
 
-    new JoystickButton(joystick2, 2).whileHeld(
+    // new JoystickButton(joystick2, 2).whileHeld(
 
-      new StartEndCommand(
-        ()-> intake.setPower(joystick1.getZ()),
-        ()-> intake.stop(), intake)
-    );
+    //   new StartEndCommand(
+    //     ()-> intake.setPower(joystick1.getZ()),
+    //     ()-> intake.stop(), intake)
+    // );
 
-    new JoystickButton(joystick2, 5).whileHeld(
-      new StartEndCommand(
-        ()-> shooter.extendPneumatic(true),
-        ()-> shooter.extendPneumatic(false), shooter
-      )
-    );
+    // // new JoystickButton(joystick2, 5).whileHeld(
+    // //   new StartEndCommand(
+    // //     ()-> shooter.extendPneumatic(true),
+    // //     ()-> shooter.extendPneumatic(false), shooter
+    // //   )
+    // // );
 
-    new JoystickButton(joystick2,6).whenPressed(
-      new InstantCommand(
-        ()-> shooter.setArmPosition(-45),shooter
-      )
-    );
+    // new JoystickButton(joystick2,6).whenPressed(
+    //   new InstantCommand(
+    //     ()-> shooter.setArmPosition(-45),shooter
+    //   )
+    // );
 
-    new JoystickButton(joystick2, 3).whileHeld(
-        new StartEndCommand(
-          ()-> shooter.setShootPower(.9),
-          ()-> shooter.stop(), shooter)
-        );
+    // new JoystickButton(joystick2, 3).whileHeld(
+    //     new StartEndCommand(
+    //       ()-> shooter.setShootPower(.9),
+    //       ()-> shooter.stop(), shooter)
+    //     );
 
 
-    new JoystickButton(joystick2, 4).whileHeld(
-      new LimeAlign(limelight,drivetrain)
-      // SmartDashboard.putNumber("DB/Slider 3", 7)
-    );
+    // new JoystickButton(joystick2, 4).whileHeld(
+    //   new LimeAlign(limelight,drivetrain)
+    //   // SmartDashboard.putNumber("DB/Slider 3", 7)
+    // );
     
-    new JoystickButton(joystick2, 9).whenPressed(
-      new SequentialCommandGroup(
-        new RunCommand(
-          ()-> shooter.setArmPosition(-45), shooter),
-        new LimeShoot(limelight, shooter),
-        new RunCommand(
-          ()-> shooter.getArmPosition(), shooter)
-      )  
-    );
+    // new JoystickButton(joystick2, 9).whenPressed(
+    //   new SequentialCommandGroup(
+    //     new RunCommand(
+    //       ()-> shooter.setArmPosition(-45), shooter),
+    //     new LimeShoot(limelight, shooter),
+    //     new RunCommand(
+    //       ()-> shooter.getArmPosition(), shooter)
+    //   )  
+    // );
   }
    
   
@@ -225,7 +246,11 @@ public class RobotContainer {
   
 
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
+    return AutoChooser.getSelected();
+  }
+}
+  
+ // An ExampleCommand will run in autonomous
 //     new SequentialCommandGroup(
 //       new RunCommand(
 //         ()-> drivetrain.motionMagic(1000, 10,DrivetrainConstants.kP,DrivetrainConstants.kI,DrivetrainConstants.kD),
@@ -238,11 +263,6 @@ public class RobotContainer {
 //       )
 //       );
 //     SmartDashboard.putBoolean("AUTOFINISH", false);
-    return null;
-  }
-}
-  
-
 
 //   public Command getAutonomousCommand() {
 //     return new SequentialCommandGroup(

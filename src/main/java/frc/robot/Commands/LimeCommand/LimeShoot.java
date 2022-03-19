@@ -13,6 +13,7 @@ public class LimeShoot extends PIDCommand {
   /**
    * Creates a new LimeAlign.
    */
+  private Shooter shooter;
 
   public LimeShoot(Limelight limelight, Shooter shooter) {
     super(
@@ -28,9 +29,15 @@ public class LimeShoot extends PIDCommand {
           SmartDashboard.putNumber("DB/Slider 3", output);
           // Use the output here
         });
+        this.shooter = shooter;
         addRequirements(shooter,limelight);
     // Use addRequirements() here to declare subsystem dependencies.
     // Configure additional PID options by calling `getController` here.
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+    shooter.setArmPosition(shooter.getArmPosition());
   }
 
   // Returns true when the command should end.
