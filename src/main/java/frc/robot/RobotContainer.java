@@ -13,6 +13,7 @@ import frc.robot.Commands.AutoDrive;
 import frc.robot.Commands.AutoShoot;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Intake;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -22,11 +23,12 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Commands.ClimbCommand.ClimbArmAdjust;
 import frc.robot.Commands.ClimbCommand.ClimbArmSet;
+import frc.robot.Commands.LimeCommand.LimeAlign;
+import frc.robot.Commands.LimeCommand.LimeShoot;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Limelight;
-import frc.robot.Commands.LimeAlign;
-import frc.robot.Commands.LimeShoot;
+import frc.robot.subsystems.Shooter;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -45,8 +47,9 @@ public class RobotContainer {
 
   private final Climber climber = new Climber();
   private final Limelight limelight = new Limelight();
-  public final Shooter shooter = new Shooter();
+  private final Shooter shooter = new Shooter();
   private final Intake intake = new Intake();
+  private final Drivetrain drivetrain = new Drivetrain();
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -237,6 +240,7 @@ public class RobotContainer {
 //     SmartDashboard.putBoolean("AUTOFINISH", false);
     return null;
   }
+}
   
 
 
