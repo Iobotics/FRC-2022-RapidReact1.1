@@ -42,6 +42,7 @@ public final class Constants {
     public static final class OIConstants{
         public static final int kJoystick1 = 0;
         public static final int kJoystick2 = 1;
+        public static final int kXbox1 = 0;
     }
   
     public static final class ClimberConstants{

@@ -268,8 +268,6 @@ public class Climber extends SubsystemBase{
 	public void stopClimbZero() {
 		stopClimb();
 		setClimbZero();
-		masterClimber.configReverseSoftLimitEnable(true,Delay.kTimeoutMs);
-		slaveClimber.configReverseSoftLimitEnable(true,Delay.kTimeoutMs);
 	}
 	
 	/**Function that will zero the Climber's position */

@@ -65,7 +65,7 @@ public class Shooter extends SubsystemBase{
         );
 
         //configure sensor direciton
-        arm.setSensorPhase(false);
+        arm.setSensorPhase(true);
         arm.setInverted(false);
 
         //Peak output
@@ -100,8 +100,12 @@ public class Shooter extends SubsystemBase{
    * Returns the position (in degrees) of the shooter
    */
     public double getArmPosition() {
-        return (arm.getSelectedSensorPosition() - ShooterConstants.kMeasuredPosHorizontal)/ShooterConstants.kTicksPerDegree;
+       return (arm.getSelectedSensorPosition() - ShooterConstants.kMeasuredPosHorizontal)/ShooterConstants.kTicksPerDegree;
     }    
+
+    public boolean isShooterWithinError(double targetPosition, double error) {
+        return (Math.abs(getArmPosition() - targetPosition)) <= error;
+    }
 
     /**
    * Aim the shooter using PID
