@@ -47,8 +47,8 @@ public final class Constants {
   
     public static final class ClimberConstants{
         public static final double kNeutralDeadband = 0.00;
-        public static final double kClimberVelocity = 2.00; //cruise velocity in inches / second
-        public static final double kArmVelocity = 15.00; //cruise velocity in degrees / second'
+        public static final double kClimberVelocity = 4.00; //cruise velocity in inches / second
+        public static final double kArmVelocity = 30.00; //cruise velocity in degrees / second'
         public static final double kArmAcceleration = 15.00; // maximum acceleration in degrees / second^2
         public static final int kArmCountsPerRev = 1680;
         public static final double kBeltGearRatio = (24.0/60.0) * (18.0/72.0) * (25.0/10.0);
