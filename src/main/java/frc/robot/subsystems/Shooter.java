@@ -39,8 +39,9 @@ public class Shooter extends SubsystemBase{
         arm = new TalonSRX(RobotMap.karm);
         
         //------Shooter wheels setup--------
+        shootLeft.setSensorPhase(true); 
+        shootRight.setInverted(false);
         shootRight.follow(shootLeft);
-        shootRight.setInverted(true);
 
         //------Double Solenoid setup------
         //initalize the solenoid to start in the Forward Position

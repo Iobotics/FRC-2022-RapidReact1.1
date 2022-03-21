@@ -13,11 +13,15 @@ import frc.robot.subsystems.Shooter;
 public class AutoShoot extends CommandBase {
   /** Creates a new AutoShoot. */
   Shooter shooter;
-  
+  double shootPower;
+  double shootTime;
 
-  public AutoShoot(Shooter shooter) {
+  public AutoShoot(Shooter shooter,double shootPower,double shootTime) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.shooter = shooter;
+    this.shootPower = shootPower;
+    this.shootTime = shootTime;
+
     addRequirements(shooter);
 
   }
@@ -26,14 +30,14 @@ public class AutoShoot extends CommandBase {
   @Override
   public void initialize() {
 
-    // shooter.stop();
-    // shooter.setShootPower(-.9);
-    // Timer.delay(.5);
-    // shooter.extendPneumatic(true);
-    // Timer.delay(.2);
-    // shooter.extendPneumatic(false);
-    // Timer.delay(.2);
-    // shooter.stop();
+    shooter.stopWheels();
+    shooter.setShootPower(shootPower);
+    Timer.delay(.5);
+    shooter.extendPneumatic(true);
+    Timer.delay(.2);
+    shooter.extendPneumatic(false);
+    Timer.delay(.2);
+    shooter.stopWheels();
 
   }
 
@@ -45,7 +49,7 @@ public class AutoShoot extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    shooter.stop();
+    shooter.stopWheels();
   }
 
   // Returns true when the command should end.

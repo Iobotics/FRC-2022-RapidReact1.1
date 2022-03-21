@@ -59,7 +59,7 @@ public class RobotContainer {
     new ShootPosition(shooter, 45.0,.3),
     new LimeAlign(limelight,drivetrain),
     new LimeShoot(limelight,shooter),
-    new AutoShoot(shooter)
+    new AutoShoot(shooter,.5,.9)
   );
 
   private Command shooterPos = new RunCommand(
@@ -125,10 +125,7 @@ public class RobotContainer {
     );
 
     new JoystickButton(xboxControl,0).whileHeld(
-      new StartEndCommand(
-        ()-> shooter.setShootPower(.8), 
-        ()-> shooter.stopWheels(), shooter
-      )
+      new AutoShoot(shooter, .9, .5)
     );
 
     new JoystickButton(xboxControl,1).whileHeld(
@@ -234,7 +231,7 @@ public class RobotContainer {
     //       ()-> shooter.setArmPosition(0), shooter),
     //     new ParallelCommandGroup(
     //       new StartEndCommand(
-    //         ()-> shooter.setShootPower(.3),
+    //         ()-> shooter.setShootPower(-.3),
     //         ()-> shooter.stopWheels(), shooter
     //       ),
     //       new StartEndCommand(
