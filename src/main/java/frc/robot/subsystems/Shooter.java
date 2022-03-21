@@ -99,8 +99,8 @@ public class Shooter extends SubsystemBase{
     /**
    * Returns the position (in degrees) of the shooter
    */
-    public void getArmPosition() {
-        SmartDashboard.putNumber("Current Degrees",(arm.getSelectedSensorPosition() - ShooterConstants.kMeasuredPosHorizontal)/ShooterConstants.kTicksPerDegree);
+    public double getArmPosition() {
+        return (arm.getSelectedSensorPosition() - ShooterConstants.kMeasuredPosHorizontal)/ShooterConstants.kTicksPerDegree;
     }    
 
     /**

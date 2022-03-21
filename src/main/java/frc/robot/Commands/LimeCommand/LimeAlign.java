@@ -13,8 +13,9 @@ public class LimeAlign extends PIDCommand {
   /**
    * Creates a new LimeAlign.
    */
+  private Drivetrain drivetrain;
 
-  public LimeAlign(Limelight limelight, Drivetrain drive) {
+  public LimeAlign(Limelight limelight, Drivetrain drivetrain) {
     super(
         // The controller that the command will use
         new PIDController(0.02, 0, 0),
@@ -24,13 +25,19 @@ public class LimeAlign extends PIDCommand {
         () -> 0,
         // This uses the output
         output -> {
-          drive.setTank(+output, -output);
+          drivetrain.setTank(+output, -output);
           SmartDashboard.putNumber("DB/Slider 2", output);
           // Use the output here
         });
-        addRequirements(drive,limelight);
+        this.drivetrain = drivetrain;
+        addRequirements(drivetrain,limelight);
     // Use addRequirements() here to declare subsystem dependencies.
     // Configure additional PID options by calling `getController` here.
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+    drivetrain.stop();
   }
 
   // Returns true when the command should end.

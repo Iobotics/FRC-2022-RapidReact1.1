@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Commands.AutoAlign;
 import frc.robot.Commands.AutoDrive;
@@ -50,6 +51,9 @@ public class RobotContainer {
   private final Shooter shooter = new Shooter();
   private final Intake intake = new Intake();
   private final Drivetrain drivetrain = new Drivetrain();
+
+  //setup autonomous commands
+  SendableChooser<Command> autonomousChooser;
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -70,7 +74,7 @@ public class RobotContainer {
     );
 
     shooter.setDefaultCommand(new RunCommand(
-      ()-> shooter.setArmPosition(SmartDashboard.getNumber("Current Degrees", 0)), shooter)
+      ()-> shooter.setArmPosition(shooter.getArmPosition()), shooter)
      );  
     
     // Configure the button bindings
@@ -157,14 +161,13 @@ public class RobotContainer {
             ()-> shooter.setShootPower(.3),
             ()-> shooter.stopWheels(), shooter
           ),
-
           new StartEndCommand(
             ()-> intake.setPower(-.3),
             ()-> intake.stop(), intake
-        )
+          )
         )
       )
-      );
+    );
 
     new JoystickButton(joystick2, 7).whenPressed(
       new InstantCommand(
@@ -173,7 +176,6 @@ public class RobotContainer {
     );
 
     new JoystickButton(joystick2, 2).whileHeld(
-
       new StartEndCommand(
         ()-> intake.setPower(joystick1.getZ()),
         ()-> intake.stop(), intake)
@@ -208,10 +210,9 @@ public class RobotContainer {
       new SequentialCommandGroup(
         new RunCommand(
           ()-> shooter.setArmPosition(-45), shooter),
-        new LimeShoot(limelight, shooter),
-        new RunCommand(
-          ()-> shooter.getArmPosition(), shooter)
-      )  
+        new LimeAlign(limelight, drivetrain),  
+        new LimeShoot(limelight, shooter) 
+      )
     );
   }
    
