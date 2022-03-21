@@ -44,8 +44,9 @@ public class RobotContainer {
 
   //private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
-  private final Joystick joystick1 = new Joystick(OIConstants.kJoystick1);
-  private final Joystick joystick2 = new Joystick(OIConstants.kJoystick2);
+  private final Joystick rightJoystick = new Joystick(OIConstants.kJoystick1);
+  private final Joystick leftJoystick = new Joystick(OIConstants.kJoystick2);
+  private final XboxController xboxControl = new XboxController(OIConstants.kXbox1);
 
   private final Climber climber = new Climber();
   private final Limelight limelight = new Limelight();
@@ -58,6 +59,10 @@ public class RobotContainer {
     new LimeAlign(limelight,drivetrain),
     new LimeShoot(limelight,shooter),
     new AutoShoot(shooter)
+  );
+
+  private Command shooterPos = new RunCommand(
+    ()-> shooter.setArmPosition(90.0*Math.abs(xboxControl.getLeftY())), shooter
   );
 
   SendableChooser<Command> AutoChooser = new SendableChooser<>();
@@ -81,13 +86,13 @@ public class RobotContainer {
     SmartDashboard.getNumber("Verks",2438);
     SmartDashboard.putNumber("Drivetrain Target (in):", 0);
     
-    // drivetrain.setDefaultCommand(new RunCommand(
-    //   () -> drivetrain.setTank(joystick1.getY(), joystick2.getY()), drivetrain)
-    // );
+    drivetrain.setDefaultCommand(new RunCommand(
+      () -> drivetrain.setTank(rightJoystick.getY(), leftJoystick.getY()), drivetrain)
+    );
 
-    // shooter.setDefaultCommand(new RunCommand(
-    //   ()-> shooter.setArmPosition(SmartDashboard.getNumber("Current Degrees", 0)), shooter)
-    //  );  
+    shooter.setDefaultCommand(new RunCommand(
+      ()-> shooter.setArmPosition(0), shooter)
+     );  
     
     // Configure the button bindings
     configureButtonBindings();
@@ -100,31 +105,81 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    //====================GAME=BUTTON=BINDINGS======================
+    new JoystickButton(leftJoystick,1).whileHeld(
+      new ParallelCommandGroup(
+        new StartEndCommand(
+          ()-> intake.setPower(.9), 
+          ()-> intake.stop(), intake
+        ),
+        new StartEndCommand(
+          ()-> shooter.setShootPower(-.4), 
+          ()-> shooter.stopWheels(), shooter
+        )
+      )
+    );
 
-    new JoystickButton(joystick1,1).whileHeld(
+    new JoystickButton(xboxControl,0).whileHeld(
+      new StartEndCommand(
+        ()-> shooter.setShootPower(.8), 
+        ()-> shooter.stopWheels(), shooter
+      )
+    );
+
+    new JoystickButton(xboxControl,1).whileHeld(
+      new StartEndCommand(
+        ()-> shooter.extendPneumatic(true), 
+        ()-> shooter.extendPneumatic(false), shooter
+      )
+    );
+
+    new JoystickButton(xboxControl,2).whileHeld(
+      new StartEndCommand(
+        ()-> shooter.setArmPosition(90.0*Math.abs(xboxControl.getLeftY())), 
+        ()-> shooter.setArmPosition(shooter.getArmPosition()), shooter
+      )
+    );
+
+    new JoystickButton(xboxControl,3).whenPressed(
+      new RunCommand(
+        ()-> shooter.setArmPosition(-10.0), shooter
+      )
+    );
+
+    new JoystickButton(xboxControl, 3).whenInactive(
+      new RunCommand(
+        ()-> shooter., requirements), true);
+      
+
+
+
+    //===================TESTING=BUTTON=BINDINGS====================
+
+    /*
+    new JoystickButton(rightJoystick,1).whileHeld(
       new StartEndCommand(
       ()-> climber.armDeg(SmartDashboard.getNumber("Art Target Angle:",0)), 
       ()-> climber.stopArm(), climber
       )
     );
-    new JoystickButton(joystick1,2).whenPressed(
+    new JoystickButton(rightJoystick,2).whenPressed(
       new InstantCommand(
         ()-> climber.zeroArm(), climber
       )
     );
-    new JoystickButton(joystick1,3).whileHeld(
+    new JoystickButton(rightJoystick,3).whileHeld(
       new RunCommand(
         ()-> climber.armClimb(), climber
       )
     );
-    new JoystickButton(joystick1,4).whileHeld(
+    new JoystickButton(rightJoystick,4).whileHeld(
       new StartEndCommand(
-        ()->climber.armSpeed(joystick1.getZ()),
+        ()->climber.armSpeed(rightJoystick.getZ()),
         ()-> climber.stopArm(), climber
       )
     );
     
-    new JoystickButton(joystick1,5).whenPressed(
+    new JoystickButton(rightJoystick,5).whenPressed(
       //this sequential Command Group should automatically climb.
       new SequentialCommandGroup(
         new ClimbArmSet(climber,0,-5),
@@ -138,38 +193,39 @@ public class RobotContainer {
         new ClimbArmSet(climber,0,-5)
       )
     );
-    new JoystickButton(joystick1,6).whenPressed(
+    new JoystickButton(rightJoystick,6).whenPressed(
       new InstantCommand(
         ()-> climber.refreshDash(), climber
       ) 
     );
-    new JoystickButton(joystick1, 7).whileHeld(
+    new JoystickButton(rightJoystick, 7).whileHeld(
       new StartEndCommand(
-        ()-> climber.setClimbPower(joystick1.getZ(),joystick1.getZ()), 
+        ()-> climber.setClimbPower(rightJoystick.getZ(),rightJoystick.getZ()), 
         ()-> climber.stopClimb(), climber
       )
     );
-    new JoystickButton(joystick1,8).whenPressed(
+    new JoystickButton(rightJoystick,8).whenPressed(
       new InstantCommand(
         ()-> climber.stop(), climber)
     );
-    new JoystickButton(joystick1, 9).whenPressed(
+    new JoystickButton(rightJoystick, 9).whenPressed(
        new InstantCommand(
          ()-> climber.climberAux(SmartDashboard.getNumber("Climber Target Height:",0)),
          climber
         )
      );
-    new JoystickButton(joystick1, 10).whenPressed(
+    new JoystickButton(rightJoystick, 10).whenPressed(
       new StartEndCommand(
         ()-> climber.setClimbZero(), 
         ()-> climber.stopClimbZero(), climber
       )
     );
-//     new JoystickButton(joystick1,11).whileHeld(
+*/
+//     new JoystickButton(rightJoystick,11).whileHeld(
 //       new RunCommand(
-//         ()->climber.zeroClimbEncoders(.4*joystick1.getZ()), climber
+//         ()->climber.zeroClimbEncoders(.4*rightJoystick.getZ()), climber
 //       )
-    // new JoystickButton(joystick2, 1).whileHeld(
+    // new JoystickButton(leftJoystick, 1).whileHeld(
     //   new SequentialCommandGroup(
     //     new RunCommand(
     //       ()-> shooter.setArmPosition(0), shooter),
@@ -187,45 +243,45 @@ public class RobotContainer {
     //   )
     //   );
 
-    // new JoystickButton(joystick2, 7).whenPressed(
+    // new JoystickButton(leftJoystick, 7).whenPressed(
     //   new InstantCommand(
     //     ()-> limelight.outputs()
     //   )
     // );
 
-    // new JoystickButton(joystick2, 2).whileHeld(
+    // new JoystickButton(leftJoystick, 2).whileHeld(
 
     //   new StartEndCommand(
-    //     ()-> intake.setPower(joystick1.getZ()),
+    //     ()-> intake.setPower(rightJoystick.getZ()),
     //     ()-> intake.stop(), intake)
     // );
 
-    // // new JoystickButton(joystick2, 5).whileHeld(
+    // // new JoystickButton(leftJoystick, 5).whileHeld(
     // //   new StartEndCommand(
     // //     ()-> shooter.extendPneumatic(true),
     // //     ()-> shooter.extendPneumatic(false), shooter
     // //   )
     // // );
 
-    // new JoystickButton(joystick2,6).whenPressed(
+    // new JoystickButton(leftJoystick,6).whenPressed(
     //   new InstantCommand(
     //     ()-> shooter.setArmPosition(-45),shooter
     //   )
     // );
 
-    // new JoystickButton(joystick2, 3).whileHeld(
+    // new JoystickButton(leftJoystick, 3).whileHeld(
     //     new StartEndCommand(
     //       ()-> shooter.setShootPower(.9),
     //       ()-> shooter.stop(), shooter)
     //     );
 
 
-    // new JoystickButton(joystick2, 4).whileHeld(
+    // new JoystickButton(leftJoystick, 4).whileHeld(
     //   new LimeAlign(limelight,drivetrain)
     //   // SmartDashboard.putNumber("DB/Slider 3", 7)
     // );
     
-    // new JoystickButton(joystick2, 9).whenPressed(
+    // new JoystickButton(leftJoystick, 9).whenPressed(
     //   new SequentialCommandGroup(
     //     new RunCommand(
     //       ()-> shooter.setArmPosition(-45), shooter),
