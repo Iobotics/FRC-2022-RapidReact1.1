@@ -146,9 +146,9 @@ public class RobotContainer {
       )
     );
 
-    new JoystickButton(xboxControl, 3).whenInactive(
-      new RunCommand(
-        ()-> shooter., requirements), true);
+    // new JoystickButton(xboxControl, 3).whenInactive(
+    //   new RunCommand(
+    //     ()-> shooter., requirements), true);
       
 
 
