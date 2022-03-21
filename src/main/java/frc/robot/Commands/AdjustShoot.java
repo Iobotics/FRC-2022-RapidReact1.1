@@ -4,15 +4,18 @@
 
 package frc.robot.Commands;
 
+
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Shooter;
 
 public class AdjustShoot extends CommandBase {
   /** Creates a new AdjustShoot. */
   Shooter shooter;
+  Timer timer;
   double anglePerSecond;
   double startAngle;
-  public AdjustShoot(Shooter shooter,double anglePerSecond) {
+  public AdjustShoot(Shooter shooter, double anglePerSecond) {
     this.shooter = shooter;
     this.anglePerSecond = anglePerSecond;
     addRequirements(shooter);
@@ -23,15 +26,21 @@ public class AdjustShoot extends CommandBase {
   @Override
   public void initialize() {
     startAngle = shooter.getArmPosition();
+    timer.reset();
+    timer.start();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    shooter.setArmPosition(startAngle + anglePerSecond * timer.get());
+  }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    shooter.setArmPosition(startAngle + anglePerSecond * timer.get());
+  }
 
   // Returns true when the command should end.
   @Override

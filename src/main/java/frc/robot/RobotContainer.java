@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Commands.AdjustShoot;
 import frc.robot.Commands.AutoAlign;
 import frc.robot.Commands.AutoDrive;
 import frc.robot.Commands.AutoShoot;
@@ -144,15 +145,13 @@ public class RobotContainer {
       )
     );
 
-    new JoystickButton(xboxControl,3).whenPressed(
-      new RunCommand(
-        ()-> shooter.setArmPosition(-10.0), shooter
-      )
+    new JoystickButton(xboxControl,3).whileHeld(
+     new AdjustShoot(shooter, xboxControl.getLeftY())
     );
 
-    // new JoystickButton(xboxControl, 3).whenInactive(
-    //   new RunCommand(
-    //     ()-> shooter., requirements), true);
+    new JoystickButton(xboxControl, 3).whenInactive(
+      new RunCommand(
+        ()-> shooter.setArmPosition(shooter.getArmPosition()), shooter), true);
       
 
 
