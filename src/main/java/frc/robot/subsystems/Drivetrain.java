@@ -11,23 +11,31 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.RobotMap;
 
 public class Drivetrain extends SubsystemBase {
 
-  private TalonFX leftMaster;
-  private TalonFX rightMaster;
-  private TalonFX leftSlave;
-  private TalonFX rightSlave;
+  private WPI_TalonFX leftMaster;
+  private WPI_TalonFX rightMaster;
+  private WPI_TalonFX leftSlave;
+  private WPI_TalonFX rightSlave;
+  private DifferentialDrive drive;
 
   public Drivetrain() {
     //initalize Talon FX motors
-    leftMaster = new TalonFX(RobotMap.kLeftMaster);
-    rightMaster = new TalonFX(RobotMap.kRightMaster);
-    leftSlave = new TalonFX(RobotMap.kLeftSlave);
-    rightSlave = new TalonFX(RobotMap.kRightSlave);
+    leftMaster = new WPI_TalonFX(RobotMap.kLeftMaster);
+    rightMaster = new WPI_TalonFX(RobotMap.kRightMaster);
+    leftSlave = new WPI_TalonFX(RobotMap.kLeftSlave);
+    rightSlave = new WPI_TalonFX(RobotMap.kRightSlave);
+    MotorControllerGroup left = new MotorControllerGroup(leftMaster, leftSlave);
+    MotorControllerGroup right = new MotorControllerGroup(rightMaster, rightSlave);
+    drive =  new DifferentialDrive(left, right);
   
     //restore facotry settings to ensure consitant behavior
     leftMaster.configFactoryDefault();
@@ -78,6 +86,10 @@ public class Drivetrain extends SubsystemBase {
   public void setTank(double leftPower, double rightPower){
     leftMaster.set(ControlMode.PercentOutput, leftPower);
     rightMaster.set(ControlMode.PercentOutput, rightPower);
+  }
+
+  public void setArcade(double speed, double rotation){
+    drive.arcadeDrive(speed, rotation);
   }
 
   /**

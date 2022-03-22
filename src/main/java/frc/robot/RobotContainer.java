@@ -8,6 +8,7 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+// import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Commands.AdjustShoot;
@@ -85,8 +86,9 @@ public class RobotContainer {
     SmartDashboard.putNumber("Drivetrain Target (in):", 0);
     
     drivetrain.setDefaultCommand(new RunCommand(
-      () -> drivetrain.setTank(rightJoystick.getY(), leftJoystick.getY()), drivetrain)
+      () -> drivetrain.setArcade(leftJoystick.getY(), rightJoystick.getX()), drivetrain)
     );
+    
 
     shooter.setDefaultCommand(new RunCommand(
       ()-> shooter.setArmPosition(shooter.getArmPosition()), shooter)
