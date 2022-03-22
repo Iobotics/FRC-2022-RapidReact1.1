@@ -5,6 +5,9 @@
 package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -16,6 +19,7 @@ import frc.robot.Commands.AutoAlign;
 import frc.robot.Commands.AutoDrive;
 import frc.robot.Commands.AutoShoot;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.TrajectoryConstants;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -298,7 +302,29 @@ public class RobotContainer {
   
 
   public Command getAutonomousCommand() {
-    return AutoChooser.getSelected();
+    //Create a voltage constraint to ensure we dont accelerate too fast
+    var autoVoltageConstraint = 
+      new DifferentialDriveVoltageConstraint(
+        new SimpleMotorFeedforward(
+          TrajectoryConstants.ksVolts,
+          TrajectoryConstants.kvVoltSecondsPerMeter,
+          TrajectoryConstants.kaVoltSecondsSquaredPerMeter),
+        TrajectoryConstants.kDriveKinematics, 
+        10 //Max Voltage
+      );
+
+    //create config for trajectory
+    TrajectoryConfig config = 
+      new TrajectoryConfig(
+        TrajectoryConstants.kMaxSpeedMetersPerSecond,
+        TrajectoryConstants.kMaxAccelerationMetersPerSecondSquared)
+        //add kinematics to ensure max speed is actually obeyed
+        .setKinematics(TrajectoryConstants.kDriveKinematics)
+        //apply voltage constraint
+        .addConstraint(autoVoltageConstraint);
+
+    
+    // return AutoChooser.getSelected();
   }
 }
   

@@ -12,8 +12,14 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivetrainConstants;
@@ -26,6 +32,13 @@ public class Drivetrain extends SubsystemBase {
   private WPI_TalonFX leftSlave;
   private WPI_TalonFX rightSlave;
   private DifferentialDrive drive;
+  MotorControllerGroup left;
+  MotorControllerGroup right;
+
+  //pathfinding setup
+  private final AHRS Gyroscope = new AHRS(SPI.Port.kMXP);
+
+  private final DifferentialDriveOdometry odometry;
 
   public Drivetrain() {
     //initalize Talon FX motors
@@ -33,9 +46,12 @@ public class Drivetrain extends SubsystemBase {
     rightMaster = new WPI_TalonFX(RobotMap.kRightMaster);
     leftSlave = new WPI_TalonFX(RobotMap.kLeftSlave);
     rightSlave = new WPI_TalonFX(RobotMap.kRightSlave);
-    MotorControllerGroup left = new MotorControllerGroup(leftMaster, leftSlave);
-    MotorControllerGroup right = new MotorControllerGroup(rightMaster, rightSlave);
+    left = new MotorControllerGroup(leftMaster, leftSlave);
+    right = new MotorControllerGroup(rightMaster, rightSlave);
     drive =  new DifferentialDrive(left, right);
+
+    //odometry for pathfinding/trajectory
+    odometry = new DifferentialDriveOdometry(Gyroscope.getRotation2d());
   
     //restore facotry settings to ensure consitant behavior
     leftMaster.configFactoryDefault();
@@ -76,7 +92,52 @@ public class Drivetrain extends SubsystemBase {
     leftMaster.config_kI(0, DrivetrainConstants.kDrivetrainGains.kI);
     leftMaster.config_kD(0, DrivetrainConstants.kDrivetrainGains.kD);
     leftMaster.config_kF(0, DrivetrainConstants.kDrivetrainGains.kF);
+
+    //=================Pathfinding=code====================
+
   }
+
+  //updates the odmetry in the periodic blocks, gets rotation (2d), left distance, and right distance (meters)
+  @Override
+  public void periodic() {
+    odometry.update(Gyroscope.getRotation2d(),leftMaster.getSensorCollection().getIntegratedSensorPosition() / DrivetrainConstants.kEncoderPerMeter, rightMaster.getSensorCollection().getIntegratedSensorPosition() / DrivetrainConstants.kEncoderPerMeter);
+  }
+
+  /**
+   * Returns the current wheel speeds of the robot.
+   *
+   * @return The current wheel speeds.
+   */
+  public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+    return new DifferentialDriveWheelSpeeds(leftMaster.getSensorCollection().getIntegratedSensorVelocity() * (1./10.) / DrivetrainConstants.kEncoderPerMeter,rightMaster.getSensorCollection().getIntegratedSensorVelocity() * (1./10.) / DrivetrainConstants.kEncoderPerMeter); 
+  }
+
+  /**
+   * Returns the heading of the robot.
+   *
+   * @return the robot's heading in degrees, from -180 to 180
+   */
+  public double getHeading() {
+    return Gyroscope.getRotation2d().getDegrees();
+  }
+
+  public Pose2d getPose() {
+    return odometry.getPoseMeters();
+  }
+
+  /**
+   * Controls the left and right sides of the drive directly with voltages.
+   *
+   * @param leftVolts the commanded left output
+   * @param rightVolts the commanded right output
+   */
+  public void tankDriveVolts(double leftVolts, double rightVolts) {
+    left.setVoltage(leftVolts);
+    right.setVoltage(rightVolts);
+    drive.feed();
+  }
+
+  //===================Drivetrain=Drive===================
 
   /**
    * Function that will Drive the motors in tank mode
