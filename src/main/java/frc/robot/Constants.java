@@ -40,8 +40,8 @@ public final class Constants {
     }
 
     public static final class OIConstants{
-        public static final int kJoystick1 = 0;
-        public static final int kJoystick2 = 1;
+        public static final int kJoystick1 = 1;
+        public static final int kJoystick2 = 0;
         public static final int kXbox1 = 0;
     }
   
@@ -63,20 +63,29 @@ public final class Constants {
     }
   
     public static final class DrivetrainConstants{
+        //the falcon 500 is run by talon FX, which uses a resolution of 1023 as max kP, falcon 500 has built-in 2048 econder, meaning that at a 
+        //kP value of 1, only half a turn means an output of 1. Theoretically, our drivetrain runs at ~
         /* 	                                    			  kP   kI   kD   kF   Iz  PeakOut */
         public static final Gains kDrivetrainGains = new Gains( 0.005, 0.0,  0.0, 0.0, 0,  1 ); //ARM PID values
         public static final int kGearRatio = 2;
-        public static final int kWheelDiameter = 6;
+        public static final double kWheelDiameter = 6.;
     }
 
     public static final class ShooterConstants{
         public static final int kDoubleSolenoidLeftSlot = 0;
         public static final int kDoubleSolenoidRightSlot = 1;
+        //for the TalonSRX, a Error * kP of 1023 is considered "full". For our poteniometer, the typical range of motion is ~300-500, meaning
+        //the greatest error we will likely get is of 200, with the error more likely to be closer to 100 or 50 in a given circumstance.
+        //More info here: https://docs.ctre-phoenix.com/en/stable/ch16_ClosedLoop.html#position-closed-loop-control-mode
+        //good recomendatation for smooth control: Start "D" term ~10x to 100x P term to smoothen movement, and if not reacing target, Integral term should start .01x P gain
+        //in this case, 50  * our error of ~ 200  at a given point is going to be 400, wwhich is only about 1/2 full power, but is still enough. If our netural
+        //deadband is .04 of full power, which coriponds to an error of aproximately 40 encoder units, or 16 degrees. From experience, the arm begins
+        //to oscilate at ~100 units, which would mean an error of aproximately 8 degrees at the current neautral deadband.
         /* 	                                    			  kP   kI   kD   kF   Iz  PeakOut */
-        public static final Gains kShooterGains = new Gains( 0.001, 0.0,  0.0, 0.0, 0,  1 ); //ARM PID values
-        public static final double kTicksPerDegree = (1023.0/10.0) * (170.0 /30.0) * (30.0/20.0); 
-        public static final int kMeasuredPosHorizontal = 291;
-        public static final double kMaxGravityFF = .1;
+        public static final Gains kShooterGains = new Gains( 100.0, 1.0,  1000.0, 0.0, 0,  1 ); //ARM PID values
+        public static final double kTicksPerDegree = (1023.0/10.0) * (170.0 /30.0) * (30.0/20.0) * (1./360.); 
+        public static final int kMeasuredPosHorizontal = -510;
+        public static final double kMaxGravityFF = .00;
         //Target speed is in Degrees/second
         public static final double kArmTargetSpeed = 10;
     }

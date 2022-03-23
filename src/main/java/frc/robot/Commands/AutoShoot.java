@@ -32,9 +32,9 @@ public class AutoShoot extends CommandBase {
 
     shooter.stopWheels();
     shooter.setShootPower(shootPower);
-    Timer.delay(.5);
+    Timer.delay(shootTime);
     shooter.extendPneumatic(true);
-    Timer.delay(.2);
+    Timer.delay(1);
     shooter.extendPneumatic(false);
     Timer.delay(.2);
     shooter.stopWheels();

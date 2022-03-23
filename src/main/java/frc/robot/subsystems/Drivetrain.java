@@ -33,9 +33,9 @@ public class Drivetrain extends SubsystemBase {
     rightMaster = new WPI_TalonFX(RobotMap.kRightMaster);
     leftSlave = new WPI_TalonFX(RobotMap.kLeftSlave);
     rightSlave = new WPI_TalonFX(RobotMap.kRightSlave);
-    MotorControllerGroup left = new MotorControllerGroup(leftMaster, leftSlave);
-    MotorControllerGroup right = new MotorControllerGroup(rightMaster, rightSlave);
-    drive =  new DifferentialDrive(left, right);
+    // MotorControllerGroup left = new MotorControllerGroup(leftMaster, leftSlave);
+    // MotorControllerGroup right = new MotorControllerGroup(rightMaster, rightSlave);
+    // drive =  new DifferentialDrive(left, right);
   
     //restore facotry settings to ensure consitant behavior
     leftMaster.configFactoryDefault();
@@ -88,9 +88,9 @@ public class Drivetrain extends SubsystemBase {
     rightMaster.set(ControlMode.PercentOutput, rightPower);
   }
 
-  public void setArcade(double speed, double rotation){
-    drive.arcadeDrive(speed, rotation);
-  }
+  // public void setArcade(double speed, double rotation){
+  //   drive.arcadeDrive(speed, rotation);
+  // }
 
   /**
    * Moves to the given amount of inches using motion magic

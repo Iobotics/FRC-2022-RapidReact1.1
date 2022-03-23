@@ -39,8 +39,9 @@ public class Shooter extends SubsystemBase{
         arm = new TalonSRX(RobotMap.karm);
         
         //------Shooter wheels setup--------
-        shootLeft.setSensorPhase(true); 
-        shootRight.setInverted(false);
+        shootLeft.setSensorPhase(false); 
+        shootRight.setInverted(true);
+        shootLeft.setInverted(true);
         shootRight.follow(shootLeft);
 
         //------Double Solenoid setup------
@@ -66,8 +67,8 @@ public class Shooter extends SubsystemBase{
         );
 
         //configure sensor direciton
-        arm.setSensorPhase(true);
-        arm.setInverted(false);
+        arm.setSensorPhase(false);
+        arm.setInverted(true);
 
         //Peak output
         arm.configPeakOutputForward(+1.0,Delay.kTimeoutMs);
@@ -83,8 +84,8 @@ public class Shooter extends SubsystemBase{
         arm.configClosedLoopPeriod(PIDConstants.kSlot0, closedLoopTimeMs);
 
         //configure acceleration and cruise velocity
-        arm.configMotionAcceleration(100 * ShooterConstants.kTicksPerDegree);
-        arm.configMotionCruiseVelocity(ShooterConstants.kArmTargetSpeed * (ShooterConstants.kTicksPerDegree ) / 10.0);
+        arm.configMotionAcceleration(1000); //* 100 * ShooterConstants.kTicksPerDegree);
+        arm.configMotionCruiseVelocity(100); //* ShooterConstants.kArmTargetSpeed * (ShooterConstants.kTicksPerDegree ) / 10.0);
         
         //select the PID Slot to be used for primary PID loop
         arm.selectProfileSlot(PIDConstants.kSlot0, PIDConstants.kPIDprimary);
@@ -92,9 +93,9 @@ public class Shooter extends SubsystemBase{
         //enable soft limits
         // arm.configForwardSoftLimitThreshold(250);
         // arm.configReverseSoftLimitThreshold(60);
-
-        // arm.configForwardSoftLimitEnable(true);
-        // arm.configReverseSoftLimitEnable(true);
+        arm.setNeutralMode(NeutralMode.Brake);
+        arm.configForwardSoftLimitEnable(false);
+        arm.configReverseSoftLimitEnable(false);
     }
 
     /**
@@ -105,7 +106,9 @@ public class Shooter extends SubsystemBase{
     }    
 
     public boolean isShooterWithinError(double targetPosition, double error) {
-        return (Math.abs(getArmPosition() - targetPosition)) <= error;
+        SmartDashboard.putNumber("erro1:",Math.abs(getArmPosition() - targetPosition));
+        SmartDashboard.putNumber("err2", error);
+        return (Math.abs(getArmPosition() - targetPosition) <= error);
     }
 
     /**
@@ -123,8 +126,8 @@ public class Shooter extends SubsystemBase{
         double cosineScalar = java.lang.Math.cos(radians);
 
         //generate Target units from degrees
-        double targetPosition = ShooterConstants.kMeasuredPosHorizontal - degrees * ShooterConstants.kTicksPerDegree;
-        
+        double targetPosition = ShooterConstants.kMeasuredPosHorizontal + degrees * ShooterConstants.kTicksPerDegree;
+        // double targetPosition = -400;
         //set PID to run to a target Degrees
         arm.set(ControlMode.MotionMagic,targetPosition,DemandType.ArbitraryFeedForward,ShooterConstants.kMaxGravityFF * cosineScalar);
     }
@@ -180,6 +183,7 @@ public class Shooter extends SubsystemBase{
    * Refreshes SmartDashboard values associated with Shooter
    */
     public void shooterRefresh(){
-        getArmPosition();
+        SmartDashboard.putNumber("ArmPOS:",getArmPosition());
     }
+
 }

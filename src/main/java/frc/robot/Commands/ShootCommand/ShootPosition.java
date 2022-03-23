@@ -4,6 +4,7 @@
 
 package frc.robot.Commands.ShootCommand;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Shooter;
 
@@ -16,12 +17,14 @@ public class ShootPosition extends CommandBase {
   public ShootPosition(Shooter shooter, double shooterTarget, double error) {
     this.shooter = shooter;
     this.shooterTarget = shooterTarget;
+    this.error = error;
     addRequirements(shooter);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    SmartDashboard.putBoolean("ZERODONE", false);
     shooter.setArmPosition(shooterTarget);
   }
 
@@ -31,7 +34,9 @@ public class ShootPosition extends CommandBase {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    SmartDashboard.putBoolean("ZERODONE", true);
+  }
 
   // Returns true when the command should end.
   @Override

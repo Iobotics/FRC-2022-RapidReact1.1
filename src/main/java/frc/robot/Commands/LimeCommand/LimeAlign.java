@@ -14,11 +14,12 @@ public class LimeAlign extends PIDCommand {
    * Creates a new LimeAlign.
    */
   private Drivetrain drivetrain;
+  private Limelight limelight;
 
   public LimeAlign(Limelight limelight, Drivetrain drivetrain) {
     super(
         // The controller that the command will use
-        new PIDController(0.02, 0, 0),
+        new PIDController(0.01, 0, 0),
         // This should return the measurement
         limelight::getTX,
         // This should return the setpoint (can also be a constant)
@@ -29,20 +30,25 @@ public class LimeAlign extends PIDCommand {
           SmartDashboard.putNumber("DB/Slider 2", output);
           // Use the output here
         });
+        this.limelight = limelight;
         this.drivetrain = drivetrain;
         addRequirements(drivetrain,limelight);
     // Use addRequirements() here to declare subsystem dependencies.
     // Configure additional PID options by calling `getController` here.
-  }
-
+    }
+    @Override
+    public void initialize() {
+      SmartDashboard.putBoolean("FIRSTDONE", false);
+    }
   @Override
   public void end(boolean interrupted) {
     drivetrain.stop();
+    SmartDashboard.putBoolean("FIRSTDONE", true);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return (Math.abs(limelight.getTX())) <= 6.0;
   }
 }

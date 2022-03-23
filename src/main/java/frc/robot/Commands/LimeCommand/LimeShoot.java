@@ -14,35 +14,42 @@ public class LimeShoot extends PIDCommand {
    * Creates a new LimeAlign.
    */
   private Shooter shooter;
+  private Limelight limelight;
 
   public LimeShoot(Limelight limelight, Shooter shooter) {
     super(
         // The controller that the command will use
-        new PIDController(0.03, 0, 0),
+        new PIDController(0.04, 0, 0),
         // This should return the measurement
         limelight::getTY,
         // This should return the setpoint (can also be a constant)
         () -> 0,
         // This uses the output
         output -> {
-          shooter.setArmPower(output);
+          shooter.setArmPower(-output);
           SmartDashboard.putNumber("DB/Slider 3", output);
           // Use the output here
         });
+        this.limelight = limelight;
         this.shooter = shooter;
         addRequirements(shooter,limelight);
     // Use addRequirements() here to declare subsystem dependencies.
     // Configure additional PID options by calling `getController` here.
   }
+  @Override
+  public void initialize() {
+    SmartDashboard.putBoolean("secondone", false);
+  }
 
   @Override
   public void end(boolean interrupted) {
     shooter.setArmPosition(shooter.getArmPosition());
+    SmartDashboard.putBoolean("secondone", true);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return (Math.abs(limelight.getTY())) <=6.0;
   }
 }
