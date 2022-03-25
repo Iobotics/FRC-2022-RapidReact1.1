@@ -58,6 +58,9 @@ public class Shooter extends SubsystemBase{
         //Set Neutral Mode
         arm.setNeutralMode(NeutralMode.Brake);
 
+        //Set Neutral Deadband
+        arm.configNeutralDeadband(0.1);
+
         //PID SETUP CONFIGURATION
         //configure Potenientometer (analog input) as PID feedback
         arm.configSelectedFeedbackSensor(
@@ -84,30 +87,33 @@ public class Shooter extends SubsystemBase{
         arm.configClosedLoopPeriod(PIDConstants.kSlot0, closedLoopTimeMs);
 
         //configure acceleration and cruise velocity
-        arm.configMotionAcceleration(1000); //* 100 * ShooterConstants.kTicksPerDegree);
-        arm.configMotionCruiseVelocity(100); //* ShooterConstants.kArmTargetSpeed * (ShooterConstants.kTicksPerDegree ) / 10.0);
+        arm.configMotionAcceleration(50); //* 100 * ShooterConstants.kTicksPerDegree);
+        arm.configMotionCruiseVelocity(50); //* ShooterConstants.kArmTargetSpeed * (ShooterConstants.kTicksPerDegree ) / 10.0);
         
         //select the PID Slot to be used for primary PID loop
         arm.selectProfileSlot(PIDConstants.kSlot0, PIDConstants.kPIDprimary);
 
         //enable soft limits
-        // arm.configForwardSoftLimitThreshold(250);
-        // arm.configReverseSoftLimitThreshold(60);
+        arm.configForwardSoftLimitThreshold(ShooterConstants.kMeasuredPosHorizontal + 80.0 * ShooterConstants.kTicksPerDegree);
+        arm.configReverseSoftLimitThreshold(ShooterConstants.kMeasuredPosHorizontal + -12.0 * ShooterConstants.kTicksPerDegree);
         arm.setNeutralMode(NeutralMode.Brake);
-        arm.configForwardSoftLimitEnable(false);
-        arm.configReverseSoftLimitEnable(false);
+        arm.configForwardSoftLimitEnable(true);
+        arm.configReverseSoftLimitEnable(true);
+
+        arm.set(ControlMode.PercentOutput, 0);
     }
 
     /**
    * Returns the position (in degrees) of the shooter
    */
     public double getArmPosition() {
+        // return arm.getSelectedSensorPosition();
        return (arm.getSelectedSensorPosition() - ShooterConstants.kMeasuredPosHorizontal)/ShooterConstants.kTicksPerDegree;
     }    
 
     public boolean isShooterWithinError(double targetPosition, double error) {
         SmartDashboard.putNumber("erro1:",Math.abs(getArmPosition() - targetPosition));
-        SmartDashboard.putNumber("err2", error);
+        SmartDashboard.putNumber("err2", targetPosition);
         return (Math.abs(getArmPosition() - targetPosition) <= error);
     }
 

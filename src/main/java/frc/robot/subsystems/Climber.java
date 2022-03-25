@@ -22,6 +22,7 @@ import com.revrobotics.SparkMaxRelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
@@ -37,13 +38,18 @@ public class Climber extends SubsystemBase{
 	private SparkMaxLimitSwitch armLimitSwitch;
 	private SparkMaxLimitSwitch armLimitSwitch2;
     private RelativeEncoder armEncoder;
+	private Servo lockl;
+	private Servo lockr;
 
     public Climber() {
         slaveClimber = new TalonSRX(RobotMap.kSlaveClimber);
         masterClimber = new TalonSRX(RobotMap.kMasterClimber);
 
         rotaryArm = new  CANSparkMax(RobotMap.kRotaryArm, MotorType.kBrushless);
-        
+
+		lockr = new Servo(1);
+	  	lockl = new Servo(2);
+
         /*==================Talon=Setup===================*/
 
 		/* Ensure that Motors are disabled */
@@ -323,7 +329,16 @@ public class Climber extends SubsystemBase{
         armCanController.setReference(0.00,CANSparkMax.ControlType.kVoltage);
     }
 
+	/*===================Servo=functions===============================*/
+	public void turnServoIn(){
+		lockl.setAngle(270);
+		lockr.setAngle(270);
+	}
 
+	public void turnServoOut(){
+		lockl.setAngle(90);
+		lockr.setAngle(90);
+	}
 
 	/*===================Informational=functions=======================*/
 

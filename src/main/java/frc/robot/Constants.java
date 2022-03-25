@@ -40,9 +40,9 @@ public final class Constants {
     }
 
     public static final class OIConstants{
-        public static final int kJoystick1 = 1;
-        public static final int kJoystick2 = 0;
-        public static final int kXbox1 = 0;
+        public static final int kJoystick1 = 0;
+        public static final int kJoystick2 = 1;
+        public static final int kXbox1 = 2;
     }
   
     public static final class ClimberConstants{
@@ -82,10 +82,10 @@ public final class Constants {
         //deadband is .04 of full power, which coriponds to an error of aproximately 40 encoder units, or 16 degrees. From experience, the arm begins
         //to oscilate at ~100 units, which would mean an error of aproximately 8 degrees at the current neautral deadband.
         /* 	                                    			  kP   kI   kD   kF   Iz  PeakOut */
-        public static final Gains kShooterGains = new Gains( 100.0, 1.0,  1000.0, 0.0, 0,  1 ); //ARM PID values
+        public static final Gains kShooterGains = new Gains( 60.0, 0.0,  0.975, 0.0, 0,  1 ); //ARM PID values
         public static final double kTicksPerDegree = (1023.0/10.0) * (170.0 /30.0) * (30.0/20.0) * (1./360.); 
-        public static final int kMeasuredPosHorizontal = -510;
-        public static final double kMaxGravityFF = .00;
+        public static final int kMeasuredPosHorizontal = -440;
+        public static final double kMaxGravityFF = .12;
         //Target speed is in Degrees/second
         public static final double kArmTargetSpeed = 10;
     }

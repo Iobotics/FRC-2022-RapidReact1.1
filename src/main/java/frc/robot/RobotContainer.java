@@ -34,6 +34,8 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Shooter;
+import edu.wpi.first.wpilibj.PWM;
+import edu.wpi.first.wpilibj.Servo;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -57,11 +59,13 @@ public class RobotContainer {
   private final Intake intake = new Intake();
   private final Drivetrain drivetrain = new Drivetrain();
 
-  private final Command AutoShooter = new SequentialCommandGroup(
-    new ShootPosition(shooter, 45.0,1.0)
-    // new LimeAlign(limelight,drivetrain)
+  private Command AutoShooter = new SequentialCommandGroup(
+    new ShootPosition(shooter, 45.0,.3,false),
+    //new LimeAlign(limelight,drivetrain),
     // new LimeShoot(limelight,shooter),
-    // new AutoShoot(shooter,.9,3)
+    
+    new ShootPosition(shooter,10.0,.3,true),
+    new AutoShoot(shooter,.6,2.0)
   );
 
   SendableChooser<Command> AutoChooser = new SendableChooser<>();
@@ -75,19 +79,18 @@ public class RobotContainer {
     SmartDashboard.putData(AutoChooser);
     
     SmartDashboard.putNumber("TARGETGOTO:",0);
-    SmartDashboard.putNumber("Shooter Arm Position", 300);
     SmartDashboard.putNumber("Art Target Position:",0);
     SmartDashboard.putNumber("Distance",10);
-    SmartDashboard.putNumber("P",0);
-    SmartDashboard.putNumber("I",0);
-    SmartDashboard.putNumber("D",0);
+    SmartDashboard.putNumber("P", 50);
+    SmartDashboard.putNumber("I", 0);
+    SmartDashboard.putNumber("D", 0);
     SmartDashboard.putNumber("AutoDrive",0);
     SmartDashboard.getNumber("Verks",2438);
     SmartDashboard.putNumber("Drivetrain Target (in):", 0);
     
-    // drivetrain.setDefaultCommand(new RunCommand(
-    //   () -> drivetrain.setTank(leftJoystick.getY(), -rightJoystick.getX()), drivetrain)
-    // );
+    drivetrain.setDefaultCommand(new RunCommand(
+      () -> drivetrain.setTank(leftJoystick.getY(), rightJoystick.getY()), drivetrain)
+    );
     
 
     // shooter.setDefaultCommand(new RunCommand(
@@ -106,77 +109,83 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     //====================GAME=BUTTON=BINDINGS======================
-    // new JoystickButton(leftJoystick,1).whileHeld(
-    //   new ParallelCommandGroup(
-    //     new StartEndCommand(
-    //       ()-> intake.setPower(.9), 
-    //       ()-> intake.stop(), intake
-    //     ),
-    //     new StartEndCommand(
-    //       ()-> shooter.setShootPower(-.4), 
-    //       ()-> shooter.stopWheels(), shooter
-    //     )
+    new JoystickButton(leftJoystick,1).whileHeld(
+      new SequentialCommandGroup(
+        new RunCommand(
+          ()-> shooter.setArmPosition(0), shooter),
+      new ParallelCommandGroup(
+        new StartEndCommand(
+          ()-> intake.setPower(.9), 
+          ()-> intake.stop(), intake
+        ),
+        new StartEndCommand(
+          ()-> shooter.setShootPower(-.4), 
+          ()-> shooter.stopWheels(), shooter
+        )
+      )
+      )
+    );
+    
+    // new JoystickButton(leftJoystick,2).whenPressed(
+    //   new InstantCommand(
+    //     ()-> climber.turnServoIn(),climber
     //   )
     // );
 
-    // new JoystickButton(xboxControl,1).whileHeld(
+    // new JoystickButton(leftJoystick,4).whenPressed(
+    //     new InstantCommand(
+    //       ()-> climber.turnServoOut(),climber       
+    //     )
+    // );
+
+    new JoystickButton(xboxControl, 5).whenPressed(
+      new RunCommand(
+        ()-> shooter.setArmPosition(45), shooter)
+    );
+
+    new JoystickButton(xboxControl, 6).whenPressed(
+      new RunCommand(
+        ()-> shooter.setArmPosition(0), shooter)
+    );
+
+    new JoystickButton(leftJoystick, 2).whenPressed(
+      new RunCommand(
+        ()-> shooter.shooterRefresh(), shooter)
+    );
+
+    new JoystickButton(leftJoystick, 3).whenPressed(
+      new StartEndCommand(
+        ()-> shooter.setArmPosition(SmartDashboard.getNumber("TARGETGOTO:", 0)),
+        ()-> shooter.stopArm(), shooter
+      )
+    );
+    
+
+    // new JoystickButton(xboxControl,0).whileHeld(
     //   new AutoShoot(shooter, .9, .5)
     // );
 
-    new JoystickButton(xboxControl,2).whileHeld(
-      new StartEndCommand(
-        ()-> shooter.extendPneumatic(true), 
-        ()-> shooter.extendPneumatic(false), shooter
-      )
-    );
+    // new JoystickButton(xboxControl,1).whileHeld(
+    //   new StartEndCommand(
+    //     ()-> shooter.extendPneumatic(true), 
+    //     ()-> shooter.extendPneumatic(false), shooter
+    //   )
+    // );
 
-    // new JoystickButton(xboxControl,3).whileHeld(
+    // new JoystickButton(xboxControl,2).whileHeld(
     //   new StartEndCommand(
     //     ()-> shooter.setArmPosition(90.0*Math.abs(xboxControl.getLeftY())), 
     //     ()-> shooter.setArmPosition(shooter.getArmPosition()), shooter
     //   )
     // );
 
-    // new JoystickButton(xboxControl,4).whileHeld(
+    // new JoystickButton(xboxControl,3).whileHeld(
     //  new AdjustShoot(shooter, xboxControl.getLeftY())
     // );
 
-    // new JoystickButton(xboxControl, 4).whenInactive(
+    // new JoystickButton(xboxControl, 3).whenInactive(
     //   new RunCommand(
     //     ()-> shooter.setArmPosition(shooter.getArmPosition()), shooter), true);
-        
-    new JoystickButton(leftJoystick, 9).whenPressed(
-      // new SequentialCommandGroup(
-        new RunCommand(
-          ()-> shooter.setArmPosition(45),
-          shooter)
-        // new LimeAlign(limelight, drivetrain),  
-        // new LimeShoot(limelight, shooter) 
-      // )
-    );    
-
-    new JoystickButton(rightJoystick, 2).whileHeld(
-      new InstantCommand(
-        ()-> shooter.shooterRefresh(),
-        shooter
-      )
-    );
-    new JoystickButton(rightJoystick,8).whenPressed(
-      new ParallelCommandGroup(
-        new InstantCommand(
-          ()->climber.stop(),climber
-        ),
-        new InstantCommand(
-          ()->drivetrain.stop(),drivetrain
-        ),
-        new InstantCommand(
-          ()->intake.stop(),intake
-        ),
-        new InstantCommand(
-          ()->shooter.stop(),shooter
-        )
-      )
-    );
       
 
 
@@ -307,7 +316,14 @@ public class RobotContainer {
     //   // SmartDashboard.putNumber("DB/Slider 3", 7)
     // );
     
-   
+    // new JoystickButton(joystick2, 9).whenPressed(
+    //   new SequentialCommandGroup(
+    //     new RunCommand(
+    //       ()-> shooter.setArmPosition(-45), shooter),
+    //     new LimeAlign(limelight, drivetrain),  
+    //     new LimeShoot(limelight, shooter) 
+    //   )
+    // );
   }
    
   

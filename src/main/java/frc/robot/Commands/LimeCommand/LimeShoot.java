@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.subsystems.Shooter;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Limelight;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
@@ -19,14 +20,17 @@ public class LimeShoot extends PIDCommand {
   public LimeShoot(Limelight limelight, Shooter shooter) {
     super(
         // The controller that the command will use
-        new PIDController(0.04, 0, 0),
+        new PIDController(0.06, 0.0000, 0.00105),
         // This should return the measurement
         limelight::getTY,
         // This should return the setpoint (can also be a constant)
-        () -> 0,
+        () -> -10.0,
         // This uses the output
         output -> {
-          shooter.setArmPower(-output);
+          double radians = java.lang.Math.toRadians(shooter.getArmPosition());
+          double cosineScalar = java.lang.Math.cos(radians);
+  
+          shooter.setArmPower(-output + cosineScalar * ShooterConstants.kMaxGravityFF);
           SmartDashboard.putNumber("DB/Slider 3", output);
           // Use the output here
         });
@@ -50,6 +54,7 @@ public class LimeShoot extends PIDCommand {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (Math.abs(limelight.getTY())) <=6.0;
+    // return shooter.getArmPosition() >= 90.0;
+    return ((Math.abs(limelight.getTY() + 10.0)) <=0.5) || shooter.getArmPosition() > 90.0;
   }
 }
