@@ -29,6 +29,7 @@ import frc.robot.Commands.ClimbCommand.ClimbArmAdjust;
 import frc.robot.Commands.ClimbCommand.ClimbArmSet;
 import frc.robot.Commands.LimeCommand.LimeAlign;
 import frc.robot.Commands.LimeCommand.LimeShoot;
+import frc.robot.Commands.ShootCommand.ShootAlign;
 import frc.robot.Commands.ShootCommand.ShootPosition;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Climber;
@@ -61,10 +62,7 @@ public class RobotContainer {
 
   private Command AutoShooter = new SequentialCommandGroup(
     new ShootPosition(shooter, 45.0,.3,false),
-    //new LimeAlign(limelight,drivetrain),
-    // new LimeShoot(limelight,shooter),
-    
-    new ShootPosition(shooter,10.0,.3,true),
+    new ShootAlign(shooter,limelight,.3),
     new AutoShoot(shooter,.6,2.0)
   );
 
@@ -145,21 +143,36 @@ public class RobotContainer {
 
     new JoystickButton(xboxControl, 6).whenPressed(
       new RunCommand(
-        ()-> shooter.setArmPosition(0), shooter)
+        ()-> shooter.setArmPosition(0), shooter
+      )
     );
 
-    new JoystickButton(leftJoystick, 2).whenPressed(
-      new RunCommand(
-        ()-> shooter.shooterRefresh(), shooter)
-    );
-
-    new JoystickButton(leftJoystick, 3).whenPressed(
+    new JoystickButton(leftJoystick, 1).whenPressed(
       new StartEndCommand(
-        ()-> shooter.setArmPosition(SmartDashboard.getNumber("TARGETGOTO:", 0)),
+        ()-> shooter.setArmPosition(45),
         ()-> shooter.stopArm(), shooter
       )
     );
+
+    new JoystickButton(leftJoystick, 2).whileHeld(
+      new ParallelCommandGroup(
+        new RunCommand (
+        ()-> shooter.shooterRefresh(), shooter),
+        new RunCommand(
+        ()-> limelight.outputs(), limelight)
+      )
+    );
     
+
+    
+
+    new JoystickButton(leftJoystick, 6).toggleWhenActive(
+      new AdjustShoot(shooter, 2.0)
+    );
+    
+    new JoystickButton(leftJoystick, 7).toggleWhenActive(
+      new AdjustShoot(shooter, -2.0)
+    );
 
     // new JoystickButton(xboxControl,0).whileHeld(
     //   new AutoShoot(shooter, .9, .5)

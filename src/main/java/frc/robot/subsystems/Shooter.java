@@ -87,8 +87,8 @@ public class Shooter extends SubsystemBase{
         arm.configClosedLoopPeriod(PIDConstants.kSlot0, closedLoopTimeMs);
 
         //configure acceleration and cruise velocity
-        arm.configMotionAcceleration(50); //* 100 * ShooterConstants.kTicksPerDegree);
-        arm.configMotionCruiseVelocity(50); //* ShooterConstants.kArmTargetSpeed * (ShooterConstants.kTicksPerDegree ) / 10.0);
+        arm.configMotionAcceleration(10); //* 100 * ShooterConstants.kTicksPerDegree);
+        arm.configMotionCruiseVelocity(10); //* ShooterConstants.kArmTargetSpeed * (ShooterConstants.kTicksPerDegree ) / 10.0);
         
         //select the PID Slot to be used for primary PID loop
         arm.selectProfileSlot(PIDConstants.kSlot0, PIDConstants.kPIDprimary);
