@@ -25,8 +25,8 @@ public class ShootAlign extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    // adjustedTarget = a + b*limelight.getTY() + c*Math.pow(limelight.getTY(),2);
-    // shooter.setArmPosition(adjustedTarget);
+    adjustedTarget = 71.0 + .565*limelight.getTY() + -.00656*Math.pow(limelight.getTY(),2);
+    shooter.setArmPosition(adjustedTarget);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -42,7 +42,7 @@ public class ShootAlign extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    // return (shooter.isShooterWithinError(adjustedTarget,error);
-    return false;
+    return (shooter.isShooterWithinError(adjustedTarget,error));
+    // return false;
   }
 }

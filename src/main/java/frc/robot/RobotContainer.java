@@ -63,8 +63,11 @@ public class RobotContainer {
   private Command AutoShooter = new SequentialCommandGroup(
     new ShootPosition(shooter, 45.0,.3,false),
     new ShootAlign(shooter,limelight,.3),
-    new AutoShoot(shooter,.6,2.0)
+    new AutoShoot(shooter,.6,4.0)
   );
+  private Command GoUp = new AdjustShoot(shooter, 2.0);
+  private Command GoDown = new AdjustShoot(shooter, -2.0);
+
 
   SendableChooser<Command> AutoChooser = new SendableChooser<>();
   
@@ -92,7 +95,7 @@ public class RobotContainer {
     
 
     // shooter.setDefaultCommand(new RunCommand(
-    //   ()-> shooter.setArmPosition(shooter.getArmPosition()), shooter)
+    //   ()-> shooter.setArmPosition(),shooter)
     //  );  
     
     // Configure the button bindings
@@ -107,22 +110,22 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     //====================GAME=BUTTON=BINDINGS======================
-    new JoystickButton(leftJoystick,1).whileHeld(
-      new SequentialCommandGroup(
-        new RunCommand(
-          ()-> shooter.setArmPosition(0), shooter),
-      new ParallelCommandGroup(
-        new StartEndCommand(
-          ()-> intake.setPower(.9), 
-          ()-> intake.stop(), intake
-        ),
-        new StartEndCommand(
-          ()-> shooter.setShootPower(-.4), 
-          ()-> shooter.stopWheels(), shooter
-        )
-      )
-      )
-    );
+    // new JoystickButton(leftJoystick,1).whileHeld(
+    //   new SequentialCommandGroup(
+    //     new RunCommand(
+    //       ()-> shooter.setArmPosition(0), shooter),
+    //   new ParallelCommandGroup(
+    //     new StartEndCommand(
+    //       ()-> intake.setPower(.9), 
+    //       ()-> intake.stop(), intake
+    //     ),
+    //     new StartEndCommand(
+    //       ()-> shooter.setShootPower(-.4), 
+    //       ()-> shooter.stopWheels(), shooter
+    //     )
+    //   )
+    //   )
+    // );
     
     // new JoystickButton(leftJoystick,2).whenPressed(
     //   new InstantCommand(
@@ -135,7 +138,6 @@ public class RobotContainer {
     //       ()-> climber.turnServoOut(),climber       
     //     )
     // );
-
     new JoystickButton(xboxControl, 5).whenPressed(
       new RunCommand(
         ()-> shooter.setArmPosition(45), shooter)
@@ -143,14 +145,13 @@ public class RobotContainer {
 
     new JoystickButton(xboxControl, 6).whenPressed(
       new RunCommand(
-        ()-> shooter.setArmPosition(0), shooter
+        ()-> shooter.setArmPosition(-12), shooter
       )
     );
 
     new JoystickButton(leftJoystick, 1).whenPressed(
-      new StartEndCommand(
-        ()-> shooter.setArmPosition(45),
-        ()-> shooter.stopArm(), shooter
+      new RunCommand(
+        ()-> shooter.setArmPosition(45), shooter
       )
     );
 
@@ -162,18 +163,22 @@ public class RobotContainer {
         ()-> limelight.outputs(), limelight)
       )
     );
-    
 
-    
-
-    new JoystickButton(leftJoystick, 6).toggleWhenActive(
-      new AdjustShoot(shooter, 2.0)
+    new JoystickButton(leftJoystick, 8).whenPressed(
+      new RunCommand(
+        ()->shooter.setArmPosition(SmartDashboard.getNumber("TARGETGOTO:",0)), shooter)
+      // new ShootPosition(shooter,SmartDashboard.getNumber("TARGETGOTO:",0),.5,false)
     );
-    
-    new JoystickButton(leftJoystick, 7).toggleWhenActive(
-      new AdjustShoot(shooter, -2.0)
+    new JoystickButton(leftJoystick, 10).whenPressed(
+      new AutoShoot(shooter,1.0,4.0)
     );
 
+    new JoystickButton(leftJoystick, 11).whenPressed(
+      new RunCommand(
+        ()->shooter.stop(), shooter)
+      // new ShootPosition(shooter,SmartDashboard.getNumber("TARGETGOTO:",0),.5,false)
+    );
+ 
     // new JoystickButton(xboxControl,0).whileHeld(
     //   new AutoShoot(shooter, .9, .5)
     // );
@@ -235,11 +240,12 @@ public class RobotContainer {
     //     new ClimbArmSet(climber,0,-5),
     //     new ClimbArmSet(climber,69,2),
     //     new ClimbArmSet(climber,5,0),
+    //     new ClimbArmSet(climber,16,30),
     //     new ClimbArmSet(climber,24,30),
     //     new ClimbArmSet(climber,24,24),
     //     new ClimbArmAdjust(climber, 5),
-    //     new ClimbArmSet(climber,4,climber.getArmPos()),
-    //     new ClimbArmSet(climber,6,-5),
+    //     new ClimbArmSet(climber,4,0),
+    //     // new ClimbArmSet(climber,6,-5),
     //     new ClimbArmSet(climber,0,-5)
     //   )
     // );
@@ -268,6 +274,16 @@ public class RobotContainer {
     //   new StartEndCommand(
     //     ()-> climber.setClimbZero(), 
     //     ()-> climber.stopClimbZero(), climber
+    //   )
+    // );
+    // new JoystickButton(xboxControl, 1).whenPressed(
+    //   new InstantCommand(
+    //     ()-> climber.turnServoIn(),climber
+    //   )
+    // );
+    // new JoystickButton(xboxControl, 2).whenPressed(
+    //   new InstantCommand(
+    //     ()-> climber.turnServoOut(),climber
     //   )
     // );
 //     new JoystickButton(rightJoystick,11).whileHeld(

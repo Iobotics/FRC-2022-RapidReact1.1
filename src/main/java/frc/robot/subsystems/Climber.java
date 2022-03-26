@@ -47,8 +47,8 @@ public class Climber extends SubsystemBase{
 
         rotaryArm = new  CANSparkMax(RobotMap.kRotaryArm, MotorType.kBrushless);
 
-		lockr = new Servo(1);
-	  	lockl = new Servo(2);
+		lockr = new Servo(0);
+	  	lockl = new Servo(1);
 
         /*==================Talon=Setup===================*/
 
@@ -178,6 +178,8 @@ public class Climber extends SubsystemBase{
 		//Configure Limit Switches to prevent lift from pulling too far
 		masterClimber.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
 		slaveClimber.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
+		masterClimber.overrideLimitSwitchesEnable(true);
+		slaveClimber.overrideLimitSwitchesEnable(true);
 		masterClimber.configSoftLimitDisableNeutralOnLOS(false,Delay.kTimeoutMs);
 		slaveClimber.configSoftLimitDisableNeutralOnLOS(false,Delay.kTimeoutMs);
 		masterClimber.configClearPositionOnLimitR(false, Delay.kTimeoutMs);
@@ -217,7 +219,7 @@ public class Climber extends SubsystemBase{
         rotaryArm.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward,false);
         rotaryArm.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse,false);
 		armLimitSwitch.enableLimitSwitch(false);
-		armLimitSwitch2.enableLimitSwitch(false);
+		// armLimitSwitch2.enableLimitSwitch(false);
 
         armCanController.setOutputRange(-1, 1);
 

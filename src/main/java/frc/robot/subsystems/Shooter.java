@@ -9,6 +9,8 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
@@ -86,9 +88,10 @@ public class Shooter extends SubsystemBase{
         int closedLoopTimeMs = 1;
         arm.configClosedLoopPeriod(PIDConstants.kSlot0, closedLoopTimeMs);
 
-        //configure acceleration and cruise velocity
+        //configure acceleration, cruise velocity, and ramp rate
         arm.configMotionAcceleration(10); //* 100 * ShooterConstants.kTicksPerDegree);
         arm.configMotionCruiseVelocity(10); //* ShooterConstants.kArmTargetSpeed * (ShooterConstants.kTicksPerDegree ) / 10.0);
+        arm.configClosedloopRamp(.25);
         
         //select the PID Slot to be used for primary PID loop
         arm.selectProfileSlot(PIDConstants.kSlot0, PIDConstants.kPIDprimary);
@@ -98,9 +101,13 @@ public class Shooter extends SubsystemBase{
         arm.configReverseSoftLimitThreshold(ShooterConstants.kMeasuredPosHorizontal + -12.0 * ShooterConstants.kTicksPerDegree);
         arm.setNeutralMode(NeutralMode.Brake);
         arm.configForwardSoftLimitEnable(true);
-        arm.configReverseSoftLimitEnable(true);
+        // arm.configReverseSoftLimitEnable(true);
 
+        //set arm percent output to 0
         arm.set(ControlMode.PercentOutput, 0);
+        
+        //config limit switch
+        arm.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
     }
 
     /**
