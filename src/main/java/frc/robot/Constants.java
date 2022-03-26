@@ -84,7 +84,7 @@ public final class Constants {
         /* 	                                    			  kP   kI   kD   kF   Iz  PeakOut */
         public static final Gains kShooterGains = new Gains( 60.0, 0.0,  16.0, 0.0, 0,  1 ); //ARM PID values
         public static final double kTicksPerDegree = (1023.0/10.0) * (170.0 /30.0) * (30.0/20.0) * (1./360.); 
-        public static final int kMeasuredPosHorizontal = -440;
+        public static final int kMeasuredPosHorizontal = -1290;
         public static final double kMaxGravityFF = .12;
         //Target speed is in Degrees/second
         public static final double kArmTargetSpeed = 10;

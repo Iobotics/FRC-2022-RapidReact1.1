@@ -114,8 +114,8 @@ public class Shooter extends SubsystemBase{
    * Returns the position (in degrees) of the shooter
    */
     public double getArmPosition() {
-        // return arm.getSelectedSensorPosition();
-       return (arm.getSelectedSensorPosition() - ShooterConstants.kMeasuredPosHorizontal)/ShooterConstants.kTicksPerDegree;
+        return arm.getSelectedSensorPosition();
+    //    return (arm.getSelectedSensorPosition() - ShooterConstants.kMeasuredPosHorizontal)/ShooterConstants.kTicksPerDegree;
     }    
 
     public boolean isShooterWithinError(double targetPosition, double error) {
