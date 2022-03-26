@@ -65,8 +65,6 @@ public class RobotContainer {
     new ShootAlign(shooter,limelight,.3),
     new AutoShoot(shooter,.6,4.0)
   );
-  private Command GoUp = new AdjustShoot(shooter, 2.0);
-  private Command GoDown = new AdjustShoot(shooter, -2.0);
 
 
   SendableChooser<Command> AutoChooser = new SendableChooser<>();
@@ -90,7 +88,7 @@ public class RobotContainer {
     SmartDashboard.putNumber("Drivetrain Target (in):", 0);
     
     drivetrain.setDefaultCommand(new RunCommand(
-      () -> drivetrain.setTank(leftJoystick.getY(), rightJoystick.getY()), drivetrain)
+      () -> drivetrain.setArcade(leftJoystick.getY(), rightJoystick.getY()),drivetrain)
     );
     
 
@@ -110,22 +108,18 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     //====================GAME=BUTTON=BINDINGS======================
-    // new JoystickButton(leftJoystick,1).whileHeld(
-    //   new SequentialCommandGroup(
-    //     new RunCommand(
-    //       ()-> shooter.setArmPosition(0), shooter),
-    //   new ParallelCommandGroup(
-    //     new StartEndCommand(
-    //       ()-> intake.setPower(.9), 
-    //       ()-> intake.stop(), intake
-    //     ),
-    //     new StartEndCommand(
-    //       ()-> shooter.setShootPower(-.4), 
-    //       ()-> shooter.stopWheels(), shooter
-    //     )
-    //   )
-    //   )
-    // );
+    new JoystickButton(leftJoystick,1).whileHeld(
+      new ParallelCommandGroup(
+        new StartEndCommand(
+          ()-> intake.setPower(.9), 
+          ()-> intake.stop(), intake
+        ),
+        new StartEndCommand(
+          ()-> shooter.setShootPower(-.4), 
+          ()-> shooter.stopWheels(), shooter
+        )
+      )
+    );
     
     // new JoystickButton(leftJoystick,2).whenPressed(
     //   new InstantCommand(
@@ -138,20 +132,14 @@ public class RobotContainer {
     //       ()-> climber.turnServoOut(),climber       
     //     )
     // );
-    new JoystickButton(xboxControl, 5).whenPressed(
+    new JoystickButton(xboxControl, 4).whenPressed(
       new RunCommand(
         ()-> shooter.setArmPosition(45), shooter)
     );
 
-    new JoystickButton(xboxControl, 6).whenPressed(
+    new JoystickButton(xboxControl, 1).whenPressed(
       new RunCommand(
         ()-> shooter.setArmPosition(-12), shooter
-      )
-    );
-
-    new JoystickButton(leftJoystick, 1).whenPressed(
-      new RunCommand(
-        ()-> shooter.setArmPosition(45), shooter
       )
     );
 
@@ -164,13 +152,11 @@ public class RobotContainer {
       )
     );
 
-    new JoystickButton(leftJoystick, 8).whenPressed(
-      new RunCommand(
-        ()->shooter.setArmPosition(SmartDashboard.getNumber("TARGETGOTO:",0)), shooter)
-      // new ShootPosition(shooter,SmartDashboard.getNumber("TARGETGOTO:",0),.5,false)
-    );
-    new JoystickButton(leftJoystick, 10).whenPressed(
-      new AutoShoot(shooter,1.0,4.0)
+    new JoystickButton(xboxControl, 2).whenPressed(
+      new SequentialCommandGroup(
+        new ShootAlign(shooter,limelight,.3),
+        new AutoShoot(shooter,1.0,2.0)
+      )
     );
 
     new JoystickButton(leftJoystick, 11).whenPressed(
