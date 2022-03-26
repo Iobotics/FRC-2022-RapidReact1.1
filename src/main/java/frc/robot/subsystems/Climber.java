@@ -218,6 +218,7 @@ public class Climber extends SubsystemBase{
         //enable motor soft limits
         rotaryArm.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward,false);
         rotaryArm.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse,false);
+		// rotaryArm.setSmartCurrentLimit(limit);
 		armLimitSwitch.enableLimitSwitch(false);
 		// armLimitSwitch2.enableLimitSwitch(false);
 

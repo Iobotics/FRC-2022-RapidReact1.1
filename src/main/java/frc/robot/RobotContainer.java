@@ -63,8 +63,9 @@ public class RobotContainer {
   private Command AutoShooter = new SequentialCommandGroup(
     new ShootPosition(shooter, 45.0,.3,false),
     new ShootAlign(shooter,limelight,.3),
-    new AutoShoot(shooter,.6,4.0)
+    new AutoShoot(shooter,1.0,2.0)
   );
+
 
 
   SendableChooser<Command> AutoChooser = new SendableChooser<>();
@@ -73,7 +74,6 @@ public class RobotContainer {
   public RobotContainer() {
     // Add commands to the autonomous command chooser
     AutoChooser.setDefaultOption("LimeLight Alignment", AutoShooter);
-
     // Put the chooser on the dashboard
     SmartDashboard.putData(AutoChooser);
     
@@ -88,7 +88,7 @@ public class RobotContainer {
     SmartDashboard.putNumber("Drivetrain Target (in):", 0);
     
     drivetrain.setDefaultCommand(new RunCommand(
-      () -> drivetrain.setArcade(leftJoystick.getY(), rightJoystick.getY()),drivetrain)
+      () -> drivetrain.setArcade(leftJoystick.getY(), -rightJoystick.getX()),drivetrain)
     );
     
 
@@ -139,7 +139,7 @@ public class RobotContainer {
 
     new JoystickButton(xboxControl, 1).whenPressed(
       new RunCommand(
-        ()-> shooter.setArmPosition(-12), shooter
+        ()-> shooter.setArmPosition(0), shooter
       )
     );
 
@@ -197,85 +197,86 @@ public class RobotContainer {
     //===================TESTING=BUTTON=BINDINGS====================
 
     
-    // new JoystickButton(rightJoystick,1).whileHeld(
-    //   new StartEndCommand(
-    //   ()-> climber.armDeg(SmartDashboard.getNumber("Art Target Angle:",0)), 
-    //   ()-> climber.stopArm(), climber
-    //   )
-    // );
-    // new JoystickButton(rightJoystick,2).whenPressed(
-    //   new InstantCommand(
-    //     ()-> climber.zeroArm(), climber
-    //   )
-    // );
-    // new JoystickButton(rightJoystick,3).whileHeld(
-    //   new RunCommand(
-    //     ()-> climber.armClimb(), climber
-    //   )
-    // );
-    // new JoystickButton(rightJoystick,4).whileHeld(
-    //   new StartEndCommand(
-    //     ()->climber.armSpeed(rightJoystick.getZ()),
-    //     ()-> climber.stopArm(), climber
-    //   )
-    // );
+    new JoystickButton(rightJoystick,1).whileHeld(
+      new StartEndCommand(
+      ()-> climber.armDeg(SmartDashboard.getNumber("Art Target Angle:",0)), 
+      ()-> climber.stopArm(), climber
+      )
+    );
+    new JoystickButton(rightJoystick,2).whenPressed(
+      new InstantCommand(
+        ()-> climber.zeroArm(), climber
+      )
+    );
+    new JoystickButton(rightJoystick,3).whileHeld(
+      new RunCommand(
+        ()-> climber.armClimb(), climber
+      )
+    );
+    new JoystickButton(rightJoystick,4).whileHeld(
+      new StartEndCommand(
+        ()->climber.armSpeed(rightJoystick.getZ()),
+        ()-> climber.stopArm(), climber
+      )
+    );
     
-    // new JoystickButton(rightJoystick,5).whenPressed(
-    //   //this sequential Command Group should automatically climb.
-    //   new SequentialCommandGroup(
-    //     new ClimbArmSet(climber,0,-5),
-    //     new ClimbArmSet(climber,69,2),
-    //     new ClimbArmSet(climber,5,0),
-    //     new ClimbArmSet(climber,16,30),
-    //     new ClimbArmSet(climber,24,30),
-    //     new ClimbArmSet(climber,24,24),
-    //     new ClimbArmAdjust(climber, 5),
-    //     new ClimbArmSet(climber,4,0),
-    //     // new ClimbArmSet(climber,6,-5),
-    //     new ClimbArmSet(climber,0,-5)
-    //   )
-    // );
-    // new JoystickButton(rightJoystick,6).whenPressed(
-    //   new InstantCommand(
-    //     ()-> climber.refreshDash(), climber
-    //   ) 
-    // );
-    // new JoystickButton(rightJoystick, 7).whileHeld(
-    //   new StartEndCommand(
-    //     ()-> climber.setClimbPower(rightJoystick.getZ(),rightJoystick.getZ()), 
-    //     ()-> climber.stopClimb(), climber
-    //   )
-    // );
-    // new JoystickButton(rightJoystick,8).whenPressed(
-    //   new InstantCommand(
-    //     ()-> climber.stop(), climber)
-    // );
-    // new JoystickButton(rightJoystick, 9).whenPressed(
-    //    new InstantCommand(
-    //      ()-> climber.climberAux(SmartDashboard.getNumber("Climber Target Height:",0)),
-    //      climber
-    //     )
-    //  );
-    // new JoystickButton(rightJoystick, 10).whenPressed(
-    //   new StartEndCommand(
-    //     ()-> climber.setClimbZero(), 
-    //     ()-> climber.stopClimbZero(), climber
-    //   )
-    // );
-    // new JoystickButton(xboxControl, 1).whenPressed(
-    //   new InstantCommand(
-    //     ()-> climber.turnServoIn(),climber
-    //   )
-    // );
-    // new JoystickButton(xboxControl, 2).whenPressed(
-    //   new InstantCommand(
-    //     ()-> climber.turnServoOut(),climber
-    //   )
-    // );
-//     new JoystickButton(rightJoystick,11).whileHeld(
-//       new RunCommand(
-//         ()->climber.zeroClimbEncoders(.4*rightJoystick.getZ()), climber
-//       )
+    new JoystickButton(rightJoystick,5).whenPressed(
+      //this sequential Command Group should automatically climb.
+      new SequentialCommandGroup(
+        new ClimbArmSet(climber,0,-5),
+        new ClimbArmSet(climber,69,2),
+        new ClimbArmSet(climber,5,0),
+        new ClimbArmSet(climber,16,30),
+        new ClimbArmSet(climber,24,30),
+        new ClimbArmSet(climber,24,24),
+        new ClimbArmAdjust(climber, 5),
+        new ClimbArmSet(climber,4,0),
+        // new ClimbArmSet(climber,6,-5),
+        new ClimbArmSet(climber,0,-5)
+      )
+    );
+    new JoystickButton(rightJoystick,6).whenPressed(
+      new InstantCommand(
+        ()-> climber.refreshDash(), climber
+      ) 
+    );
+    new JoystickButton(rightJoystick, 7).whileHeld(
+      new StartEndCommand(
+        ()-> climber.setClimbPower(rightJoystick.getZ(),rightJoystick.getZ()), 
+        ()-> climber.stopClimb(), climber
+      )
+    );
+    new JoystickButton(rightJoystick,8).whenPressed(
+      new InstantCommand(
+        ()-> climber.stop(), climber)
+    );
+    new JoystickButton(rightJoystick, 9).whenPressed(
+       new InstantCommand(
+         ()-> climber.climberAux(SmartDashboard.getNumber("Climber Target Height:",0)),
+         climber
+        )
+     );
+    new JoystickButton(rightJoystick, 10).whenPressed(
+      new StartEndCommand(
+        ()-> climber.setClimbZero(), 
+        ()-> climber.stopClimbZero(), climber
+      )
+    );
+    new JoystickButton(xboxControl, 5).whenPressed(
+      new InstantCommand(
+        ()-> climber.turnServoIn(),climber
+      )
+    );
+    new JoystickButton(xboxControl, 6).whenPressed(
+      new InstantCommand(
+        ()-> climber.turnServoOut(),climber
+      )
+    );
+    new JoystickButton(rightJoystick,11).whileHeld(
+      new RunCommand(
+        ()->climber.zeroClimbEncoders(.4*rightJoystick.getZ()), climber
+      )
+    );
     // new JoystickButton(joystick2, 1).whileHeld(
     //   new SequentialCommandGroup(
     //     new RunCommand(
