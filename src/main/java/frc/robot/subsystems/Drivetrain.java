@@ -12,12 +12,16 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.RobotMap;
+
 
 public class Drivetrain extends SubsystemBase {
 
@@ -26,9 +30,11 @@ public class Drivetrain extends SubsystemBase {
   private WPI_TalonFX leftSlave;
   private WPI_TalonFX rightSlave;
   private DifferentialDrive drive;
+  private AHRS ahrs;
 
   public Drivetrain() {
     //initalize Talon FX motors
+    ahrs = new AHRS(SPI.Port.kMXP); 
     leftMaster = new WPI_TalonFX(RobotMap.kLeftMaster);
     rightMaster = new WPI_TalonFX(RobotMap.kRightMaster);
     leftSlave = new WPI_TalonFX(RobotMap.kLeftSlave);
@@ -36,6 +42,7 @@ public class Drivetrain extends SubsystemBase {
     MotorControllerGroup left = new MotorControllerGroup(leftMaster, leftSlave);
     MotorControllerGroup right = new MotorControllerGroup(rightMaster, rightSlave);
     drive =  new DifferentialDrive(left, right);
+    drive.setSafetyEnabled(false);
   
     //restore facotry settings to ensure consitant behavior
     leftMaster.configFactoryDefault();
@@ -76,6 +83,12 @@ public class Drivetrain extends SubsystemBase {
     leftMaster.config_kI(0, DrivetrainConstants.kDrivetrainGains.kI);
     leftMaster.config_kD(0, DrivetrainConstants.kDrivetrainGains.kD);
     leftMaster.config_kF(0, DrivetrainConstants.kDrivetrainGains.kF);
+    
+    rightMaster.config_kP(0, DrivetrainConstants.kDrivetrainGains.kP);
+    rightMaster.config_kI(0, DrivetrainConstants.kDrivetrainGains.kI);
+    rightMaster.config_kD(0, DrivetrainConstants.kDrivetrainGains.kD);
+    rightMaster.config_kF(0, DrivetrainConstants.kDrivetrainGains.kF);
+    
   }
 
   /**
@@ -92,24 +105,45 @@ public class Drivetrain extends SubsystemBase {
     drive.arcadeDrive(speed, rotation);
   }
 
+  public void resetEncoder()
+  {
+    leftMaster.setSelectedSensorPosition(0);
+    rightMaster.setSelectedSensorPosition(0);
+  }
+
+  public double getLeftPosition()
+  {
+    return leftMaster.getSelectedSensorPosition() / DrivetrainConstants.kEncoderPerInch;
+  }
+
+  public double getRightPosition()
+  {
+    return rightMaster.getSelectedSensorPosition() / DrivetrainConstants.kEncoderPerInch;
+  }
+  
+  
+  public void outputs()
+  {
+    SmartDashboard.putNumber("Drivetrain Left Inch:",getLeftPosition());
+    SmartDashboard.putNumber("Drivetrain Left Inch:",getRightPosition());
+  }
+
   /**
    * Moves to the given amount of inches using motion magic
    * @param distance distance to move (inches)
-   * @param speed cruising speed of motor in inches per second
    */
-  public void motionMagic (double distance, double speed) {
-    double rotations = (distance * DrivetrainConstants.kGearRatio)/(DrivetrainConstants.kWheelDiameter*Math.PI);
-    double targetPos = rotations*2048;
+  public void motionMagic (double distance) {
+    double targetPos = distance * DrivetrainConstants.kEncoderPerInch;
     //Convert target speed from inches / second to encoder units / 100 ms
-    double targetSpeed = (speed *DrivetrainConstants.kGearRatio * 2048 * 10) / (DrivetrainConstants.kWheelDiameter * Math.PI);
+    double targetSpeed = (DrivetrainConstants.kDrivetrainSpeed *DrivetrainConstants.kEncoderPerInch ) * (1.0/10.0);
 
-    leftSlave.follow(leftMaster);
-    rightMaster.follow(leftMaster);
-    rightSlave.follow(rightMaster);
     leftMaster.configMotionCruiseVelocity(targetSpeed);
-    leftMaster.configMotionAcceleration(1000);
-    leftMaster.setSelectedSensorPosition(0);
+    leftMaster.configMotionAcceleration(targetSpeed);
+    rightMaster.configMotionCruiseVelocity(targetSpeed);
+    rightMaster.configMotionAcceleration(targetSpeed);
+
     leftMaster.set(ControlMode.MotionMagic, targetPos);
+    rightMaster.set(ControlMode.MotionMagic, targetPos);
   }
 
   /**
@@ -119,15 +153,9 @@ public class Drivetrain extends SubsystemBase {
    * @return true if current position is within error of distance
    */
   public boolean isTargetAchieved (double distance, double error) {
-    double rotations = (distance * DrivetrainConstants.kGearRatio)/(DrivetrainConstants.kWheelDiameter*Math.PI);
-    double targetPos = rotations*2048;
-    //converting allowed error from inches to encoder units
-    double allowedError = ((error * DrivetrainConstants.kGearRatio)/(DrivetrainConstants.kWheelDiameter * Math.PI) * 2048);
-    if(Math.abs(leftMaster.getSelectedSensorPosition() - targetPos) <= allowedError && leftMaster.getSelectedSensorVelocity() == 0.0 && leftMaster.getActiveTrajectoryVelocity() < 3) {
-      return true;
-    } else{
-      return false;
-    }
+    SmartDashboard.putNumber("First:",this.getLeftPosition());
+    SmartDashboard.putNumber("Second:",distance);
+    return(Math.abs(this.getLeftPosition() - distance) <= error);
   }
 
   /**

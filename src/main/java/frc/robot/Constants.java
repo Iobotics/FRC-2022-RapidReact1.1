@@ -66,9 +66,11 @@ public final class Constants {
         //the falcon 500 is run by talon FX, which uses a resolution of 1023 as max kP, falcon 500 has built-in 2048 econder, meaning that at a 
         //kP value of 1, only half a turn means an output of 1. Theoretically, our drivetrain runs at ~14:1, with each rotation of the wheel being 18.85 inches equivelent. 
         /* 	                                    			  kP   kI   kD   kF   Iz  PeakOut */
-        public static final Gains kDrivetrainGains = new Gains( 0.005, 0.0,  0.0, 0.0, 0,  1 ); //ARM PID values
-        public static final int kGearRatio = 2;
+        public static final Gains kDrivetrainGains = new Gains( 0.05, 0.0,  0.0, 0.0, 0,  1 ); //ARM PID values
+        public static final double kGearRatio = 14.0;
         public static final double kWheelDiameter = 6.;
+        public static final double kEncoderPerInch = (1.0/(DrivetrainConstants.kWheelDiameter*Math.PI))*(DrivetrainConstants.kGearRatio)*2048.0 * 50.0/42.5;
+        public static final double kDrivetrainSpeed = 24.0;
     }
 
     public static final class ShooterConstants{

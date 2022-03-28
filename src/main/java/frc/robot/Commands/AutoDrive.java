@@ -8,6 +8,7 @@
 
 
 package frc.robot.Commands;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drivetrain;
 
@@ -29,7 +30,8 @@ public class AutoDrive extends CommandBase {
   public void initialize() {
     // stop motion of drivetrain and enable motionMagic to a distance
     drivetrain.stop();
-    drivetrain.motionMagic(distance, 4);
+    drivetrain.motionMagic(distance);
+    SmartDashboard.putBoolean("Finished", false);
 
   }
 
@@ -43,11 +45,12 @@ public class AutoDrive extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     drivetrain.stop();
+    SmartDashboard.putBoolean("Finished", true);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return drivetrain.isTargetAchieved(distance, .01);
+    return drivetrain.isTargetAchieved(distance, 1.0);
   }
 }

@@ -195,7 +195,7 @@ public class Shooter extends SubsystemBase{
     /**
    * Refreshes SmartDashboard values associated with Shooter
    */
-    public void shooterRefresh(){
+    public void outputs(){
         SmartDashboard.putNumber("ArmPOS:",getArmPosition());
     }
 

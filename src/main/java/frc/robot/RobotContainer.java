@@ -65,6 +65,14 @@ public class RobotContainer {
     new ShootAlign(shooter,limelight,.3),
     new AutoShoot(shooter,1.0,2.0)
   );
+  
+  private Command AutoRed = new SequentialCommandGroup(
+    new AutoDrive(drivetrain,21),
+    new ShootPosition(shooter, 45.0, .3, false),
+    new ShootAlign(shooter, limelight, .3),
+    new AutoShoot(shooter,1.0,2.0),
+    new AutoDrive(drivetrain,50)
+  );
 
 
 
@@ -74,6 +82,7 @@ public class RobotContainer {
   public RobotContainer() {
     // Add commands to the autonomous command chooser
     AutoChooser.setDefaultOption("LimeLight Alignment", AutoShooter);
+    AutoChooser.addOption("Red Auto", AutoRed);
     // Put the chooser on the dashboard
     SmartDashboard.putData(AutoChooser);
     
@@ -155,10 +164,16 @@ public class RobotContainer {
     new JoystickButton(leftJoystick, 2).whileHeld(
       new ParallelCommandGroup(
         new RunCommand (
-        ()-> shooter.shooterRefresh(), shooter),
+        ()-> shooter.outputs(), shooter),
         new RunCommand(
-        ()-> limelight.outputs(), limelight)
+        ()-> limelight.outputs(), limelight),
+        new RunCommand(
+        ()-> drivetrain.outputs(), drivetrain)
       )
+    );
+    new JoystickButton(leftJoystick, 3).whenPressed(
+      new RunCommand (
+      ()-> drivetrain.resetEncoder(), drivetrain)
     );
 
     new JoystickButton(xboxControl, 2).whenPressed(
