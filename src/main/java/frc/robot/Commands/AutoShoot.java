@@ -36,7 +36,6 @@ public class AutoShoot extends CommandBase {
     shooter.extendPneumatic(true);
     // Timer.delay(.4);
     shooter.extendPneumatic(false);
-
   }
 
 

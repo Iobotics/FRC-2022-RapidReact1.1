@@ -64,14 +64,14 @@ public class RobotContainer {
   private Command AutoShooter = new SequentialCommandGroup(
     new ShootPosition(shooter, 45.0,.3,false),
     new ShootAlign(shooter,limelight,.3),
-    new AutoShoot(shooter,1.0,2.0)
+    new AutoShoot(shooter,.6,2.0)
   );
   
   private Command AutoRed = new SequentialCommandGroup(
+    new AutoDrive(drivetrain,0),
     new AutoDrive(drivetrain,21),
-    new ShootPosition(shooter, 45.0, .3, false),
-    new ShootAlign(shooter, limelight, .3),
-    new AutoShoot(shooter,1.0,2.0),
+    new ShootPosition(shooter, 68.0, .3, false),
+    new AutoShoot(shooter,0.6,2.0),
     new AutoDrive(drivetrain,50)
   );
 
@@ -149,7 +149,7 @@ public class RobotContainer {
     // );
     new JoystickButton(xboxControl, 4).whenPressed(
       new RunCommand(
-        ()-> shooter.setArmPosition(45), shooter)
+        ()-> shooter.setArmPosition(68), shooter)
     );
     new JoystickButton(xboxControl, 3).whenPressed(
       new RunCommand(
