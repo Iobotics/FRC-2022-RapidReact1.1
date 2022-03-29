@@ -8,6 +8,7 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.command.WaitCommand;
 // import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -176,10 +177,12 @@ public class RobotContainer {
       ()-> drivetrain.resetEncoder(), drivetrain)
     );
 
-    new JoystickButton(xboxControl, 2).whenPressed(
+    new JoystickButton(xboxControl, 5).whenPressed(
       new SequentialCommandGroup(
-        new ShootAlign(shooter,limelight,.3),
-        new AutoShoot(shooter,1.0,2.0)
+        new RunCommand(()-> shooter.setShootPower(.6),shooter).withTimeout(1.0),
+        new RunCommand(()->shooter.extendPneumatic(true),shooter).withTimeout(.4),
+        new InstantCommand(()->shooter.extendPneumatic(false),shooter),
+        new InstantCommand(()-> shooter.setShootPower(0),shooter)
       )
     );
 

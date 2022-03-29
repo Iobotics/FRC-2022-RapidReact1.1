@@ -15,7 +15,7 @@ public class AutoShoot extends CommandBase {
   Shooter shooter;
   double shootPower;
   double shootTime;
-
+  
   public AutoShoot(Shooter shooter,double shootPower,double shootTime) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.shooter = shooter;
@@ -32,24 +32,24 @@ public class AutoShoot extends CommandBase {
 
     shooter.stopWheels();
     shooter.setShootPower(shootPower);
-    Timer.delay(shootTime);
+    // Timer.delay(shootTime);
     shooter.extendPneumatic(true);
-    Timer.delay(1);
+    // Timer.delay(.4);
     shooter.extendPneumatic(false);
-    Timer.delay(.2);
-    shooter.stopWheels();
 
   }
 
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+  }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     shooter.stopWheels();
+    shooter.extendPneumatic(false);
   }
 
   // Returns true when the command should end.
