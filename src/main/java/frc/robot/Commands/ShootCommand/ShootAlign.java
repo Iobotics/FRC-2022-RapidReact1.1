@@ -26,6 +26,10 @@ public class ShootAlign extends CommandBase {
   @Override
   public void initialize() {
     adjustedTarget = 71.0 + .565*limelight.getTY() + -.00656*Math.pow(limelight.getTY(),2);
+    if(adjustedTarget > 71.0)
+    {
+      adjustedTarget = 71.0;
+    }
     shooter.setArmPosition(adjustedTarget);
   }
 

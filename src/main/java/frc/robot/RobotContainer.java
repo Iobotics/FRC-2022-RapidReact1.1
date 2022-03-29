@@ -130,9 +130,9 @@ public class RobotContainer {
       )
     );
     new JoystickButton(rightJoystick, 1).whileHeld(
-      new StartEndCommand(
-        ()-> intake.setPower(.5), 
-        ()->intake.stop(), intake)
+      new InstantCommand(
+        ()-> shooter.setArmPosition(SmartDashboard.getNumber("TARGETGOTO:",45)), 
+        shooter)
     );
     
     // new JoystickButton(leftJoystick,2).whenPressed(
@@ -237,12 +237,12 @@ public class RobotContainer {
     //     ()-> climber.armClimb(), climber
     //   )
     // );
-    // new JoystickButton(rightJoystick,4).whileHeld(
-    //   new StartEndCommand(
-    //     ()->climber.armSpeed(rightJoystick.getZ()),
-    //     ()-> climber.stopArm(), climber
-    //   )
-    // );
+    new JoystickButton(rightJoystick,4).whileHeld(
+      new StartEndCommand(
+        ()->climber.armSpeed(rightJoystick.getZ()),
+        ()-> climber.stopArm(), climber
+      )
+    );
     
     // new JoystickButton(rightJoystick,5).whenPressed(
     //   //this sequential Command Group should automatically climb.
