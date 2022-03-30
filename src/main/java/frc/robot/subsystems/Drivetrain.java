@@ -124,8 +124,8 @@ public class Drivetrain extends SubsystemBase {
   
   public void outputs()
   {
-    SmartDashboard.putNumber("Drivetrain Left Inch:",getLeftPosition());
-    SmartDashboard.putNumber("Drivetrain Left Inch:",getRightPosition());
+    // SmartDashboard.putNumber("Drivetrain Left Inch:",getLeftPosition());
+    // SmartDashboard.putNumber("Drivetrain Left Inch:",getRightPosition());
   }
 
   /**
@@ -153,8 +153,8 @@ public class Drivetrain extends SubsystemBase {
    * @return true if current position is within error of distance
    */
   public boolean isTargetAchieved (double distance, double error) {
-    SmartDashboard.putNumber("First:",this.getLeftPosition());
-    SmartDashboard.putNumber("Second:",distance);
+    // SmartDashboard.putNumber("First:",this.getLeftPosition());
+    // SmartDashboard.putNumber("Second:",distance);
     return(Math.abs(this.getLeftPosition() - distance) <= error);
   }
 

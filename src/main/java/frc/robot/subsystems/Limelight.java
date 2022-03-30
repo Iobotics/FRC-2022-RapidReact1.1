@@ -38,9 +38,9 @@ public class Limelight extends SubsystemBase {
 
     
 
-    SmartDashboard.putNumber("LimelightX", x);
-    SmartDashboard.putNumber("LimelightY", y);
-    SmartDashboard.putNumber("LimelightArea", area);
+    // SmartDashboard.putNumber("LimelightX", x);
+    // SmartDashboard.putNumber("LimelightY", y);
+    // SmartDashboard.putNumber("LimelightArea", area);
 
 
   }
@@ -70,9 +70,9 @@ public class Limelight extends SubsystemBase {
   public void periodic() {
 
 
-      SmartDashboard.putNumber("LimelightX", tx.getDouble(0.0));
-      SmartDashboard.putNumber("LimelightY", ty.getDouble(0.0));
-      SmartDashboard.putNumber("LimelightArea", ta.getDouble(0.0));
+      // SmartDashboard.putNumber("LimelightX", tx.getDouble(0.0));
+      // SmartDashboard.putNumber("LimelightY", ty.getDouble(0.0));
+      // SmartDashboard.putNumber("LimelightArea", ta.getDouble(0.0));
       //Ignore this part in the future
       //SmartDashboard.putBoolean("Limelight TV", this.isTargetDetected());
 
@@ -112,11 +112,11 @@ public class Limelight extends SubsystemBase {
       }     
 
 
-      SmartDashboard.putBoolean("On Target?", onTarget);
-      SmartDashboard.putBoolean("Above", topTarget);
-      SmartDashboard.putBoolean("Right", rightTarget);
-      SmartDashboard.putBoolean("Left", leftTarget);
-      SmartDashboard.putBoolean("Bottom", bottomTarget);
+      // SmartDashboard.putBoolean("On Target?", onTarget);
+      // SmartDashboard.putBoolean("Above", topTarget);
+      // SmartDashboard.putBoolean("Right", rightTarget);
+      // SmartDashboard.putBoolean("Left", leftTarget);
+      // SmartDashboard.putBoolean("Bottom", bottomTarget);
     
   }
 }

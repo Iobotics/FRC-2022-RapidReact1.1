@@ -119,8 +119,8 @@ public class Shooter extends SubsystemBase{
     }    
 
     public boolean isShooterWithinError(double targetPosition, double error) {
-        SmartDashboard.putNumber("erro1:",Math.abs(getArmPosition() - targetPosition));
-        SmartDashboard.putNumber("err2", targetPosition);
+        // SmartDashboard.putNumber("erro1:",Math.abs(getArmPosition() - targetPosition));
+        // SmartDashboard.putNumber("err2", targetPosition);
         return (Math.abs(getArmPosition() - targetPosition) <= error);
     }
 

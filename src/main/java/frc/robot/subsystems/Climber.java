@@ -350,8 +350,8 @@ public class Climber extends SubsystemBase{
 
 		SmartDashboard.putNumber("Art Target Angle:",0);
 		SmartDashboard.putNumber("Climber Target Height:",0);
-		SmartDashboard.putNumber("MasterClimber: ",masterClimber.getSensorCollection().getQuadraturePosition());
-		SmartDashboard.putNumber("SlaveClimber: ",slaveClimber.getSensorCollection().getQuadraturePosition());
+		// SmartDashboard.putNumber("MasterClimber: ",masterClimber.getSensorCollection().getQuadraturePosition());
+		// SmartDashboard.putNumber("SlaveClimber: ",slaveClimber.getSensorCollection().getQuadraturePosition());
 		SmartDashboard.putNumber("ArmPosition: ",armEncoder.getPosition());
 	}
 
@@ -374,7 +374,7 @@ public class Climber extends SubsystemBase{
 	 */
 	public boolean isClimberWithinError(double error,double targetInch)
 	{
-		SmartDashboard.putNumber("TEST1:", (double)masterClimber.getSelectedSensorPosition(0)/ClimberConstants.kEncoderPerInch);
+		// SmartDashboard.putNumber("TEST1:", (double)masterClimber.getSelectedSensorPosition(0)/ClimberConstants.kEncoderPerInch);
 		return (Math.abs(targetInch - ((double)masterClimber.getSelectedSensorPosition(0)/ClimberConstants.kEncoderPerInch))<=error);
 	}
 
