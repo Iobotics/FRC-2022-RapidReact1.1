@@ -236,6 +236,7 @@ public class Climber extends SubsystemBase{
 
         //ensures that the arm is using the potentiometer as it's feedback device
 		armCanController.setFeedbackDevice(armEncoder);
+		rotaryArm.setSmartCurrentLimit(20);
 
 		rotaryArm.burnFlash();
     }
@@ -334,8 +335,8 @@ public class Climber extends SubsystemBase{
 
 	/*===================Servo=functions===============================*/
 	public void turnServoIn(){
-		lockl.setAngle(270);
-		lockr.setAngle(270);
+		lockl.setAngle(160);
+		lockr.setAngle(160);
 	}
 
 	public void turnServoOut(){

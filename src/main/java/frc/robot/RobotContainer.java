@@ -188,22 +188,23 @@ public class RobotContainer {
       new SequentialCommandGroup(
         new InstantCommand(
         ()-> climber.turnServoOut(),climber
-      ),
+        ),
+        new InstantCommand(()->shooter.setArmPosition(-12.0), shooter),
         new ClimbArmSet(climber,0,-7),
         new ClimbArmSet(climber,69,1),
         new ClimbArmSet(climber,5,0),
         new ClimbArmSet(climber,16,28),
         new ClimbArmSet(climber,24,28),
-        new ClimbArmSet(climber,24,24),
+        new ClimbArmSet(climber,24,20),
         new ClimbArmAdjust(climber, 5),
         new ClimbArmSet(climber,4,-5),
         new ClimbArmSet(climber,0,-5),
         new ClimbArmSet(climber,0,-7),
         new ClimbArmSet(climber,69,1),
         new ClimbArmSet(climber,5,0),
-        new ClimbArmSet(climber,16,30),
-        new ClimbArmSet(climber,24,30),
-        new ClimbArmSet(climber,24,24),
+        new ClimbArmSet(climber,16,28),
+        new ClimbArmSet(climber,24,28),
+        new ClimbArmSet(climber,24,20),
         new ClimbArmAdjust(climber, 5),
         new ClimbArmSet(climber,4,15)
       )
@@ -213,38 +214,6 @@ public class RobotContainer {
         ()->shooter.outputs(), shooter
       )
     );
-    new JoystickButton(leftJoystick, 8).whenPressed(
-      new InstantCommand (
-        ()->climber.turnServoIn(),climber
-      )
-    );
-    
-    // new JoystickButton(leftJoystick,2).whenPressed(
-    //   new InstantCommand(
-    //     ()-> climber.turnServoIn(),climber
-    //   )
-    // );
-
-    // new JoystickButton(leftJoystick,4).whenPressed(
-    //     new InstantCommand(
-    //       ()-> climber.turnServoOut(),climber       
-    //     )
-    // );
-    // new JoystickButton(xboxControl, 4).whenPressed(
-    //   new RunCommand(
-    //     ()-> shooter.setArmPosition(68), shooter)
-    // );
-    // new JoystickButton(xboxControl, 3).whenPressed(
-    //   new RunCommand(
-    //     (  )-> shooter.stop(), shooter)
-    // );
-
-    // new JoystickButton(xboxControl, 1).whenPressed(
-    //   new RunCommand(
-    //     ()-> shooter.setArmPosition(-12), shooter
-    //   )
-    // );
-
     // new JoystickButton(leftJoystick, 2).whileHeld(
     //   new ParallelCommandGroup(
     //     new RunCommand (
@@ -255,54 +224,7 @@ public class RobotContainer {
     //     ()-> drivetrain.outputs(), drivetrain)
     //   )
     // );
-    // new JoystickButton(leftJoystick, 3).whenPressed(
-    //   new RunCommand (
-    //   ()-> drivetrain.resetEncoder(), drivetrain)
-    // );
-
-    // new JoystickButton(xboxControl, 5).whenPressed(
-    //   new SequentialCommandGroup(
-    //     new RunCommand(()-> shooter.setShootPower(.6),shooter).withTimeout(1.0),
-    //     new RunCommand(()->shooter.extendPneumatic(true),shooter).withTimeout(.4),
-    //     new InstantCommand(()->shooter.extendPneumatic(false),shooter),
-    //     new InstantCommand(()-> shooter.setShootPower(0),shooter)
-    //   )
-    // );
-
-    // new JoystickButton(leftJoystick, 11).whenPressed(
-    //   new RunCommand(
-    //     ()->shooter.stop(), shooter)
-    //   // new ShootPosition(shooter,SmartDashboard.getNumber("TARGETGOTO:",0),.5,false)
-    // );
  
-    // new JoystickButton(xboxControl,0).whileHeld(
-    //   new AutoShoot(shooter, .9, .5)
-    // );
-
-    // new JoystickButton(xboxControl,1).whileHeld(
-    //   new StartEndCommand(
-    //     ()-> shooter.extendPneumatic(true), 
-    //     ()-> shooter.extendPneumatic(false), shooter
-    //   )
-    // );
-
-    // new JoystickButton(xboxControl,2).whileHeld(
-    //   new StartEndCommand(
-    //     ()-> shooter.setArmPosition(90.0*Math.abs(xboxControl.getLeftY())), 
-    //     ()-> shooter.setArmPosition(shooter.getArmPosition()), shooter
-    //   )
-    // );
-
-    // new JoystickButton(xboxControl,3).whileHeld(
-    //  new AdjustShoot(shooter, xboxControl.getLeftY())
-    // );
-
-    // new JoystickButton(xboxControl, 3).whenInactive(
-    //   new RunCommand(
-    //     ()-> shooter.setArmPosition(shooter.getArmPosition()), shooter), true);
-      
-
-
 
     //===================TESTING=BUTTON=BINDINGS====================
 
@@ -313,68 +235,44 @@ public class RobotContainer {
     //   ()-> climber.stopArm(), climber
     //   )
     // );
-    new JoystickButton(rightJoystick,2).whenPressed(
-      new InstantCommand(
-        ()-> climber.zeroArm(), climber
+    new JoystickButton(rightJoystick,6).whileHeld(
+      new SequentialCommandGroup(
+        new RunCommand(
+        ()-> climber.armDeg(0), climber
+        ),
+        new RunCommand(
+        ()-> climber.climberAux(0), climber
+        )
       )
     );
-    new JoystickButton(rightJoystick,4).whileHeld(
+    new JoystickButton(leftJoystick,6).whileHeld(
       new StartEndCommand(
-        ()->climber.armSpeed(rightJoystick.getZ()),
+        ()->climber.armSpeed(leftJoystick.getZ()),
         ()-> climber.stopArm(), climber
       )
     );
-    
-    new JoystickButton(rightJoystick,5).whenPressed(
-      //this sequential Command Group should automatically climb.
-      new SequentialCommandGroup(
-        new InstantCommand(
-        ()-> climber.turnServoOut(),climber
-      ),
-        new ClimbArmSet(climber,0,-7),
-        new ClimbArmSet(climber,69,1),
-        new ClimbArmSet(climber,5,0),
-        new ClimbArmSet(climber,16,28),
-        new ClimbArmSet(climber,24,28),
-        new ClimbArmSet(climber,24,24),
-        new ClimbArmAdjust(climber, 5),
-        new ClimbArmSet(climber,4,-5),
-        new ClimbArmSet(climber,0,-5),
-        new ClimbArmSet(climber,0,-7),
-        new ClimbArmSet(climber,69,1),
-        new ClimbArmSet(climber,5,0),
-        new ClimbArmSet(climber,16,30),
-        new ClimbArmSet(climber,24,30),
-        new ClimbArmSet(climber,24,24),
-        new ClimbArmAdjust(climber, 5),
-        new ClimbArmSet(climber,4,15)
-      )
-    );
-    // new JoystickButton(rightJoystick,6).whenPressed(
-    //   new InstantCommand(
-    //     ()-> climber.refreshDash(), climber
-    //   ) 
-    // );
-    new JoystickButton(rightJoystick, 7).whileHeld(
+    new JoystickButton(leftJoystick, 7).whileHeld(
       new StartEndCommand(
-        ()-> climber.setClimbPower(rightJoystick.getZ(),rightJoystick.getZ()), 
+        ()-> climber.setClimbPower(leftJoystick.getZ(),leftJoystick.getZ()), 
         ()-> climber.stopClimb(), climber
       )
     );
-    new JoystickButton(rightJoystick,8).whenPressed(
+    new JoystickButton(leftJoystick,8).whenPressed(
       new InstantCommand(
-        ()-> climber.stop(), climber)
+        ()-> climber.turnServoIn(), climber)
     );
-    // new JoystickButton(rightJoystick, 9).whenPressed(
-    //    new InstantCommand(
-    //      ()-> climber.climberAux(SmartDashboard.getNumber("Climber Target Height:",0)),
-    //      climber
-    //     )
-    //  );
-    new JoystickButton(rightJoystick, 10).whenPressed(
-      new StartEndCommand(
-        ()-> climber.setClimbZero(), 
-        ()-> climber.stopClimbZero(), climber
+    new JoystickButton(leftJoystick,9).whenPressed(
+      new InstantCommand(
+        ()-> climber.turnServoOut(), climber)
+    );
+    new JoystickButton(leftJoystick, 10).whenPressed(
+      new InstantCommand(
+        ()-> climber.setClimbZero(), climber
+      )
+    );
+    new JoystickButton(leftJoystick, 11).whenPressed(
+      new InstantCommand(
+        ()-> climber.zeroArm(), climber
       )
     );
     // new JoystickButton(joystick2, 1).whileHeld(
