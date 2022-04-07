@@ -47,10 +47,10 @@ public final class Constants {
   
     public static final class ClimberConstants{
         public static final double kNeutralDeadband = 0.00;
-        public static final double kClimberVelocity = 7.00; //cruise velocity in inches / second
-        public static final double kArmVelocity = 60.00; //cruise velocity in degrees / second'
-        public static final double kArmAcceleration = 15.00; // maximum acceleration in degrees / second^2
-        public static final int kArmCountsPerRev = 1680;
+        public static final double kClimberVelocity = 25.00; //cruise velocity in inches / second
+        public static final double kArmVelocity = 45.00; //cruise velocity in degrees / second'
+        public static final double kArmAcceleration = 45.00; // maximum acceleration in degrees / second^2
+        public static final int kArmCountsPerRev = 840;
         public static final double kBeltGearRatio = (24.0/60.0) * (18.0/72.0) * (25.0/10.0);
         public static final int kClimberCountsPerRev = 4096;
         public static final double kSpoolDiameter = .88;
@@ -84,12 +84,12 @@ public final class Constants {
         //deadband is .04 of full power, which coriponds to an error of aproximately 40 encoder units, or 16 degrees. From experience, the arm begins
         //to oscilate at ~100 units, which would mean an error of aproximately 8 degrees at the current neautral deadband.
         /* 	                                    			  kP   kI   kD   kF   Iz  PeakOut */
-        public static final Gains kShooterGains = new Gains( 60.0, 0.0,  16.0, 0.0, 0,  1 ); //ARM PID values
+        public static final Gains kShooterGains = new Gains( 30.0, 0.0,  30.0, 0.0, 0,  1 ); //ARM PID values
         public static final double kTicksPerDegree = (1023.0/10.0) * (170.0 /30.0) * (30.0/20.0) * (1./360.); 
         public static final int kMeasuredPosHorizontal = -260;
         public static final double kMaxGravityFF = .12;
         //Target speed is in Degrees/second
-        public static final double kArmTargetSpeed = 16;
+        public static final double kArmTargetSpeed = 40;
     }
 
     public static final class PIDConstants{

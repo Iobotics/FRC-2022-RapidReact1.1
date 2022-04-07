@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.command.WaitCommand;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 // import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -62,6 +63,7 @@ public class RobotContainer {
   private final Shooter shooter = new Shooter();
   private final Intake intake = new Intake();
   private final Drivetrain drivetrain = new Drivetrain();
+  private final Spark LED = new Spark(2);
 
   private double setPosition = 68;
 
@@ -70,14 +72,41 @@ public class RobotContainer {
     new ShootAlign(shooter,limelight,.3),
     new AutoShoot(shooter,.6,2.0)
   );
-  
-  private Command AutoRed = new SequentialCommandGroup(
-    new AutoDrive(drivetrain,0),
-    new AutoDrive(drivetrain,21),
-    new ShootPosition(shooter, 68.0, .3, false),
-    new AutoShoot(shooter,0.6,2.0),
-    new AutoDrive(drivetrain,50)
+  private Command RedTeam = new SequentialCommandGroup(
+      new InstantCommand(
+        ()->LED.set(-.25)
+      )
+    ); 
+  private Command BlueTeam = new SequentialCommandGroup(
+    new InstantCommand(
+      ()->LED.set(-.23)
+    )
   );
+  private Command AutoRed = new SequentialCommandGroup(
+    RedTeam,
+    new InstantCommand(
+      ()->drivetrain.resetEncoder(),drivetrain
+    ),
+    new AutoDrive(drivetrain,0),
+    new AutoDrive(drivetrain,60),
+    new ShootPosition(shooter, 68.0, .6, false),
+    new AutoShoot(shooter,0.6,2.0),
+    new AutoDrive(drivetrain,60),
+    new ShootPosition(shooter, -12.0, .6, false)
+  );
+  private Command AutoBlue = new SequentialCommandGroup(
+    BlueTeam,
+    new InstantCommand(
+      ()->drivetrain.resetEncoder(),drivetrain
+    ),
+    new AutoDrive(drivetrain,0),
+    new AutoDrive(drivetrain,60),
+    new ShootPosition(shooter, 68.0, .6, false),
+    new AutoShoot(shooter,0.6,2.0),
+    new AutoDrive(drivetrain,60),
+    new ShootPosition(shooter, -12.0, .6, false)
+  );
+
 
   private Command Shoot = new SequentialCommandGroup(
     new RunCommand(()->shooter.setShootPower(.6),shooter).withTimeout(1.0),
@@ -93,8 +122,9 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Add commands to the autonomous command chooser
-    AutoChooser.setDefaultOption("LimeLight Alignment", AutoShooter);
-    AutoChooser.addOption("Red Auto", AutoRed);
+    AutoChooser.setDefaultOption("AutoBlue", AutoBlue);
+    // AutoChooser.addOption("AutoRED", AutoRed);
+    AutoChooser.addOption("AutoRed", AutoRed);
     // Put the chooser on the dashboard
     SmartDashboard.putData(AutoChooser);
     drivetrain.setDefaultCommand(new RunCommand(
@@ -186,6 +216,7 @@ public class RobotContainer {
     );
     new JoystickButton(xboxControl, 9).whenPressed(
       new SequentialCommandGroup(
+        new InstantCommand(()->LED.set(-.57)),
         new InstantCommand(
         ()-> climber.turnServoOut(),climber
         ),
@@ -193,26 +224,27 @@ public class RobotContainer {
         new ClimbArmSet(climber,0,-7),
         new ClimbArmSet(climber,69,1),
         new ClimbArmSet(climber,5,0),
-        new ClimbArmSet(climber,16,28),
-        new ClimbArmSet(climber,24,28),
-        new ClimbArmSet(climber,24,20),
+        // new ClimbArmSet(climber,16,28),
+        new ClimbArmSet(climber,24.5,28),
+        new ClimbArmSet(climber,24.5,20),
         new ClimbArmAdjust(climber, 5),
         new ClimbArmSet(climber,4,-5),
         new ClimbArmSet(climber,0,-5),
         new ClimbArmSet(climber,0,-7),
         new ClimbArmSet(climber,69,1),
         new ClimbArmSet(climber,5,0),
-        new ClimbArmSet(climber,16,28),
-        new ClimbArmSet(climber,24,28),
-        new ClimbArmSet(climber,24,20),
+        // new ClimbArmSet(climber,16,28),
+        new ClimbArmSet(climber,24.5,28),
+        new ClimbArmSet(climber,24.5,20),
         new ClimbArmAdjust(climber, 5),
         new ClimbArmSet(climber,4,15)
       )
     );
     new JoystickButton(xboxControl, 10).whenPressed(
-      new RunCommand(
-        ()->shooter.outputs(), shooter
-      )
+      new ClimbArmSet(climber,0,0)  
+    // new RunCommand(
+      //   ()->shooter.outputs(), shooter
+      // )
     );
     // new JoystickButton(leftJoystick, 2).whileHeld(
     //   new ParallelCommandGroup(
@@ -275,6 +307,7 @@ public class RobotContainer {
         ()-> climber.zeroArm(), climber
       )
     );
+    
     // new JoystickButton(joystick2, 1).whileHeld(
     //   new SequentialCommandGroup(
     //     new RunCommand(
