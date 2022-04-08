@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Commands.ClimbCommand.ClimbArmAdjust;
 import frc.robot.Commands.ClimbCommand.ClimbArmSet;
 import frc.robot.Commands.DriveCommand.AutoDrive;
+import frc.robot.Commands.IntakeCommand.AutoIntake;
 import frc.robot.Commands.LimeCommand.LimeAlign;
 import frc.robot.Commands.LimeCommand.LimeShoot;
 import frc.robot.Commands.ShootCommand.AdjustShoot;
@@ -87,6 +88,19 @@ public class RobotContainer {
     new frc.robot.Commands.DriveCommand.Gyro(gyro, 180, getGyro(), drivetrain)
   );
 
+  private Command AutoBlueTwo = new SequentialCommandGroup(
+    new AutoDrive(drivetrain,0),
+    new AutoDrive(drivetrain,10),
+    new ShootPosition(shooter, 68.0, .3, false),
+    new AutoShoot(shooter,0.6,2.0),
+    new frc.robot.Commands.DriveCommand.Gyro(gyro, 180, 0, drivetrain),
+    new ParallelCommandGroup(
+      new AutoDrive(drivetrain,40),
+      new AutoIntake(intake)
+      )
+
+  );
+
 
 
   SendableChooser<Command> AutoChooser = new SendableChooser<>();
@@ -97,6 +111,7 @@ public class RobotContainer {
     AutoChooser.setDefaultOption("LimeLight Alignment", AutoShooter);
     AutoChooser.addOption("Red Auto", AutoRed);
     AutoChooser.addOption("Auto Turn", AutoTurn);
+    AutoChooser.addOption("Two Ball Blue", AutoBlueTwo);
     // Put the chooser on the dashboard
     SmartDashboard.putData(AutoChooser);
     
