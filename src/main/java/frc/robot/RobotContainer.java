@@ -93,7 +93,7 @@ public class RobotContainer {
     new AutoDrive(drivetrain,10),
     new ShootPosition(shooter, 68.0, .3, false),
     new AutoShoot(shooter,0.6,2.0),
-    new frc.robot.Commands.DriveCommand.Gyro(gyro, 180, 0, drivetrain),
+    new Gyro(gyro, 180, 0, drivetrain),
     new ParallelCommandGroup(
       new AutoDrive(drivetrain,40),
       new AutoIntake(intake)

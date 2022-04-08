@@ -30,7 +30,7 @@ public class Gyro extends PIDCommand {
   public Gyro(AHRS gyro, double angle, double initialAngle, Drivetrain drive) {
     super(
         // The controller that the co + gyro.getAngle(mmand will use
-        PID = new PIDController(0.002, 0.0,  0.0),
+        PID = new PIDController(0.0025, 0.0,  0.0),
         //new PIDController(0.0135 * 0.6, 1.2 * (0.0135 / 1.4), (0.0135 * 1.4 * 3)/40),
 
         // This should return the measurement
