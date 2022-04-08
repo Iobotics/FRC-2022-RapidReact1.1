@@ -4,21 +4,14 @@
 
 package frc.robot;
 
-import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonObjectFormatVisitor;
-
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.command.WaitCommand;
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
 // import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Commands.AdjustShoot;
-import frc.robot.Commands.AutoAlign;
-import frc.robot.Commands.AutoDrive;
-import frc.robot.Commands.AutoShoot;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
@@ -31,8 +24,12 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Commands.ClimbCommand.ClimbArmAdjust;
 import frc.robot.Commands.ClimbCommand.ClimbArmSet;
+import frc.robot.Commands.DriveCommand.AutoDrive;
 import frc.robot.Commands.LimeCommand.LimeAlign;
 import frc.robot.Commands.LimeCommand.LimeShoot;
+import frc.robot.Commands.ShootCommand.AdjustShoot;
+import frc.robot.Commands.ShootCommand.AutoAlign;
+import frc.robot.Commands.ShootCommand.AutoShoot;
 import frc.robot.Commands.ShootCommand.ShootAlign;
 import frc.robot.Commands.ShootCommand.ShootPosition;
 import frc.robot.Constants.OIConstants;
@@ -63,56 +60,19 @@ public class RobotContainer {
   private final Shooter shooter = new Shooter();
   private final Intake intake = new Intake();
   private final Drivetrain drivetrain = new Drivetrain();
-  private final Spark LED = new Spark(2);
-
-  private double setPosition = 68;
 
   private Command AutoShooter = new SequentialCommandGroup(
     new ShootPosition(shooter, 45.0,.3,false),
     new ShootAlign(shooter,limelight,.3),
     new AutoShoot(shooter,.6,2.0)
   );
-  private Command RedTeam = new SequentialCommandGroup(
-      new InstantCommand(
-        ()->LED.set(-.25)
-      )
-    ); 
-  private Command BlueTeam = new SequentialCommandGroup(
-    new InstantCommand(
-      ()->LED.set(-.23)
-    )
-  );
+  
   private Command AutoRed = new SequentialCommandGroup(
-    RedTeam,
-    new InstantCommand(
-      ()->drivetrain.resetEncoder(),drivetrain
-    ),
     new AutoDrive(drivetrain,0),
-    new AutoDrive(drivetrain,60),
-    new ShootPosition(shooter, 68.0, .6, false),
+    new AutoDrive(drivetrain,21),
+    new ShootPosition(shooter, 68.0, .3, false),
     new AutoShoot(shooter,0.6,2.0),
-    new AutoDrive(drivetrain,60),
-    new ShootPosition(shooter, -12.0, .6, false)
-  );
-  private Command AutoBlue = new SequentialCommandGroup(
-    BlueTeam,
-    new InstantCommand(
-      ()->drivetrain.resetEncoder(),drivetrain
-    ),
-    new AutoDrive(drivetrain,0),
-    new AutoDrive(drivetrain,60),
-    new ShootPosition(shooter, 68.0, .6, false),
-    new AutoShoot(shooter,0.6,2.0),
-    new AutoDrive(drivetrain,60),
-    new ShootPosition(shooter, -12.0, .6, false)
-  );
-
-
-  private Command Shoot = new SequentialCommandGroup(
-    new RunCommand(()->shooter.setShootPower(.6),shooter).withTimeout(1.0),
-    new RunCommand(()->shooter.extendPneumatic(true),shooter).withTimeout(.3),
-    new InstantCommand(()->shooter.extendPneumatic(false),shooter),
-    new InstantCommand(()->shooter.setShootPower(0))
+    new AutoDrive(drivetrain,50)
   );
 
 
@@ -122,19 +82,29 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Add commands to the autonomous command chooser
-    AutoChooser.setDefaultOption("AutoBlue", AutoBlue);
-    // AutoChooser.addOption("AutoRED", AutoRed);
-    AutoChooser.addOption("AutoRed", AutoRed);
+    AutoChooser.setDefaultOption("LimeLight Alignment", AutoShooter);
+    AutoChooser.addOption("Red Auto", AutoRed);
     // Put the chooser on the dashboard
     SmartDashboard.putData(AutoChooser);
+    
+    SmartDashboard.putNumber("TARGETGOTO:",0);
+    SmartDashboard.putNumber("Art Target Position:",0);
+    SmartDashboard.putNumber("Distance",10);
+    SmartDashboard.putNumber("P", 50);
+    SmartDashboard.putNumber("I", 0);
+    SmartDashboard.putNumber("D", 0);
+    SmartDashboard.putNumber("AutoDrive",0);
+    SmartDashboard.getNumber("Verks",2438);
+    SmartDashboard.putNumber("Drivetrain Target (in):", 0);
+    
     drivetrain.setDefaultCommand(new RunCommand(
       () -> drivetrain.setArcade(leftJoystick.getY(), -rightJoystick.getX()),drivetrain)
     );
     
 
-    shooter.setDefaultCommand(new RunCommand(
-      ()-> shooter.outputs(),shooter)
-    );  
+    // shooter.setDefaultCommand(new RunCommand(
+    //   ()-> shooter.setArmPosition(),shooter)
+    //  );  
     
     // Configure the button bindings
     configureButtonBindings();
@@ -147,7 +117,9 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    //====================GAME=BUTTON=BINDINGS======================
+    //====================OFFICIAL=GAME=BUTTON=BINDINGS======================
+
+    //=====LEFT=TRIGGER=INTAKES=BALLS
     new JoystickButton(leftJoystick,1).whileHeld(
       new ParallelCommandGroup(
         new StartEndCommand(
@@ -160,154 +132,171 @@ public class RobotContainer {
         )
       )
     );
-
-    new JoystickButton(rightJoystick, 1).whileHeld(
+    
+    //=====RIGHT=TRIGGER=OUTTAKES=BALLS
+    new JoystickButton(rightJoystick,1).whileHeld(
       new ParallelCommandGroup(
         new StartEndCommand(
           ()-> intake.setPower(.7), 
           ()-> intake.stop(), intake
-        ),
-        new StartEndCommand(
-          ()-> shooter.setShootPower(.4), 
-          ()-> shooter.stopWheels(), shooter
         )
       )
     );
 
-    new JoystickButton(xboxControl,1).whenPressed(
+    //=====BUTTON=A=POINTS=SHOOTER=TO=INTAKE
+    new JoystickButton(xboxControl, 1).whenPressed(
       new RunCommand(
-        ()->shooter.setArmPosition(-12.0), shooter
+        ()-> shooter.setArmPosition(-12), shooter
       )
     );
 
+    //=====BUTTON=B=SHOOTS=BALLS
     new JoystickButton(xboxControl, 2).whenPressed(
-      Shoot
-    );
-
-    new JoystickButton(xboxControl, 3).whenPressed(
-      new ParallelCommandGroup(
-        new RunCommand (
-        ()-> shooter.stop(), shooter),
-        new RunCommand(
-        ()-> climber.stop(), climber)
+      new SequentialCommandGroup(
+        new RunCommand(()-> shooter.setShootPower(.6),shooter).withTimeout(1.0),
+        new RunCommand(()->shooter.extendPneumatic(true),shooter).withTimeout(.4),
+        new InstantCommand(()->shooter.extendPneumatic(false),shooter),
+        new InstantCommand(()-> shooter.setShootPower(0),shooter)
       )
     );
 
+    //=====BUTTON=X=STOPS=SHOOTER
+    new JoystickButton(xboxControl, 3).whenPressed(
+      new RunCommand(
+        (  )-> shooter.stop(), shooter)
+    );
+
+    //=====BUTTON=Y=POINTS=SHOOTER=TO=IDEAL=TARGET
     new JoystickButton(xboxControl, 4).whenPressed(
       new RunCommand(
-        ()-> shooter.setArmPosition(setPosition), shooter
-      )
+        ()-> shooter.setArmPosition(68), shooter)
     );
-    new JoystickButton(xboxControl, 5).whenPressed(
-      new RunCommand(
-        ()-> climber.climberAux(0), climber
-      )
-    );
-    new JoystickButton(xboxControl, 6).whenPressed(
-      new RunCommand(
-        ()-> climber.climberAux(20), climber
-      )
-    );
-    new JoystickButton(xboxControl, 7).whenPressed(
-      ()-> setPosition+= 1
-    );
-    new JoystickButton(xboxControl, 8).whenPressed(
-      ()-> setPosition-= 1
-    );
-    new JoystickButton(xboxControl, 9).whenPressed(
-      new SequentialCommandGroup(
-        new InstantCommand(()->LED.set(-.57)),
-        new InstantCommand(
-        ()-> climber.turnServoOut(),climber
-        ),
-        new InstantCommand(()->shooter.setArmPosition(-12.0), shooter),
-        new ClimbArmSet(climber,0,-7),
-        new ClimbArmSet(climber,69,1),
-        new ClimbArmSet(climber,5,0),
-        // new ClimbArmSet(climber,16,28),
-        new ClimbArmSet(climber,24.5,28),
-        new ClimbArmSet(climber,24.5,20),
-        new ClimbArmAdjust(climber, 5),
-        new ClimbArmSet(climber,4,-5),
-        new ClimbArmSet(climber,0,-5),
-        new ClimbArmSet(climber,0,-7),
-        new ClimbArmSet(climber,69,1),
-        new ClimbArmSet(climber,5,0),
-        // new ClimbArmSet(climber,16,28),
-        new ClimbArmSet(climber,24.5,28),
-        new ClimbArmSet(climber,24.5,20),
-        new ClimbArmAdjust(climber, 5),
-        new ClimbArmSet(climber,4,15)
-      )
-    );
-    new JoystickButton(xboxControl, 10).whenPressed(
-      new ClimbArmSet(climber,0,0)  
-    // new RunCommand(
-      //   ()->shooter.outputs(), shooter
-      // )
-    );
-    // new JoystickButton(leftJoystick, 2).whileHeld(
-    //   new ParallelCommandGroup(
-    //     new RunCommand (
-    //     ()-> shooter.outputs(), shooter),
-    //     new RunCommand(
-    //     ()-> limelight.outputs(), limelight),
-    //     new RunCommand(
-    //     ()-> drivetrain.outputs(), drivetrain)
-    //   )
-    // );
- 
 
     //===================TESTING=BUTTON=BINDINGS====================
 
     
+    // new JoystickButton(xboxControl, 3).whenPressed(
+    //   new RunCommand(
+    //     (  )-> shooter.stop(), shooter)
+    // );
+
+    // new JoystickButton(leftJoystick, 3).whenPressed(
+    //   new RunCommand (
+    //   ()-> drivetrain.resetEncoder(), drivetrain)
+    // );
+
+    // new JoystickButton(leftJoystick, 11).whenPressed(
+    //   new RunCommand(
+    //     ()->shooter.stop(), shooter)
+    //   // new ShootPosition(shooter,SmartDashboard.getNumber("TARGETGOTO:",0),.5,false)
+    // );
+ 
+    // // new JoystickButton(xboxControl,0).whileHeld(
+    // //   new AutoShoot(shooter, .9, .5)
+    // // );
+
+    // // new JoystickButton(xboxControl,1).whileHeld(
+    // //   new StartEndCommand(
+    // //     ()-> shooter.extendPneumatic(true), 
+    // //     ()-> shooter.extendPneumatic(false), shooter
+    // //   )
+    // // );
+
+    // // new JoystickButton(xboxControl,2).whileHeld(
+    // //   new StartEndCommand(
+    // //     ()-> shooter.setArmPosition(90.0*Math.abs(xboxControl.getLeftY())), 
+    // //     ()-> shooter.setArmPosition(shooter.getArmPosition()), shooter
+    // //   )
+    // // );
+
+    // // new JoystickButton(xboxControl,3).whileHeld(
+    // //  new AdjustShoot(shooter, xboxControl.getLeftY())
+    // // );
+
+    // // new JoystickButton(xboxControl, 3).whenInactive(
+    // //   new RunCommand(
+    // //     ()-> shooter.setArmPosition(shooter.getArmPosition()), shooter), true);
+
     // new JoystickButton(rightJoystick,1).whileHeld(
     //   new StartEndCommand(
     //   ()-> climber.armDeg(SmartDashboard.getNumber("Art Target Angle:",0)), 
     //   ()-> climber.stopArm(), climber
     //   )
     // );
-    new JoystickButton(rightJoystick,6).whileHeld(
-      new SequentialCommandGroup(
-        new RunCommand(
-        ()-> climber.armDeg(0), climber
-        ),
-        new RunCommand(
-        ()-> climber.climberAux(0), climber
-        )
-      )
-    );
-    new JoystickButton(leftJoystick,6).whileHeld(
-      new StartEndCommand(
-        ()->climber.armSpeed(leftJoystick.getZ()),
-        ()-> climber.stopArm(), climber
-      )
-    );
-    new JoystickButton(leftJoystick, 7).whileHeld(
-      new StartEndCommand(
-        ()-> climber.setClimbPower(leftJoystick.getZ(),leftJoystick.getZ()), 
-        ()-> climber.stopClimb(), climber
-      )
-    );
-    new JoystickButton(leftJoystick,8).whenPressed(
-      new InstantCommand(
-        ()-> climber.turnServoIn(), climber)
-    );
-    new JoystickButton(leftJoystick,9).whenPressed(
-      new InstantCommand(
-        ()-> climber.turnServoOut(), climber)
-    );
-    new JoystickButton(leftJoystick, 10).whenPressed(
-      new InstantCommand(
-        ()-> climber.setClimbZero(), climber
-      )
-    );
-    new JoystickButton(leftJoystick, 11).whenPressed(
-      new InstantCommand(
-        ()-> climber.zeroArm(), climber
-      )
-    );
+    // new JoystickButton(rightJoystick,2).whenPressed(
+    //   new InstantCommand(
+    //     ()-> climber.zeroArm(), climber
+    //   )
+    // );
+    // new JoystickButton(rightJoystick,3).whileHeld(
+    //   new RunCommand(
+    //     ()-> climber.armClimb(), climber
+    //   )
+    // );
+    // new JoystickButton(rightJoystick,4).whileHeld(
+    //   new StartEndCommand(
+    //     ()->climber.armSpeed(rightJoystick.getZ()),
+    //     ()-> climber.stopArm(), climber
+    //   )
+    // );
     
+    // new JoystickButton(rightJoystick,5).whenPressed(
+    //   //this sequential Command Group should automatically climb.
+    //   new SequentialCommandGroup(
+    //     new ClimbArmSet(climber,0,-5),
+    //     new ClimbArmSet(climber,69,2),
+    //     new ClimbArmSet(climber,5,0),
+    //     new ClimbArmSet(climber,16,30),
+    //     new ClimbArmSet(climber,24,30),
+    //     new ClimbArmSet(climber,24,24),
+    //     new ClimbArmAdjust(climber, 5),
+    //     new ClimbArmSet(climber,4,0),
+    //     // new ClimbArmSet(climber,6,-5),
+    //     new ClimbArmSet(climber,0,-5)
+    //   )
+    // );
+    // new JoystickButton(rightJoystick,6).whenPressed(
+    //   new InstantCommand(
+    //     ()-> climber.refreshDash(), climber
+    //   ) 
+    // );
+    // new JoystickButton(rightJoystick, 7).whileHeld(
+    //   new StartEndCommand(
+    //     ()-> climber.setClimbPower(rightJoystick.getZ(),rightJoystick.getZ()), 
+    //     ()-> climber.stopClimb(), climber
+    //   )
+    // );
+    // new JoystickButton(rightJoystick,8).whenPressed(
+    //   new InstantCommand(
+    //     ()-> climber.stop(), climber)
+    // );
+    // new JoystickButton(rightJoystick, 9).whenPressed(
+    //    new InstantCommand(
+    //      ()-> climber.climberAux(SmartDashboard.getNumber("Climber Target Height:",0)),
+    //      climber
+    //     )
+    //  );
+    // new JoystickButton(rightJoystick, 10).whenPressed(
+    //   new StartEndCommand(
+    //     ()-> climber.setClimbZero(), 
+    //     ()-> climber.stopClimbZero(), climber
+    //   )
+    // );
+    // new JoystickButton(xboxControl, 5).whenPressed(
+    //   new InstantCommand(
+    //     ()-> climber.turnServoIn(),climber
+    //   )
+    // );
+    // new JoystickButton(xboxControl, 6).whenPressed(
+    //   new InstantCommand(
+    //     ()-> climber.turnServoOut(),climber
+    //   )
+    // );
+    // new JoystickButton(rightJoystick,11).whileHeld(
+    //   new RunCommand(
+    //     ()->climber.zeroClimbEncoders(.4*rightJoystick.getZ()), climber
+    //   )
+    // );
     // new JoystickButton(joystick2, 1).whileHeld(
     //   new SequentialCommandGroup(
     //     new RunCommand(

@@ -2,49 +2,58 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.Commands;
-
+package frc.robot.Commands.ShootCommand;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.Shooter;
 
-public class AdjustShoot extends CommandBase {
-  /** Creates a new AdjustShoot. */
+public class AutoShoot extends CommandBase {
+  /** Creates a new AutoShoot. */
   Shooter shooter;
-  Timer timer;
-  double anglePerSecond;
-  double startAngle;
-  public AdjustShoot(Shooter shooter, double anglePerSecond) {
-    this.shooter = shooter;
-    this.anglePerSecond = anglePerSecond;
-    addRequirements(shooter);
+  double shootPower;
+  double shootTime;
+  
+  public AutoShoot(Shooter shooter,double shootPower,double shootTime) {
     // Use addRequirements() here to declare subsystem dependencies.
+    this.shooter = shooter;
+    this.shootPower = shootPower;
+    this.shootTime = shootTime;
+
+    addRequirements(shooter);
+
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    startAngle = shooter.getArmPosition();
-    timer.reset();
-    timer.start();
+
+    shooter.stopWheels();
+    shooter.setShootPower(shootPower);
+    Timer.delay(shootTime);
+    shooter.extendPneumatic(true);
+    Timer.delay(.4);
+    shooter.extendPneumatic(false);
   }
+
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.setArmPosition(startAngle + anglePerSecond * timer.get());
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    shooter.setArmPosition(startAngle + anglePerSecond * timer.get());
+    shooter.stopWheels();
+    shooter.extendPneumatic(false);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }

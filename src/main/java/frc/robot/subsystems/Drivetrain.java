@@ -166,5 +166,8 @@ public class Drivetrain extends SubsystemBase {
     rightMaster.set(ControlMode.PercentOutput, 0);
   }
   
+  public int getVelocity() {
+    return (int)leftMaster.getSelectedSensorVelocity();
+  }
 
 }
