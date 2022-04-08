@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.command.WaitCommand;
-import edu.wpi.first.wpilibj.interfaces.Gyro;
 // import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -35,6 +34,7 @@ import frc.robot.Commands.ShootCommand.AutoAlign;
 import frc.robot.Commands.ShootCommand.AutoShoot;
 import frc.robot.Commands.ShootCommand.ShootAlign;
 import frc.robot.Commands.ShootCommand.ShootPosition;
+import frc.robot.Commands.DriveCommand.Gyro;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Limelight;
@@ -84,7 +84,7 @@ public class RobotContainer {
   );
 
   private Command AutoTurn = new SequentialCommandGroup(
-    new frc.robot.Commands.DriveCommand.Gyro(gyro, 180, getGyro(), drivetrain)
+    new Gyro(gyro, 180, getGyro(), drivetrain)
   );
 
 
@@ -183,6 +183,10 @@ public class RobotContainer {
     new JoystickButton(xboxControl, 4).whenPressed(
       new RunCommand(
         ()-> shooter.setArmPosition(68), shooter)
+    );
+
+    new JoystickButton(leftJoystick, 5).whenPressed(
+      new Gyro(gyro, 180, getGyro(), drivetrain)
     );
 
     //===================TESTING=BUTTON=BINDINGS====================
