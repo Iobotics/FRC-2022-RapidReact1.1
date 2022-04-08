@@ -4,11 +4,14 @@
 
 package frc.robot;
 
+import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.command.WaitCommand;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 // import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -54,12 +57,17 @@ public class RobotContainer {
   private final Joystick rightJoystick = new Joystick(OIConstants.kJoystick1);
   private final Joystick leftJoystick = new Joystick(OIConstants.kJoystick2);
   private final XboxController xboxControl = new XboxController(OIConstants.kXbox1);
+  private final AHRS gyro = new AHRS();
 
   private final Climber climber = new Climber();
   private final Limelight limelight = new Limelight();
   private final Shooter shooter = new Shooter();
   private final Intake intake = new Intake();
   private final Drivetrain drivetrain = new Drivetrain();
+
+  public double getGyro() {
+    return gyro.getRoll();
+  }
 
   private Command AutoShooter = new SequentialCommandGroup(
     new ShootPosition(shooter, 45.0,.3,false),
@@ -75,6 +83,10 @@ public class RobotContainer {
     new AutoDrive(drivetrain,50)
   );
 
+  private Command AutoTurn = new SequentialCommandGroup(
+    new frc.robot.Commands.DriveCommand.Gyro(gyro, 180, getGyro(), drivetrain)
+  );
+
 
 
   SendableChooser<Command> AutoChooser = new SendableChooser<>();
@@ -84,6 +96,7 @@ public class RobotContainer {
     // Add commands to the autonomous command chooser
     AutoChooser.setDefaultOption("LimeLight Alignment", AutoShooter);
     AutoChooser.addOption("Red Auto", AutoRed);
+    AutoChooser.addOption("Auto Turn", AutoTurn);
     // Put the chooser on the dashboard
     SmartDashboard.putData(AutoChooser);
     
