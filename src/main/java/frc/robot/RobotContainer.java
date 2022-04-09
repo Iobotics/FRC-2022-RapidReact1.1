@@ -95,10 +95,15 @@ public class RobotContainer {
     new AutoShoot(shooter,0.6,2.0),
     new Gyro(gyro, 180, 0, drivetrain),
     new ParallelCommandGroup(
+      new ShootPosition(shooter, -11.0, .3, false),
       new AutoDrive(drivetrain,40),
       new AutoIntake(intake)
-      )
-
+      ),
+    new ParallelCommandGroup(
+      new Gyro(gyro, 0, 180, drivetrain),
+      new ShootPosition(shooter, 68.0, .3, false)
+      ),
+    new AutoShoot(shooter,0.9,2.0)
   );
 
 
@@ -203,6 +208,8 @@ public class RobotContainer {
     new JoystickButton(leftJoystick, 5).whenPressed(
       new Gyro(gyro, 180, getGyro(), drivetrain)
     );
+
+    
 
     //===================TESTING=BUTTON=BINDINGS====================
 
