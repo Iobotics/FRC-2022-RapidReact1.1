@@ -16,7 +16,7 @@ public class ClimbArmSet extends CommandBase {
   /** Command that will set the arm and climber to their respenctive positions
    * @param subClimber the climber subsystem
    * @param subClimbTargetInch the target of the climber in inches
-   * @param subArmTargetDegree the target of teh arm in degrees
+   * @param subArmTargetDegree the target of the arm in degrees
   */
   public ClimbArmSet(Climber subClimber,double subClimbTargetInch, double subArmTargetDegree) {
     climber = subClimber;

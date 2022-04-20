@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.command.WaitCommand;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 // import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -65,15 +66,30 @@ public class RobotContainer {
   private final Shooter shooter = new Shooter();
   private final Intake intake = new Intake();
   private final Drivetrain drivetrain = new Drivetrain();
+  private final Spark LED = new Spark(2);
 
   public double getGyro() {
     return gyro.getRoll();
   }
 
+  private double setPosition = 68;
+
   private Command AutoShooter = new SequentialCommandGroup(
     new ShootPosition(shooter, 45.0,.3,false),
     new ShootAlign(shooter,limelight,.3),
     new AutoShoot(shooter,.6,2.0)
+  );
+
+  private Command RedTeam = new SequentialCommandGroup(
+      new InstantCommand(
+        ()->LED.set(-.25)
+      )
+    ); 
+    
+  private Command BlueTeam = new SequentialCommandGroup(
+    new InstantCommand(
+      ()->LED.set(-.23)
+    )
   );
   
   private Command AutoRed = new SequentialCommandGroup(
@@ -94,8 +110,8 @@ public class RobotContainer {
     new ShootPosition(shooter, 68.0, .3, false),
     new AutoShoot(shooter,0.6,2.0),
     new Gyro(gyro, 180, 0, drivetrain),
+    new ShootPosition(shooter, -11.0, .3, false),
     new ParallelCommandGroup(
-      new ShootPosition(shooter, -11.0, .3, false),
       new AutoDrive(drivetrain,40),
       new AutoIntake(intake)
       ),
@@ -135,9 +151,9 @@ public class RobotContainer {
     );
     
 
-    // shooter.setDefaultCommand(new RunCommand(
-    //   ()-> shooter.setArmPosition(),shooter)
-    //  );  
+    shooter.setDefaultCommand(new RunCommand(
+      ()-> shooter.outputs(),shooter)
+    ); 
     
     // Configure the button bindings
     configureButtonBindings();
@@ -179,7 +195,7 @@ public class RobotContainer {
     //=====BUTTON=A=POINTS=SHOOTER=TO=INTAKE
     new JoystickButton(xboxControl, 1).whenPressed(
       new RunCommand(
-        ()-> shooter.setArmPosition(-12), shooter
+        ()-> shooter.setArmPosition(-12.0), shooter
       )
     );
 
@@ -202,11 +218,59 @@ public class RobotContainer {
     //=====BUTTON=Y=POINTS=SHOOTER=TO=IDEAL=TARGET
     new JoystickButton(xboxControl, 4).whenPressed(
       new RunCommand(
-        ()-> shooter.setArmPosition(68), shooter)
+        ()-> shooter.setArmPosition(setPosition), shooter)
     );
 
     new JoystickButton(leftJoystick, 5).whenPressed(
       new Gyro(gyro, 180, getGyro(), drivetrain)
+    );
+
+    new JoystickButton(xboxControl, 5).whenPressed(
+      new RunCommand(
+        ()-> climber.climberAux(0), climber
+      )
+    );
+    new JoystickButton(xboxControl, 6).whenPressed(
+      new RunCommand(
+        ()-> climber.climberAux(20), climber
+      )
+    );
+    // new JoystickButton(xboxControl, 7).whenPressed(
+    //   ()-> setPosition+= 1
+    // );
+    // new JoystickButton(xboxControl, 8).whenPressed(
+    //   ()-> setPosition-= 1
+    //);
+    new JoystickButton(xboxControl, 9).whenPressed(
+      new SequentialCommandGroup(
+        new InstantCommand(()->LED.set(-.57)),
+        new InstantCommand(
+        ()-> climber.turnServoOut(),climber
+        ),
+        new InstantCommand(()->shooter.setArmPosition(-12.0), shooter),
+        new ClimbArmSet(climber,0,-7),
+        new ClimbArmSet(climber,69,1),
+        new ClimbArmSet(climber,5,0),
+        // new ClimbArmSet(climber,16,28),
+        new ClimbArmSet(climber,24.5,28),
+        new ClimbArmSet(climber,24.5,20),
+        new ClimbArmAdjust(climber, 5),
+        new ClimbArmSet(climber,4,-5),
+        new ClimbArmSet(climber,0,-5),
+        new ClimbArmSet(climber,0,-7),
+        new ClimbArmSet(climber,69,1),
+        new ClimbArmSet(climber,5,0),
+        // new ClimbArmSet(climber,16,28),
+        new ClimbArmSet(climber,24.5,28),
+        new ClimbArmSet(climber,24.5,20),
+        new ClimbArmAdjust(climber, 5),
+        new ClimbArmSet(climber,4,15)
+      )
+    );
+    new JoystickButton(xboxControl, 10).whenPressed(
+      new RunCommand(
+        ()->shooter.outputs(), shooter
+      )
     );
 
     
